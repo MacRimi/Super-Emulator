@@ -113,76 +113,85 @@ EOF
     chmod +x "$HOME_DIR/RetroPie/roms/ajustes/lanzar_steam.sh"
 fi
 
-# Agregar script para lanzar Steam al directorio "ajustes" solo si no existe
-if [[ ! -f "$HOME_DIR/RetroPie/roms/ajustes/lanzar_steam.sh" ]]; then
-    cat <<EOF > "$HOME_DIR/RetroPie/roms/ajustes/lanzar_steam.sh"
-#!/bin/bash
-steam -noverifyfiles -bigpicture
-wait
-emulationstation
-EOF
-
-    chmod +x "$HOME_DIR/RetroPie/roms/ajustes/lanzar_steam.sh"
-fi
 
 # Agregar script para importar juegos de Steam al directorio "ajustes" solo si no existe
 if [[ ! -f "$HOME_DIR/RetroPie/roms/ajustes/importar_juegos_steam.sh" ]]; then
     cat <<'EOF' > "$HOME_DIR/RetroPie/roms/ajustes/importar_juegos_steam.sh"
 #!/usr/bin/env bash
 
-readonly ROMS_DIR="$HOME_DIR/RetroPie/roms/steam"
-readonly OUTPUT_DIR="$ROMS_DIR"
+# ##############################################################################
+# Encuentra juegos de Steam en tu directorio de Steam y escribe scripts de shell para lanzar los juegos.
+# ##############################################################################
 
-# Información de Steam
-readonly STEAM_APPS_DIR="$HOME_DIR/.local/share/Steam/steamapps"
+# Configuración
+readonly ROMS_DIR="${HOME}/RetroPie/roms/steam"
+readonly OUTPUT_DIR="${ROMS_DIR}"
+
+# Steam stuff"
+readonly STEAM_APPS_DIR="${HOME}/.local/share/Steam/steamapps"
 readonly STEAM_MANIFEST_EXT='.acf'
 
-# Función para obtener propiedades del manifiesto de Steam
+# ##############################################################################
+# Obtiene la propiedad especificada del manifiesto de la aplicación de Steam.
+#
+# Argumentos:
+#   app_manifest_path: la ruta completa al archivo de manifiesto de la aplicación.
+#   property_name: el nombre de la propiedad que se desea obtener.
+# ##############################################################################
+
+
 function getManifestProperty() {
     local app_manifest_path="$1"
     local property_name="$2"
-    grep "$property_name" "$app_manifest_path" | cut -d '"' -f 4
+
+    # Utiliza grep y sed para extraer el valor de la propiedad del archivo de manifiesto
+    grep "${property_name}" "${app_manifest_path}" | cut -d '"' -f 4 
 }
 
-# Función para generar un script para lanzar un juego
+# ##############################################################################
+# Escribe el contenido de un script de shell para lanzar un juego de Steam.
+#
+# Argumentos:
+#   app_id: el ID numérico para la aplicación de Steam.
+#   app_name: el nombre de cadena de la aplicación de Steam.
+# ##############################################################################
+
 function shellScriptTemplate() {
     local app_id="$1"
     local app_name="$2"
 
-    cat <<EOF2
+
+cat <<EOF
 #!/bin/bash
 
-steam -noverifyfiles -bigpicture steam://rungameid/\$app_id &
+# Lanza el juego desde Steam
+steam -noverifyfiles  -bigpicture steam://rungameid/${app_id} &
 
+# Esperar un poco para asegurarse de que el juego esté completamente cerrado antes de continuar
 wait
 
+# Una vez que el juego se cierra, cerrar Steam y reiniciar EmulationStation
 emulationstation
 
-EOF2
+EOF
 }
 
-# Asegúrate de que el directorio está vacío antes de crearlo
-if [[ -d "$OUTPUT_DIR" ]]; then
-    rm -r "$OUTPUT_DIR"
+if [[ -d "${OUTPUT_DIR}" ]]; then
+    rm -r "${OUTPUT_DIR}"
 fi
+mkdir -p "${OUTPUT_DIR}"
 
-# Crear el directorio
-mkdir -p "$OUTPUT_DIR"
+app_manifest_names=$(ls "${STEAM_APPS_DIR}" | grep "${STEAM_MANIFEST_EXT}")
+for app_manifest_name in ${app_manifest_names}; do
+    app_manifest_path="${STEAM_APPS_DIR}/${app_manifest_name}"
+    app_id=$(getManifestProperty "${app_manifest_path}" '"appid"')
+    app_name=$(getManifestProperty "${app_manifest_path}" '"name"')
+    sanitized_app_name=$(echo "${app_name}" | sed 's/&/and/g' | tr ' ' '_')
+    shell_script_path="${OUTPUT_DIR}/${sanitized_app_name}.sh"
+    shell_script_contents=$(shellScriptTemplate "${app_id}" "${app_name}")
 
-# Obtener el nombre de las aplicaciones en Steam
-app_manifest_names=$(ls "$STEAM_APPS_DIR" | grep "$STEAM_MANIFEST_EXT")
-for app_manifest_name in "${app_manifest_names}"; do
-    app_manifest_path="$STEAM_APPS_DIR/$app_manifest_name"
-    app_id=$(getManifestProperty("$app_manifest_path", "appid")
-    app_name=$(getManifestProperty("$app_manifest_path", "name")
-
-    sanitized_app_name=$(echo "$app_name" | sed 's/&/and/g' | tr ' ' '_' )
-    shell_script_path="$OUTPUT_DIR/$sanitized_app_name.sh"
-    
-    shell_script_contents=$(shellScriptTemplate("\$app_id", "\$app_name"))
-
-    echo "\$shell_script_contents" > "\$shell_script_path"
-    chmod +x "\$shell_script_path"
+    echo "${shell_script_contents}" > "${shell_script_path}"
+    chmod +x "${shell_script_path}"
 done
 EOF
 
