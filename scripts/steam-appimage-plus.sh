@@ -115,8 +115,9 @@ else
     exit 1
 fi
 
-
+# ##############################################################################
 # Agregar script para lanzar Steam en Big Picture al directorio "ajustes" solo si no existe
+# ##############################################################################
 if [[ ! -f "$HOME/RetroPie/roms/ajustes/lanzar_steam.sh" ]]; then
     cat <<EOF > "$HOME/RetroPie/roms/ajustes/lanzar_steam.sh"
 #!/bin/bash
@@ -127,16 +128,18 @@ EOF
     chmod +x "$HOME/RetroPie/roms/ajustes/lanzar_steam.sh"
 fi
 
+# ##############################################################################
 # Agregar script para importar juegos de Steam al directorio "ajustes" solo si no existe
+# ##############################################################################
 if [[ ! -f "$HOME/RetroPie/roms/ajustes/importar_juegos_steam.sh" ]]; then
     cat <<'EOF' > "$HOME/RetroPie/roms/ajustes/importar_juegos_steam.sh"
 #!/usr/bin/env bash
 
-readonly ROMS_DIR="${HOME/RetroPie/roms/steam"
+readonly ROMS_DIR="${HOME}/RetroPie/roms/steam"
 readonly OUTPUT_DIR="${ROMS_DIR}"
 
 # Información de Steam
-readonly STEAM_APPS_DIR="${HOME/.local/share/Steam/steamapps"
+readonly STEAM_APPS_DIR="${HOME}/.local/share/Steam/steamapps"
 readonly STEAM_MANIFEST_EXT='.acf'
 
 # Función para obtener propiedades del manifiesto de Steam
