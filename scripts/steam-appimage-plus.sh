@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Define el directorio base del usuario estándar para evitar errores relacionados con el usuario root
+# Define el directorio base del usuario estándar
 HOME_DIR=$(eval echo ~$SUDO_USER)
 
 # Define mkRomDir para crear directorios si no está ya definido
@@ -33,27 +33,19 @@ for pkg in "${REQUIRED_PACKAGES[@]}"; do
 done
 
 # Crea el directorio para instalar Steam si no existe
-if [[ ! -d "$md_inst/bin" ]]; then
-    mkRomDir "$md_inst/bin"
-fi
+mkRomDir "$HOME_DIR/RetroPie/roms/steam"
+
+# Crea el directorio "ajustes" si no existe
+mkRomDir "$HOME_DIR/RetroPie/roms/ajustes"
 
 # Descarga e instala Steam si no está ya instalado
-if [[ ! -f "$md_inst/bin/steam.deb" ]]; then
-    wget --content-disposition "https://cdn.cloudflare.steamstatic.com/client/installer/steam.deb" -O "$md_inst/bin/steam.deb"
+if [[ ! -f "$HOME_DIR/RetroPie/roms/steam/steam.deb" ]]; then
+    wget --content-disposition "https://cdn.cloudflare.steamstatic.com/client/installer/steam.deb" -O "$HOME_DIR/RetroPie/roms/steam/steam.deb"
 fi
 
-if ! which steam; then
-    sudo apt-get install -y "$md_inst/bin/steam.deb"
-    rm "$md_inst/bin/steam.deb"  # Borrar el archivo después de instalar
-fi
-
-# Crear directorios de ROMs para Steam y "ajustes"
-if [[ ! -d "$HOME/RetroPie/roms/steam" ]]; then
-    mkRomDir "$HOME/RetroPie/roms/steam"
-fi
-
-if [[ ! -d "$HOME/RetroPie/roms/ajustes" ]]; then
-    mkRomDir "$HOME/RetroPie/roms/ajustes"
+if ! which steam > /dev/null; then
+    sudo apt-get install -y "$HOME_DIR/RetroPie/roms/steam/steam.deb"
+    rm "$HOME_DIR/RetroPie/roms/steam/steam.deb"  # Borrar el archivo después de la instalación
 fi
 
 # Lista de rutas comunes para es_systems.cfg
@@ -73,19 +65,16 @@ for path in "${ES_SYSTEMS_PATHS[@]}"; do
     fi
 done
 
-# Verificar si se encontró el archivo
+# Verificar si se encontró es_systems.cfg
 if [[ -z "$ES_SYSTEMS_CFG" ]]; then
-    echo "No se encontró es_systems.cfg."
+    echo "No se encontró es_systems.cfg. No se pueden agregar sistemas."
     exit 1
 fi
 
-# Añadir el sistema "steam" y "ajustes" a es_systems.cfg solo si no están ya configurados
-# Verificar si el sistema "ajustes" ya existe
-# Si se encontró es_systems.cfg, añadir configuraciones con permisos administrativos
-if [[ -n "$ES_SYSTEMS_CFG" ]]; then
-    # Insertar el sistema "ajustes" solo si no está ya configurado
-    if ! grep -q '<name>ajustes</name>' "$ES_SYSTEMS_CFG"; then
-        sudo sed -i "/<\/systemList>/i \
+# Añadir sistemas a es_systems.cfg
+# Insertar el sistema "ajustes" antes de </systemList> solo si no está ya configurado
+if ! grep -q '<name>ajustes</name>' "$ES_SYSTEMS_CFG"; then
+    sudo sed -i "/<\/systemList>/i \
 <system>\
     <name>ajustes</name>\
     <fullname>Configuraciones</fullname>\
@@ -95,11 +84,11 @@ if [[ -n "$ES_SYSTEMS_CFG" ]]; then
     <platform>config</platform>\
     <theme>ajustes</theme>\
 </system>" "$ES_SYSTEMS_CFG"
-    fi
+fi
 
-    # Insertar el sistema "steam" solo si no está ya configurado
-    if ! grep -q '<name>steam</name>' "$ES_SYSTEMS_CFG"; then
-        sudo sed -i "/<\/systemList>/i \
+# Insertar el sistema "steam" antes de </systemList> solo si no está ya configurado
+if ! grep -q '<name>steam</name>' "$ES_SYSTEMS_CFG"; then
+    sudo sed -i "/<\/systemList>/i \
 <system>\
     <name>steam</name>\
     <fullname>Steam</fullname>\
@@ -109,10 +98,6 @@ if [[ -n "$ES_SYSTEMS_CFG" ]]; then
     <platform>pc</platform>\
     <theme>steam</theme>\
 </system>" "$ES_SYSTEMS_CFG"
-    fi
-else
-    echo "No se encontró es_systems.cfg. No se pueden agregar los sistemas."
-    exit 1
 fi
 
 # Agregar script para lanzar Steam al directorio "ajustes" solo si no existe
@@ -180,8 +165,8 @@ for app_manifest_name in "${app_manifest_names}"; do
     chmod +x "$shell_script_path"
 done
 EOF
-   # Dar permisos de ejecución al script
-    sudo chmod +x "$HOME_DIR/RetroPie/roms/ajustes/importar_juegos_steam.sh"
+    chmod +x "$HOME_DIR/RetroPie/roms/ajustes/importar_juegos_steam.sh"
 fi
 
 echo "Configuración completada. Por favor, reinicie EmulationStation para aplicar los cambios."
+
