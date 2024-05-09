@@ -46,6 +46,12 @@ fi
 cat <<EOF > "$HOME/RetroPie/roms/ajustes/lanzar_steam.sh"
 #!/bin/bash
 steam -noverifyfiles -bigpicture
+# Esperar un poco para asegurarse de que sream esté completamente cerrado antes de continuar
+wait
+
+# Una vez que steam, reiniciar EmulationStation
+
+emulationstation
 EOF
 
 chmod +x "$HOME/RetroPie/roms/ajustes/lanzar_steam.sh"
