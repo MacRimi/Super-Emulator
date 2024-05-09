@@ -161,7 +161,7 @@ function shellScriptTemplate() {
     local app_name="$2"
 
 
-cat <<EOF
+cat <<EOF2
 #!/bin/bash
 
 # Lanza el juego desde Steam
@@ -173,7 +173,7 @@ wait
 # Una vez que el juego se cierra, cerrar Steam y reiniciar EmulationStation
 emulationstation
 
-EOF
+EOF2
 }
 
 
