@@ -14,9 +14,6 @@ sudo apt install -y libc6:amd64 libc6:i386 \
                     libgl1-mesa-dri:amd64 libgl1-mesa-dri:i386 \
                     steam-libs-amd64:amd64 steam-libs-i386:i386
 
-# Instala un entorno gráfico ligero (si es necesario)
-sudo apt install -y xorg xinit openbox
-
 # Descarga e instala Steam
 wget -O steam.deb https://cdn.cloudflare.steamstatic.com/client/installer/steam.deb
 sudo apt install -y ./steam.deb
