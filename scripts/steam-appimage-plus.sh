@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Actualiza el sistema
-if [[ "$(sudo apt update)" ]]; then
-    sudo apt upgrade -y
+if [[ "$(sudo apt-get update)" ]]; then
+    sudo apt-get upgrade -y
 else
     echo "No se pudo actualizar el sistema."
     exit 1
@@ -26,7 +26,7 @@ REQUIRED_PACKAGES=(
 
 for pkg in "${REQUIRED_PACKAGES[@]}"; do
     if ! dpkg -l | grep -q "$pkg"; then
-        sudo apt install -y "$pkg"
+        sudo apt-get install -y "$pkg"
     fi
 done
 
