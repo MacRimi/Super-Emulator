@@ -115,6 +115,17 @@ else
     exit 1
 fi
 
+# Agregar script para lanzar Steam al directorio "ajustes" solo si no existe
+if [[ ! -f "$HOME_DIR/RetroPie/roms/ajustes/lanzar_steam.sh" ]]; then
+    cat <<EOF > "$HOME_DIR/RetroPie/roms/ajustes/lanzar_steam.sh"
+#!/bin/bash
+steam -noverifyfiles -bigpicture
+wait
+emulationstation
+EOF
+    chmod +x "$HOME_DIR/RetroPie/roms/ajustes/lanzar_steam.sh"
+fi
+
 # Agregar script para importar juegos de Steam al directorio "ajustes" solo si no existe
 if [[ ! -f "$HOME_DIR/RetroPie/roms/ajustes/importar_juegos_steam.sh" ]]; then
     cat <<'EOF' > "$HOME_DIR/RetroPie/roms/ajustes/importar_juegos_steam.sh"
