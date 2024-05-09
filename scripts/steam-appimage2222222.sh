@@ -176,10 +176,6 @@ emulationstation
 EOF
 }
 
-if [[ -d "${OUTPUT_DIR}" ]]; then
-    rm -r "${OUTPUT_DIR}"
-fi
-mkdir -p "${OUTPUT_DIR}"
 
 app_manifest_names=$(ls "${STEAM_APPS_DIR}" | grep "${STEAM_MANIFEST_EXT}")
 for app_manifest_name in ${app_manifest_names}; do
@@ -193,6 +189,7 @@ for app_manifest_name in ${app_manifest_names}; do
     echo "${shell_script_contents}" > "${shell_script_path}"
     chmod +x "${shell_script_path}"
 done
+
 EOF
 
     chmod +x "$HOME_DIR/RetroPie/roms/ajustes/importar_juegos_steam.sh"
