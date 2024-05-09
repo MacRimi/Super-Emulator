@@ -28,7 +28,7 @@ function configure_steam-appimage() {
     mkRomDir "steam"
 
     # Agregar Steam como emulador en RetroPie/EmulationStation
-    addEmulator 0 "$md_id" "steam" "steam -noverifyfiles  -bigpicture"
+    addEmulator 0 "$md_id" "steam" "steam"
 
     # Agregar el sistema "steam" a RetroPie
     addSystem "steam"
