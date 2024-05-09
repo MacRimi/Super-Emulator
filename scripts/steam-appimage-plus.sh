@@ -3,7 +3,7 @@
 # Define el directorio base del usuario estándar
 HOME_DIR=$(eval echo ~$SUDO_USER)
 
-# Define mkRomDir para crear directorios si no está ya definido
+# Define mkRomDir para crear directorios
 mkRomDir() {
     mkdir -p "$1"
 }
@@ -16,7 +16,7 @@ if ! dpkg --print-architecture | grep -q "i386"; then
     sudo dpkg --add-architecture i386
 fi
 
-# Instala las dependencias necesarias para Steam y compatibilidad entre arquitecturas
+# Instalar dependencias necesarias para Steam
 REQUIRED_PACKAGES=(
     "libc6:amd64" "libc6:i386"
     "libegl1:amd64" "libegl1:i386"
@@ -26,26 +26,27 @@ REQUIRED_PACKAGES=(
     "steam-libs-amd64:amd64" "steam-libs-i386:i386"
 )
 
+# Instalar las dependencias solo si no están ya instaladas
 for pkg in "${REQUIRED_PACKAGES[@]}"; do
     if ! dpkg -l | grep -q "$pkg"; then
         sudo apt-get install -y "$pkg"
     fi
 done
 
-# Crea el directorio para instalar Steam si no existe
+# Crear el directorio para instalar Steam si no existe
 mkRomDir "$HOME_DIR/RetroPie/roms/steam"
 
-# Crea el directorio "ajustes" si no existe
+# Crear el directorio "ajustes" si no existe
 mkRomDir "$HOME_DIR/RetroPie/roms/ajustes"
 
-# Descarga e instala Steam si no está ya instalado
+# Descargar e instalar Steam solo si no está ya instalado
 if [[ ! -f "$HOME_DIR/RetroPie/roms/steam/steam.deb" ]]; then
     wget --content-disposition "https://cdn.cloudflare.steamstatic.com/client/installer/steam.deb" -O "$HOME_DIR/RetroPie/roms/steam/steam.deb"
 fi
 
 if ! which steam > /dev/null; then
     sudo apt-get install -y "$HOME_DIR/RetroPie/roms/steam/steam.deb"
-    rm "$HOME_DIR/RetroPie/roms/steam/steam.deb"  # Borrar el archivo después de la instalación
+    rm "$HOME_DIR/RetroPie/roms/steam/steam.deb"  # Eliminar el archivo después de instalar
 fi
 
 # Lista de rutas comunes para es_systems.cfg
@@ -57,7 +58,7 @@ ES_SYSTEMS_PATHS=(
 # Variable para almacenar la ruta correcta
 ES_SYSTEMS_CFG=""
 
-# Buscar la ruta correcta
+# Buscar la ruta correcta para es_systems.cfg
 for path in "${ES_SYSTEMS_PATHS[@]}"; do
     if [[ -f "$path" ]]; then
         ES_SYSTEMS_CFG="$path"
@@ -71,8 +72,8 @@ if [[ -z "$ES_SYSTEMS_CFG" ]]; then
     exit 1
 fi
 
-# Añadir sistemas a es_systems.cfg
-# Insertar el sistema "ajustes" antes de </systemList> solo si no está ya configurado
+# Insertar sistemas en es_systems.cfg
+# Agregar el sistema "ajustes" antes de </systemList> solo si no está ya configurado
 if ! grep -q '<name>ajustes</name>' "$ES_SYSTEMS_CFG"; then
     sudo sed -i "/<\/systemList>/i \
 <system>\
@@ -86,7 +87,7 @@ if ! grep -q '<name>ajustes</name>' "$ES_SYSTEMS_CFG"; then
 </system>" "$ES_SYSTEMS_CFG"
 fi
 
-# Insertar el sistema "steam" antes de </systemList> solo si no está ya configurado
+# Agregar el sistema "steam" antes de </systemList> solo si no está ya configurado
 if ! grep -q '<name>steam</name>' "$ES_SYSTEMS_CFG"; then
     sudo sed -i "/<\/systemList>/i \
 <system>\
@@ -108,6 +109,7 @@ steam -noverifyfiles -bigpicture
 wait
 emulationstation
 EOF
+
     chmod +x "$HOME_DIR/RetroPie/roms/ajustes/lanzar_steam.sh"
 fi
 
@@ -127,10 +129,10 @@ readonly STEAM_MANIFEST_EXT='.acf'
 function getManifestProperty() {
     local app_manifest_path="$1"
     local property_name="$2"
-    grep "${property_name}" "${app_manifest_path}" | cut -d '"' -f 4
+    grep "$property_name" "$app_manifest_path" | cut -d '"' -f 4
 }
 
-# Función para generar script para lanzar un juego
+# Función para generar un script para lanzar un juego
 function shellScriptTemplate() {
     local app_id="$1"
     local app_name="$2"
@@ -138,7 +140,7 @@ function shellScriptTemplate() {
     cat <<EOF2
 #!/bin/bash
 
-steam -noverifyfiles -bigpicture steam://rungameid/${app_id} &
+steam -noverifyfiles -bigpicture steam://rungameid/\$app_id &
 
 wait
 
@@ -151,13 +153,13 @@ EOF2
 mkRomDir "$OUTPUT_DIR"
 
 app_manifest_names=$(ls "$STEAM_APPS_DIR" | grep "$STEAM_MANIFEST_EXT")
-for app_manifest_name in "${app_manifest_names}"; do
+for app_manifest_name en "${app_manifest_names}"; entonces
     app_manifest_path="$STEAM_APPS_DIR/$app_manifest_name"
-    app_id=$(getManifestProperty("$app_manifest_path", '"appid"')
-    app_name=$(getManifestProperty("$app_manifest_path", '"name"')
+    app_id=$(getManifestProperty("$app_manifest_path", "appid")
+    app_name=$(getManifestProperty("$app_manifest_path", "name")
 
-    sanitized_app_name=$(echo "$app_name" | sed 's/&/and/g' | tr ' ' '_' )
-    shell_script_path="$OUTPUT_DIR/${sanitized_app_name}.sh"
+    sanitized_app_name=$(echo "$app_name" | sed 's/&/and/g' | tr ' ' '_')
+    shell_script_path="$OUTPUT_DIR/$sanitized_app_name.sh"
     
     shell_script_contents=$(shellScriptTemplate("$app_id", "$app_name"))
 
@@ -165,8 +167,10 @@ for app_manifest_name in "${app_manifest_names}"; do
     chmod +x "$shell_script_path"
 done
 EOF
+
     chmod +x "$HOME_DIR/RetroPie/roms/ajustes/importar_juegos_steam.sh"
 fi
 
 echo "Configuración completada. Por favor, reinicie EmulationStation para aplicar los cambios."
+
 
