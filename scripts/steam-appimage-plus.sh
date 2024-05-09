@@ -115,31 +115,16 @@ else
     exit 1
 fi
 
-# ##############################################################################
-# Agregar script para lanzar Steam en Big Picture al directorio "ajustes" solo si no existe
-# ##############################################################################
-if [[ ! -f "$HOME/RetroPie/roms/ajustes/lanzar_steam.sh" ]]; then
-    cat <<EOF > "$HOME/RetroPie/roms/ajustes/lanzar_steam.sh"
-#!/bin/bash
-steam -noverifyfiles -bigpicture
-wait
-emulationstation
-EOF
-    chmod +x "$HOME/RetroPie/roms/ajustes/lanzar_steam.sh"
-fi
-
-# ##############################################################################
 # Agregar script para importar juegos de Steam al directorio "ajustes" solo si no existe
-# ##############################################################################
-if [[ ! -f "$HOME/RetroPie/roms/ajustes/importar_juegos_steam.sh" ]]; then
-    cat <<'EOF' > "$HOME/RetroPie/roms/ajustes/importar_juegos_steam.sh"
+if [[ ! -f "$HOME_DIR/RetroPie/roms/ajustes/importar_juegos_steam.sh" ]]; then
+    cat <<'EOF' > "$HOME_DIR/RetroPie/roms/ajustes/importar_juegos_steam.sh"
 #!/usr/bin/env bash
 
-readonly ROMS_DIR="${HOME}/RetroPie/roms/steam"
+readonly ROMS_DIR="${HOME_DIR}/RetroPie/roms/steam"
 readonly OUTPUT_DIR="${ROMS_DIR}"
 
 # Información de Steam
-readonly STEAM_APPS_DIR="${HOME}/.local/share/Steam/steamapps"
+readonly STEAM_APPS_DIR="${HOME_DIR}/.local/share/Steam/steamapps"
 readonly STEAM_MANIFEST_EXT='.acf'
 
 # Función para obtener propiedades del manifiesto de Steam
@@ -157,7 +142,6 @@ function shellScriptTemplate() {
     cat <<EOF2
 #!/bin/bash
 
-# Lanza el juego desde Steam
 steam -noverifyfiles -bigpicture steam://rungameid/${app_id} &
 
 wait
@@ -176,14 +160,12 @@ for app_manifest_name in "${app_manifest_names}"; do
     app_id=$(getManifestProperty("${app_manifest_path}", '"appid"')
     app_name=$(getManifestProperty("${app_manifest_path}", '"name"')
 
-    sanitized_app_name=$(echo "${app_name}" | sed 's/&/and/g' | tr ' ' '_')
+    sanitized_app_name=$(echo "${app_name}" | sed 's/&/and/g' | tr ' ' '_' )
     shell_script_path="${OUTPUT_DIR}/${sanitized_app_name}.sh"
     shell_script_contents=$(shellScriptTemplate("${app_id}", "${app_name}")
 
     echo "${shell_script_contents}" > "${shell_script_path}")
     chmod +x("${shell_script_path}")
-
-restart emulationstation
 done
 EOF
 fi
