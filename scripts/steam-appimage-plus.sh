@@ -80,7 +80,8 @@ if [[ -z "$ES_SYSTEMS_CFG" ]]; then
 fi
 
 # Añadir el sistema "steam" y "ajustes" a es_systems.cfg solo si no están ya configurados
-if ! grep -q '<name>steam</name>' "$ES_SYSTEMS_CFG"; then
+# Verificar si el sistema "ajustes" ya existe
+if ! grep -q '<name>ajustes</name>' "$ES_SYSTEMS_CFG"; then
     cat <<EOF >> "$ES_SYSTEMS_CFG"
 <system>
     <name>ajustes</name>
@@ -91,6 +92,12 @@ if ! grep -q '<name>steam</name>' "$ES_SYSTEMS_CFG"; then
     <platform>config</platform>
     <theme>ajustes</theme>
 </system>
+EOF
+fi
+
+# Verificar si el sistema "steam" ya existe
+if ! grep -q '<name>steam</name>' "$ES_SYSTEMS_CFG"; then
+    cat <<EOF >> "$ES_SYSTEMS_CFG"
 <system>
     <name>steam</name>
     <fullname>Steam</fullname>
