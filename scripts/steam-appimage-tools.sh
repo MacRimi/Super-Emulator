@@ -7,6 +7,9 @@ mkdir -p "$md_inst/bin"
 wget --content-disposition "https://cdn.cloudflare.steamstatic.com/client/installer/steam.deb" -O "$md_inst/bin/steam.deb"
 sudo apt install -y "$md_inst/bin/steam.deb"
 
+# Borrar el archivo descargado después de la instalación
+rm "$md_inst/bin/steam.deb"
+
 # Crear el directorio de ROMs para Steam y el directorio "ajustes"
 mkRomDir "steam"
 mkRomDir "ajustes"
