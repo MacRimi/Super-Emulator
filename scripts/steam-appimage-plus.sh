@@ -83,39 +83,38 @@ fi
 # Verificar si el sistema "ajustes" ya existe
 # Si se encontró es_systems.cfg, añadir configuraciones con permisos administrativos
 if [[ -n "$ES_SYSTEMS_CFG" ]]; then
-    # Añadir el sistema "ajustes" solo si no está ya configurado
+    # Insertar el sistema "ajustes" solo si no está ya configurado
     if ! grep -q '<name>ajustes</name>' "$ES_SYSTEMS_CFG"; then
-        sudo bash -c "cat <<EOF >> $ES_SYSTEMS_CFG
-<system>
-    <name>ajustes</name>
-    <fullname>Configuraciones</fullname>
-    <path>$HOME_DIR/RetroPie/roms/ajustes</path>
-    <extension>.sh</extension>
-    <command>%ROM%</command>
-    <platform>config</platform>
-    <theme>ajustes</theme>
-</system>
-EOF"
+        sudo sed -i "/<\/systemList>/i \
+<system>\
+    <name>ajustes</name>\
+    <fullname>Configuraciones</fullname>\
+    <path>$HOME_DIR/RetroPie/roms/ajustes</path>\
+    <extension>.sh</extension>\
+    <command>%ROM%</command>\
+    <platform>config</platform>\
+    <theme>ajustes</theme>\
+</system>" "$ES_SYSTEMS_CFG"
     fi
 
-    # Añadir el sistema "steam" solo si no está ya configurado
+    # Insertar el sistema "steam" solo si no está ya configurado
     if ! grep -q '<name>steam</name>' "$ES_SYSTEMS_CFG"; then
-        sudo bash -c "cat <<EOF >> $ES_SYSTEMS_CFG
-<system>
-    <name>steam</name>
-    <fullname>Steam</fullname>
-    <path>$HOME_DIR/RetroPie/roms/steam</path>
-    <extension>.sh</extension>
-    <command>%ROM%</command>
-    <platform>pc</platform>
-    <theme>steam</theme>
-</system>
-EOF"
+        sudo sed -i "/<\/systemList>/i \
+<system>\
+    <name>steam</name>\
+    <fullname>Steam</fullname>\
+    <path>$HOME_DIR/RetroPie/roms/steam</path>\
+    <extension>.sh</extension>\
+    <command>%ROM%</command>\
+    <platform>pc</platform>\
+    <theme>steam</theme>\
+</system>" "$ES_SYSTEMS_CFG"
     fi
 else
-    echo "No se encontró es_systems.cfg."
+    echo "No se encontró es_systems.cfg. No se pueden agregar los sistemas."
     exit 1
 fi
+
 
 # Agregar script para lanzar Steam en Big Picture al directorio "ajustes" solo si no existe
 if [[ ! -f "$HOME/RetroPie/roms/ajustes/lanzar_steam.sh" ]]; then
