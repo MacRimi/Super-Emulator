@@ -182,6 +182,8 @@ for app_manifest_name in "${app_manifest_names}"; do
 
     echo "${shell_script_contents}" > "${shell_script_path}")
     chmod +x("${shell_script_path}")
+
+restart emulationstation
 done
 EOF
 fi
