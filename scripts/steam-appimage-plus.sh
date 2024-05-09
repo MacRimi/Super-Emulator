@@ -180,7 +180,8 @@ for app_manifest_name in "${app_manifest_names}"; do
     chmod +x "$shell_script_path"
 done
 EOF
-    chmod +x "$HOME_DIR/RetroPie/roms/ajustes/importar_juegos_steam.sh"
+   # Dar permisos de ejecución al script
+    sudo chmod +x "$HOME_DIR/RetroPie/roms/ajustes/importar_juegos_steam.sh"
 fi
 
 echo "Configuración completada. Por favor, reinicie EmulationStation para aplicar los cambios."
