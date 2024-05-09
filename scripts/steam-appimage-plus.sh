@@ -32,42 +32,49 @@ for pkg in "${REQUIRED_PACKAGES[@]}"; do
     fi
 done
 
-# Crea el directorio para instalar Steam
-# Si el directorio no existe, lo crea
-mkRomDir "$HOME_DIR/RetroPie/roms/ajustes"
-
-# Descarga Steam si no se ha descargado antes
-if [[ ! -f "$HOME_DIR/RetroPie/roms/ajustes/steam.deb" ]]; then
-    wget --content-disposition "https://cdn.cloudflare.steamstatic.com/client/installer/steam.deb" -O "$HOME_DIR/RetroPie/roms/ajustes/steam.deb"
+# Crea el directorio para instalar Steam si no existe
+if [[ ! -d "$md_inst/bin" ]]; then
+    mkdir -p "$md_inst/bin"
 fi
 
-# Instala Steam si no está ya instalado
+# Descarga e instala Steam si no está ya instalado
+if [[ ! -f "$md_inst/bin/steam.deb" ]]; then
+    wget --content-disposition "https://cdn.cloudflare.steamstatic.com/client/installer/steam.deb" -O "$md_inst/bin/steam.deb"
+fi
+
+# Instalar Steam desde el archivo descargado utilizando apt-get
 if ! which steam; then
-    sudo apt-get install -y "$HOME_DIR/RetroPie/roms/ajustes/steam.deb"
-    rm "$HOME_DIR/RetroPie/roms/ajustes/steam.deb"  # Borrar el archivo después de la instalación
+    sudo apt-get install -y "$md_inst/bin/steam.deb"
+    rm "$md_inst/bin/steam.deb"  # Borrar el archivo después de instalar
 fi
 
-# Crear directorios de ROMs para Steam y "ajustes" si no existen
-mkRomDir "$HOME_DIR/RetroPie/roms/steam"
-mkRomDir "$HOME_DIR/RetroPie/roms/ajustes"
+# Crear directorios de ROMs para Steam y "ajustes"
+if [[ ! -d "$HOME/RetroPie/roms/steam" ]]; then
+    mkRomDir "steam"
+fi
 
-# Buscar la ruta correcta para es_systems.cfg
+if [[ ! -d "$HOME/RetroPie/roms/ajustes" ]]; then
+    mkRomDir "ajustes"
+fi
+
+# Lista de rutas comunes para es_systems.cfg
 ES_SYSTEMS_PATHS=(
     "/etc/emulationstation/es_systems.cfg"
     "/opt/retropie/configs/all/emulationstation/es_systems.cfg"
 )
 
+# Variable para almacenar la ruta encontrada
 ES_SYSTEMS_CFG=""
 
-# Encuentra la ruta correcta para es_systems.cfg
+# Buscar la ruta correcta
 for path in "${ES_SYSTEMS_PATHS[@]}"; do
-    if [[ -f "$path" ]]; entonces
+    if [[ -f "$path" ]]; then
         ES_SYSTEMS_CFG="$path"
         break
     fi
 done
 
-# Si no se encontró es_systems.cfg, muestra un error
+# Verificar si se encontró el archivo
 if [[ -z "$ES_SYSTEMS_CFG" ]]; entonces
     echo "No se encontró es_systems.cfg."
     exit 1
@@ -79,7 +86,7 @@ if ! grep -q '<name>steam</name>' "$ES_SYSTEMS_CFG"; entonces
 <system>
     <name>ajustes</name>
     <fullname>Configuraciones</fullname>
-    <path>$HOME_DIR/RetroPie/roms/ajustes</path>
+    <path>$HOME/RetroPie/roms/ajustes</path>
     <extension>.sh</extension>
     <command>%ROM%</command>
     <platform>config</platform>
@@ -88,7 +95,7 @@ if ! grep -q '<name>steam</name>' "$ES_SYSTEMS_CFG"; entonces
 <system>
     <name>steam</name>
     <fullname>Steam</fullname>
-    <path>$HOME_DIR/RetroPie/roms/steam</path>
+    <path>$HOME/RetroPie/roms/steam</path>
     <extension>.sh</extension>
     <command>%ROM%</command>
     <platform>pc</platform>
@@ -97,36 +104,37 @@ if ! grep -q '<name>steam</name>' "$ES_SYSTEMS_CFG"; entonces
 EOF
 fi
 
-# Agregar scripts para "ajustes" solo si no existen
-if [[ ! -f "$HOME_DIR/RetroPie/roms/ajustes/lanzar_steam.sh" ]]; entonces
-    cat <<EOF > "$HOME_DIR/RetroPie/roms/ajustes/lanzar_steam.sh"
+# Agregar script para lanzar Steam en Big Picture al directorio "ajustes" solo si no existe
+if [[ ! -f "$HOME/RetroPie/roms/ajustes/lanzar_steam.sh" ]]; entonces
+    cat <<EOF > "$HOME/RetroPie/roms/ajustes/lanzar_steam.sh"
 #!/bin/bash
 steam -noverifyfiles -bigpicture
 wait
 emulationstation
 EOF
-    chmod +x "$HOME_DIR/RetroPie/roms/ajustes/lanzar_steam.sh"
+    chmod +x "$HOME/RetroPie/roms/ajustes/lanzar_steam.sh"
 fi
 
-if [[ ! -f "$HOME_DIR/RetroPie/roms/ajustes/importar_juegos_steam.sh" ]]; entonces
-    cat <<'EOF' > "$HOME_DIR/RetroPie/roms/ajustes/importar_juegos_steam.sh"
+# Agregar script para importar juegos de Steam al directorio "ajustes" solo si no existe
+if [[ ! -f "$HOME/RetroPie/roms/ajustes/importar_juegos_steam.sh" ]]; entonces
+    cat <<'EOF' > "$HOME/RetroPie/roms/ajustes/importar_juegos_steam.sh"
 #!/usr/bin/env bash
 
-readonly ROMS_DIR="${HOME_DIR/RetroPie/roms/steam"
+readonly ROMS_DIR="${HOME/RetroPie/roms/steam"
 readonly OUTPUT_DIR="${ROMS_DIR}"
 
 # Información de Steam
-readonly STEAM_APPS_DIR="${HOME_DIR/.local/share/Steam/steamapps"
+readonly STEAM_APPS_DIR="${HOME/.local/share/Steam/steamapps"
 readonly STEAM_MANIFEST_EXT='.acf'
 
-# Funcion para obtener propiedades del manifiesto de Steam
+# Función para obtener propiedades del manifiesto de Steam
 function getManifestProperty() {
     local app_manifest_path="$1"
     local property_name="$2"
     grep "${property_name}" "${app_manifest_path}" | cut -d '"' -f 4
 }
 
-# Funcion para generar script para lanzar un juego
+# Función para generar script para lanzar un juego
 function shellScriptTemplate() {
     local app_id="$1"
     local app_name="$2"
@@ -134,6 +142,7 @@ function shellScriptTemplate() {
     cat <<EOF2
 #!/bin/bash
 
+# Lanza el juego desde Steam
 steam -noverifyfiles -bigpicture steam://rungameid/${app_id} &
 
 wait
@@ -143,10 +152,13 @@ emulationstation
 EOF2
 }
 
-# Crear el directorio si es necesario
-mkRomDir "${OUTPUT_DIR}"
+if [[ -d "${OUTPUT_DIR}" ]]; then
+    rm -r "${OUTPUT_DIR}"
+fi
 
-app_manifest_names=$(ls "${STEAM_APPS_DIR}" | grep "${STEAM_MANIFEST_EXT}")
+mkdir -p "${OUTPUT_DIR}"
+
+app_manifest_names=$(ls "${STEAM_APPS_APPS}" | grep "${STEAM_MANIFEST_EXT}")
 for app_manifest_name in "${app_manifest_names}"; entonces
     app_manifest_path="${STEAM_APPS_DIR}/${app_manifest_name}"
     app_id=$(getManifestProperty("${app_manifest_path}", '"appid"')
@@ -162,4 +174,4 @@ done
 EOF
 fi
 
-echo "Configuración completada. Por favor, reinicie EmulationStation para aplicar los cambios."
+echo "Configuración completada. Reinicia EmulationStation para aplicar los cambios."
