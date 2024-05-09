@@ -40,7 +40,7 @@ mkRomDir "$HOME_DIR/RetroPie/roms/steam"
 mkRomDir "$HOME_DIR/RetroPie/roms/ajustes"
 
 # Descargar e instalar Steam solo si no está ya instalado
-if [[ ! -f "$HOME_DIR/RetroPie/roms/steam/steam.deb" ]]; entonces
+if [[ ! -f "$HOME_DIR/RetroPie/roms/steam/steam.deb" ]]; then
     wget --content-disposition "https://cdn.cloudflare.steamstatic.com/client/installer/steam.deb" -O "$HOME_DIR/RetroPie/roms/steam/steam.deb"
 fi
 
@@ -60,21 +60,21 @@ ES_SYSTEMS_CFG=""
 
 # Buscar la ruta correcta para es_systems.cfg
 for path in "${ES_SYSTEMS_PATHS[@]}"; do
-    if [[ -f "$path" ]]; entonces
+    if [[ -f "$path" ]]; then
         ES_SYSTEMS_CFG="$path"
         break
     fi
 done
 
 # Verificar si se encontró es_systems.cfg
-if [[ -z "$ES_SYSTEMS_CFG" ]]; entonces
+if [[ -z "$ES_SYSTEMS_CFG" ]]; then
     echo "No se encontró es_systems.cfg. No se pueden agregar sistemas."
     exit 1
 fi
 
 # Añadir sistemas a es_systems.cfg
 # Agregar el sistema "ajustes" antes de </systemList> solo si no está ya configurado
-if ! grep -q '<name>ajustes</name>' "$ES_SYSTEMS_CFG"; entonces
+if ! grep -q '<name>ajustes</name>' "$ES_SYSTEMS_CFG"; then
     sudo sed -i "/<\/systemList>/i \
 <system>\
     <name>ajustes</name>\
@@ -88,7 +88,7 @@ if ! grep -q '<name>ajustes</name>' "$ES_SYSTEMS_CFG"; entonces
 fi
 
 # Agregar el sistema "steam" antes de </systemList> solo si no está ya configurado
-if ! grep -q '<name>steam</name>' "$ES_SYSTEMS_CFG"; entonces
+if ! grep -q '<name>steam</name>' "$ES_SYSTEMS_CFG"; then
     sudo sed -i "/<\/systemList>/i \
 <system>\
     <name>steam</name>\
@@ -102,7 +102,7 @@ if ! grep -q '<name>steam</name>' "$ES_SYSTEMS_CFG"; entonces
 fi
 
 # Agregar script para lanzar Steam al directorio "ajustes" solo si no existe
-if [[ ! -f "$HOME_DIR/RetroPie/roms/ajustes/lanzar_steam.sh" ]]; entonces
+if [[ ! -f "$HOME_DIR/RetroPie/roms/ajustes/lanzar_steam.sh" ]]; then
     cat <<EOF > "$HOME_DIR/RetroPie/roms/ajustes/lanzar_steam.sh"
 #!/bin/bash
 steam -noverifyfiles -bigpicture
@@ -114,7 +114,7 @@ EOF
 fi
 
 # Agregar script para importar juegos de Steam al directorio "ajustes" solo si no existe
-if [[ ! -f "$HOME_DIR/RetroPie/roms/ajustes/importar_juegos_steam.sh" ]]; entonces
+if [[ ! -f "$HOME_DIR/RetroPie/roms/ajustes/importar_juegos_steam.sh" ]]; then
     cat <<'EOF' > "$HOME_DIR/RetroPie/roms/ajustes/importar_juegos_steam.sh"
 #!/usr/bin/env bash
 
