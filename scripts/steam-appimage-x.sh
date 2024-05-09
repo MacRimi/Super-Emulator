@@ -191,6 +191,9 @@ for app_manifest_name in ${app_manifest_names}; do
   
 done
 
+emulationstation --quit  # Cerrar EmulationStation
+emulationstation         # Reiniciar EmulationStation
+
 EOF
 
     chmod +x "$HOME_DIR/RetroPie/roms/ajustes/importar_juegos_steam.sh"
