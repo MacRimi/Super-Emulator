@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Define mkRomDir para crear directorios de ROMs si no está ya definido
+mkRomDir() {
+    mkdir -p "$1"
+}
+
 # Actualiza el sistema
 if [[ "$(sudo apt-get update)" ]]; then
     sudo apt-get upgrade -y
@@ -32,7 +37,7 @@ done
 
 # Crea el directorio para instalar Steam si no existe
 if [[ ! -d "$md_inst/bin" ]]; then
-    mkdir -p "$md_inst/bin"
+    mkRomDir "$md_inst/bin"
 fi
 
 # Descarga e instala Steam si no está ya instalado
