@@ -153,7 +153,8 @@ EOF2
 mkRomDir "$OUTPUT_DIR"
 
 app_manifest_names=$(ls "$STEAM_APPS_DIR" | grep "$STEAM_MANIFEST_EXT")
-for app_manifest_name en "${app_manifest_names}"; entonces
+
+for app_manifest_name in "${app_manifest_names}"; do
     app_manifest_path="$STEAM_APPS_DIR/$app_manifest_name"
     app_id=$(getManifestProperty("$app_manifest_path", "appid")
     app_name=$(getManifestProperty("$app_manifest_path", "name")
@@ -166,11 +167,10 @@ for app_manifest_name en "${app_manifest_names}"; entonces
     echo "$shell_script_contents" > "$shell_script_path"
     chmod +x "$shell_script_path"
 done
+
 EOF
 
     chmod +x "$HOME_DIR/RetroPie/roms/ajustes/importar_juegos_steam.sh"
 fi
 
 echo "Configuración completada. Por favor, reinicie EmulationStation para aplicar los cambios."
-
-
