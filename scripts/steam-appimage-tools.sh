@@ -28,15 +28,31 @@ rm "$md_inst/bin/steam.deb"
 mkRomDir "steam"
 mkRomDir "ajustes"
 
-# Añadir Steam como emulador en RetroPie/EmulationStation
-addEmulator 0 "$md_id" "steam" "steam"
-addSystem "steam"
+# Lista de rutas comunes para el archivo es_systems.cfg
+ES_SYSTEMS_PATHS=(
+    "/etc/emulationstation/es_systems.cfg"
+    "/opt/retropie/configs/all/emulationstation/es_systems.cfg"
+)
 
-# Asegurarse de que el archivo es_systems.cfg esté configurado
-ES_SYSTEMS_CFG="/opt/retropie/configs/all/emulationstation/es_systems.cfg"
+# Variable para almacenar la ruta encontrada
+ES_SYSTEMS_CFG=""
 
+# Buscar la ruta correcta
+for path in "${ES_SYSTEMS_PATHS[@]}"; do
+    if [[ -f "$path" ]]; then
+        ES_SYSTEMS_CFG="$path"
+        break
+    fi
+done
+
+# Verificar si se encontró el archivo
+if [[ -z "$ES_SYSTEMS_CFG" ]]; then
+    echo "No se encontró el archivo es_systems.cfg en las rutas conocidas."
+    exit 1
+fi
+
+# Añadir el sistema "steam" y "ajustes" a es_systems.cfg
 if ! grep -q '<name>steam</name>' "$ES_SYSTEMS_CFG"; then
-    # Agregar la configuración para el sistema Steam
     cat <<EOF >> "$ES_SYSTEMS_CFG"
 <system>
     <name>ajustes</name>
@@ -63,11 +79,11 @@ fi
 cat <<EOF > "$HOME/RetroPie/roms/ajustes/lanzar_steam.sh"
 #!/bin/bash
 steam -noverifyfiles -bigpicture
-# Esperar un poco para asegurarse de que sream esté completamente cerrado antes de continuar
+
+# Esperar un poco para asegurarse de que Steam esté completamente cerrado antes de continuar
 wait
 
-# Una vez que steam, reiniciar EmulationStation
-
+# Una vez que Steam termine, reiniciar EmulationStation
 emulationstation
 EOF
 
@@ -80,7 +96,7 @@ cat <<'EOF' > "$HOME/RetroPie/roms/ajustes/importar_juegos_steam.sh"
 readonly ROMS_DIR="${HOME}/RetroPie/roms/steam"
 readonly OUTPUT_DIR="${ROMS_DIR}"
 
-# Steam info
+# Información de Steam
 readonly STEAM_APPS_DIR="${HOME}/.local/share/Steam/steamapps"
 readonly STEAM_MANIFEST_EXT='.acf'
 
@@ -96,7 +112,7 @@ function shellScriptTemplate() {
     local app_id="$1"
     local app_name="$2"
 
-    cat <<EOF
+    cat <<EOF2
 #!/bin/bash
 
 # Lanza el juego desde Steam
@@ -108,7 +124,7 @@ wait
 # Reiniciar EmulationStation una vez que el juego se cierra
 emulationstation
 
-EOF
+EOF2
 }
 
 if [[ -d "${OUTPUT_DIR}" ]]; then
@@ -117,7 +133,7 @@ fi
 mkdir -p "${OUTPUT_DIR}"
 
 app_manifest_names=$(ls "${STEAM_APPS_DIR}" | grep "${STEAM_MANIFEST_EXT}")
-for app_manifest_name in ${app_manifest_names}; do
+for app_manifest_name in "${app_manifest_names}"; do
     app_manifest_path="${STEAM_APPS_DIR}/${app_manifest_name}"
     app_id=$(getManifestProperty("${app_manifest_path}", '"appid"')
     app_name=$(getManifestProperty("${app_manifest_path}", '"name"')
@@ -127,7 +143,7 @@ for app_manifest_name in ${app_manifest_names}; do
     shell_script_contents=$(shellScriptTemplate("${app_id}", "${app_name}")
 
     echo "${shell_script_contents}" > "${shell_script_path}"
-    chmod +x "${shell_script_path}"
+    chmod +x("${shell_script_path}")
 done
 EOF
 EOF
