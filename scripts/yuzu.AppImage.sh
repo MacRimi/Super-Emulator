@@ -12,7 +12,7 @@ rp_module_flags="!arm"
 
 function install_bin_yuzu() {
     mkdir -p "$md_inst/bin"
-    cp "/ruta/a/tu/yuzu.AppImage" "$md_inst/bin/yuzu.AppImage"
+    cp "/home/pi/Descargas/yuzu.AppImage" "$md_inst/bin/yuzu.AppImage"
     chmod +x "$md_inst/bin/yuzu.AppImage"
 }
 
