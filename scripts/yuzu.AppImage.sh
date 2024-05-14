@@ -9,11 +9,19 @@ rp_module_section="exp"
 rp_module_flags="!arm"
 
 # Funciones de instalación y configuración
+
 function install_bin_yuzu() {
     mkdir -p "$md_inst/bin"
-    wget --content-disposition https://yuzu-emu.org/downloads/latest/ -O "$md_inst/bin/yuzu.AppImage"
+    cp "/ruta/a/tu/yuzu.AppImage" "$md_inst/bin/yuzu.AppImage"
     chmod +x "$md_inst/bin/yuzu.AppImage"
 }
+
+
+#function install_bin_yuzu() {
+#    mkdir -p "$md_inst/bin"
+#    wget --content-disposition https://yuzu-emu.org/downloads/latest/ -O "$md_inst/bin/yuzu.AppImage"
+#    chmod +x "$md_inst/bin/yuzu.AppImage"
+#}
 
 function configure_yuzu() {
     mkRomDir "switch"
