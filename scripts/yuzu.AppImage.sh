@@ -3,7 +3,7 @@
 # Variables del módulo RetroPie
 rp_module_id="yuzu"
 rp_module_desc="Nintendo Switch emulator Yuzu"
-rp_module_help="ROM Extensions: .xci, .nsp\n\nCopy your Nintendo Switch game files to $romdir/switch\n\nVisit https://yuzu-emu.org/ for more information."
+rp_module_help="ROM Extensions: .xci .nsp\n\nCopy your Nintendo Switch game files to $romdir/switch\n\n¡No olvides ejecutar primero la actualización del firmware del sistema y añadir las llaves!."
 rp_module_licence="GPL3 https://raw.githubusercontent.com/yuzu-emu/yuzu/master/LICENSE"
 rp_module_section="exp"
 rp_module_flags="!arm"
