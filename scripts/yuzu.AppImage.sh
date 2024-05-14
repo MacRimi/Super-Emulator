@@ -26,6 +26,6 @@ function install_bin_yuzu() {
 function configure_yuzu() {
     mkRomDir "switch"
     addEmulator 0 "$md_id" "switch" "$md_inst/bin/yuzu.AppImage %ROM%"
-    addEmulator 1 "$md_id-nogui" "switch" "$md_inst/bin/yuzu.AppImage --headless %ROM%/PS3_GAME/USRDIR/EBOOT.BIN"
+    addEmulator 1 "$md_id-nogui" "switch" "$md_inst/bin/yuzu.AppImage --no-gui %ROM%/PS3_GAME/USRDIR/EBOOT.BIN"
     addSystem "switch"
 }
