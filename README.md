@@ -27,3 +27,7 @@ wget https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/yuzu.A
 ```
 wget https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/cemu.AppImage.sh -O ~/RetroPie-Setup/scriptmodules/emulators/cemu.AppImage.sh
 ```
+######## steam ########
+```
+wget https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/steam.AppImage.sh -O ~/RetroPie-Setup/scriptmodules/emulators/steam.AppImage.sh
+```
