@@ -20,3 +20,8 @@ sudo nano /etc/modprobe.d/blacklist.conf
 # Desactivar audio USB
 blacklist snd_usb_audio
 ```
+
+######### cemu ########
+```
+wget https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/cemu.AppImage.sh -O ~/RetroPie-Setup/scriptmodules/emulators/cemu.AppImage.sh
+```
