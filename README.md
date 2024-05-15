@@ -11,3 +11,12 @@ https://www.reddit.com/r/retroid/comments/1b7ugxj/upcoming_emulationstation_remo
 ```
 wget https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/yuzu.AppImage.sh -O ~/RetroPie-Setup/scriptmodules/emulators/yuzu.AppImage.sh
 ```
+
+desactivar audio USB:
+```
+sudo nano /etc/modprobe.d/blacklist.conf
+```
+```
+# Desactivar audio USB
+blacklist snd_usb_audio
+```
