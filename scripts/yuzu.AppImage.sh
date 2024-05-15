@@ -28,9 +28,3 @@ function configure_yuzu() {
     addEmulator 0 "$md_id" "switch" "$md_inst/bin/yuzu.AppImage %ROM%"
     addSystem "switch"
 }
-
-function configure_yuzu_extensions() {
-    local system="switch"
-    local extensions=".xci .nsp"
-    ensureSystemretroconfig "$system" "$extensions"
-}
