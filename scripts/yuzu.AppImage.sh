@@ -23,9 +23,18 @@ function install_bin_yuzu() {
 #    chmod +x "$md_inst/bin/yuzu.AppImage"
 #}
 
+#function configure_yuzu() {
+#    mkRomDir "switch"
+#    addEmulator 0 "$md_id" "switch" "$md_inst/bin/yuzu.AppImage %ROM%"
+#    addEmulator 1 "$md_id-nogui" "switch" "$md_inst/bin/yuzu.AppImage %ROM%"
+#    addSystem "switch"
+#}
 function configure_yuzu() {
     mkRomDir "switch"
     addEmulator 0 "$md_id" "switch" "$md_inst/bin/yuzu.AppImage %ROM%"
     addEmulator 1 "$md_id-nogui" "switch" "$md_inst/bin/yuzu.AppImage %ROM%"
     addSystem "switch"
+    sed -i '/"$md_id"/c\'"0 yuzu %ROM%" /opt/retropie/configs/all/emulators.cfg
+    sed -i '/"$md_id-nogui"/c\'"1 yuzu %ROM%" /opt/retropie/configs/all/emulators.cfg
+    sed -i '/"$md_id-nogui"/a\'"1 xdotool key F11" /opt/retropie/configs/all/emulators.cfg
 }
