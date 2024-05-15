@@ -8,9 +8,6 @@ mkRomDir() {
     mkdir -p "$1"
 }
 
-# Actualiza el sistema con permisos de administrador
-sudo apt-get update && sudo apt-get upgrade -y
-
 # Añade soporte para arquitectura i386 si no está ya añadido
 sudo dpkg --add-architecture i386
 
