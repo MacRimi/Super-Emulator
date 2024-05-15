@@ -26,5 +26,5 @@ function install_bin_yuzu() {
 function configure_yuzu() {
     mkRomDir "switch"
     addEmulator 0 "$md_id" "switch" "$md_inst/bin/yuzu.AppImage %ROM%"
-    addSystem "switch" ".xci .nsp" 
+    addSystem "switch"
 }
