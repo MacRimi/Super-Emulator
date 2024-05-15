@@ -67,3 +67,83 @@ sudo sed -i "/<\/systemList>/i \
     <platform>pc</platform>\
     <theme>steam</theme>\
 </system>" "$ES_SYSTEMS_CFG"
+
+####################################################
+# crear y añadir scripts
+####################################################
+
+# Agregar script para lanzar Steam al directorio "ajustes"
+cat <<EOF > "$HOME_DIR/RetroPie/roms/ajustes/lanzar_steam.sh"
+#!/bin/bash
+steam
+wait
+emulationstation
+EOF
+
+chmod +x "$HOME_DIR/RetroPie/roms/ajustes/lanzar_steam.sh"
+
+####################################################################
+
+# Agregar script para importar juegos de Steam al directorio "ajustes" solo si no existe
+cat <<'EOF' > "$HOME_DIR/RetroPie/roms/ajustes/importar_juegos_steam.sh"
+#!/usr/bin/env bash
+# Configuración
+readonly ROMS_DIR="${HOME}/RetroPie/roms/steam"
+readonly OUTPUT_DIR="${ROMS_DIR}"
+
+# Steam stuff"
+readonly STEAM_APPS_DIR="${HOME}/.local/share/Steam/steamapps"
+readonly STEAM_MANIFEST_EXT='.acf'
+
+
+function getManifestProperty() {
+    local app_manifest_path="$1"
+    local property_name="$2"
+
+    # Utiliza grep y sed para extraer el valor de la propiedad del archivo de manifiesto
+    grep "${property_name}" "${app_manifest_path}" | cut -d '"' -f 4 
+}
+
+
+function shellScriptTemplate() {
+    local app_id="$1"
+    local app_name="$2"
+
+
+cat <<EOF2
+#!/bin/bash
+
+# Lanza el juego desde Steam
+steam steam://rungameid/${app_id} &
+
+wait
+
+# Una vez que el juego se cierra, cerrar Steam y reiniciar EmulationStation
+emulationstation
+
+EOF2
+}
+
+
+app_manifest_names=$(ls "${STEAM_APPS_DIR}" | grep "${STEAM_MANIFEST_EXT}")
+for app_manifest_name in ${app_manifest_names}; do
+    app_manifest_path="${STEAM_APPS_DIR}/${app_manifest_name}"
+    app_id=$(getManifestProperty "${app_manifest_path}" '"appid"')
+    app_name=$(getManifestProperty "${app_manifest_path}" '"name"')
+    sanitized_app_name=$(echo "${app_name}" | sed 's/&/and/g' | tr ' ' '_')
+    shell_script_path="${OUTPUT_DIR}/${sanitized_app_name}.sh"
+    shell_script_contents=$(shellScriptTemplate "${app_id}" "${app_name}")
+
+    echo "${shell_script_contents}" > "${shell_script_path}"
+    chmod +x "${shell_script_path}"
+  
+done
+
+emulationstation --quit  # Cerrar EmulationStation
+emulationstation         # Reiniciar EmulationStation
+
+EOF
+
+    chmod +x "$HOME_DIR/RetroPie/roms/ajustes/importar_juegos_steam.sh"
+
+
