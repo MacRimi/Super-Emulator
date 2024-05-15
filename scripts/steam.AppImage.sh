@@ -8,24 +8,6 @@ mkRomDir() {
     mkdir -p "$1"
 }
 
-# Añade soporte para arquitectura i386 si no está ya añadido
-sudo dpkg --add-architecture i386
-
-# Instalar dependencias necesarias para Steam
-REQUIRED_PACKAGES=(
-    "libc6:amd64" "libc6:i386"
-    "libegl1:amd64" "libegl1:i386"
-    "libgbm1:amd64" "libgbm1:i386"
-    "libgl1-mesa-glx:amd64" "libgl1-mesa-glx:i386"
-    "libgl1-mesa-dri:amd64" "libgl1-mesa-dri:i386"
-    "steam-libs-amd64:amd64" "steam-libs-i386:i386"
-)
-
-# Instalar las dependencias
-for pkg in "${REQUIRED_PACKAGES[@]}"; do
-    sudo apt-get install -y "$pkg"
-done
-
 # Crear el directorio para instalar Steam
 mkRomDir "$HOME_DIR/RetroPie/roms/steam"
 
