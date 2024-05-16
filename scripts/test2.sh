@@ -67,6 +67,9 @@ export QT_PLUGIN_PATH="${HERE}"/usr/lib/qt4/plugins/:"${HERE}"/usr/lib/steam/:"$
 EOF
 chmod a+x ./$APP/$APP.AppDir/AppRun
 
+# Eliminar cualquier archivo steam.desktop que pueda haberse creado accidentalmente
+rm -f ./$APP/$APP.AppDir/*.desktop
+
 # ...EXPORT THE APPDIR TO AN APPIMAGE!
 ARCH=x86_64 VERSION=$(./appimagetool -v | grep -o '[[:digit:]]*') ./appimagetool -s ./$APP/$APP.AppDir > /dev/null 2>&1
 cd ..;
