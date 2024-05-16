@@ -31,3 +31,7 @@ wget https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/cemu.A
 ```
 wget https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/steam.AppImage.sh -O ~/RetroPie-Setup/scriptmodules/emulators/steam.AppImage.sh
 ```
+evitar mensaje de confirmacion al ejecutar:
+```
+sudo dpkg-reconfigure debconf
+```
