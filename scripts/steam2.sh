@@ -44,6 +44,19 @@ function configure_steam() {
     
     # Agregar sistema Steam
     addSystem "steam"
+    
+    # Modificar la configuración de extensión de archivo en es_systems.cfg
+    cat <<EOF >> /etc/emulationstation/es_systems.cfg
+<system>
+    <name>steam</name>
+    <fullname>Steam</fullname>
+    <path>/home/pi/RetroPie/roms/steam</path>
+    <extension>.sh</extension>
+    <command>%ROM%</command>
+    <platform>steam</platform>
+    <theme>steam</theme>
+</system>
+EOF
 }
 
 # Manejar la entrada de los comandos
