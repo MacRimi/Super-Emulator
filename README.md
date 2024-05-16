@@ -35,3 +35,7 @@ evitar mensaje de confirmacion al ejecutar:
 ```
 sudo dpkg-reconfigure debconf
 ```
+Utilidad para poder usar el compilador de steam:
+```
+sudo apt-get install dpkg imagemagick desktop-file-utils
+```
