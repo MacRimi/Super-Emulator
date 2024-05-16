@@ -69,7 +69,8 @@ chmod a+x ./$APP/$APP.AppDir/AppRun
 
 # ...EXPORT THE APPDIR TO AN APPIMAGE!
 ARCH=x86_64 VERSION=$(./appimagetool -v | grep -o '[[:digit:]]*') ./appimagetool -s ./$APP/$APP.AppDir > /dev/null 2>&1
-cd ..;
+cd ..
+ls -l ./tmp  # Debugging line - list contents of tmp directory
 mv ./tmp/*.AppImage ./steam.AppImage
 
 echo "Steam has been packaged as steam.AppImage"
