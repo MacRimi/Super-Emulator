@@ -47,7 +47,11 @@ ingredients:
     - zenity
     - zenity-common" >> recipe.yml;
 
-./pkg2appimage ./recipe.yml;
+echo "Executing pkg2appimage..."
+./pkg2appimage ./recipe.yml
+
+# CHECK IF THE APPIMAGE WAS CREATED
+ls -l
 
 # ...REPLACING THE EXISTING APPRUN WITH A CUSTOM ONE...
 rm -R -f ./$APP/$APP.AppDir/AppRun
