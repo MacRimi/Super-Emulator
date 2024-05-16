@@ -72,8 +72,4 @@ ARCH=x86_64 VERSION=$(./appimagetool -v | grep -o '[[:digit:]]*') ./appimagetool
 cd ..;
 mv ./tmp/*.AppImage ./steam.AppImage
 
-echo "
-
- Steam is provided by https://store.steampowered.com
-  
-";
+echo "Steam has been packaged as steam.AppImage"
