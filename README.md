@@ -8,6 +8,8 @@ https://github.com/archtaurus/RetroPieBIOS
 
 https://www.reddit.com/r/retroid/comments/1b7ugxj/upcoming_emulationstation_removes_yuzu_option/
 
+https://github.com/ivan-hc/Steam-appimage
+
 
 
 desactivar audio USB:
