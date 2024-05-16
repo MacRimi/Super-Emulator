@@ -12,7 +12,7 @@ rp_module_flags="!arm"
 
 function install_bin_cemu() {
     mkdir -p "$md_inst/bin"
-    cp "/home/pi/Descargas/Cemu.AppImage" "$md_inst/bin/cemu"  
+    cp "/home/pi/Descargas/Cemu.AppImage" "$md_inst/bin/cemu.AppImage"  
     chmod +x "$md_inst/bin/cemu"
 }
 
