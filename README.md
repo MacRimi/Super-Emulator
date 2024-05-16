@@ -25,11 +25,11 @@ wget https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/yuzu.A
 
 ######### cemu ########
 ```
-wget https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/cemu.AppImage.sh -O ~/RetroPie-Setup/scriptmodules/emulators/cemu.AppImage.sh
+wget https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/cemu.AppImage.sh -O ~/RetroPie-Setup/scriptmodules/emulators/Cemu.AppImage.sh
 ```
 ######## steam ########
 ```
-wget https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/steam.AppImage.sh -O ~/RetroPie-Setup/scriptmodules/emulators/steam.AppImage.sh
+wget https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/steam.AppImage.sh -O ~/RetroPie-Setup/scriptmodules/emulators/Steam.AppImage.sh
 ```
 evitar mensaje de confirmacion al ejecutar:
 ```
