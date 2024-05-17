@@ -16,6 +16,9 @@ rp_module_licence="Proprietary https://store.steampowered.com/subscriber_agreeme
 rp_module_section="exp"
 rp_module_flags="!all 64bit"
 
+# Define la ruta del directorio de inicio del usuario actual
+HOME_DIR="$HOME"
+
 function depends_steam() {
     local depends=(curl wget)
     getDepends "${depends[@]}"
@@ -45,15 +48,16 @@ function install_bin_steam() {
 
 function configure_steam() {
     mkRomDir "steam"
-    addEmulator 1 "$md_id" "steam" "/usr/games/steam %ROM%"
+    addEmulator 1 "$md_id" "steam" "$md_inst/bin/steam %ROM%"
     addSystem "steam" ".sh"
+
     # Agregar nueva entrada al archivo es_systems.cfg
     echo "<system>" >> /etc/emulationstation/es_systems.cfg
     echo "    <name>steam</name>" >> /etc/emulationstation/es_systems.cfg
     echo "    <fullname>Steam</fullname>" >> /etc/emulationstation/es_systems.cfg
     echo "    <path>/home/pi/RetroPie/roms/steam</path>" >> /etc/emulationstation/es_systems.cfg
-    echo "    <extension>.sh .SH</extension>" >> /etc/emulationstation/es_systems.cfg
-    echo "    <command>/path/to/open_steam_script.sh</command>" >> /etc/emulationstation/es_systems.cfg
+    echo "    <extension>.sh</extension>" >> /etc/emulationstation/es_systems.cfg
+    echo "    <command>%ROM%</command>" >> /etc/emulationstation/es_systems.cfg
     echo "    <platform>steam</platform>" >> /etc/emulationstation/es_systems.cfg
     echo "    <theme>steam</theme>" >> /etc/emulationstation/es_systems.cfg
     echo "</system>" >> /etc/emulationstation/es_systems.cfg
