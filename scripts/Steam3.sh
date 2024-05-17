@@ -40,8 +40,6 @@ function install_bin_steam() {
     wget --content-disposition https://cdn.cloudflare.steamstatic.com/client/installer/steam.deb -O "$md_inst/bin/steam.deb"
     sudo dpkg -i "$md_inst/bin/steam.deb" || sudo apt -f install -y
     rm "$md_inst/bin/steam.deb"
-    
-    # Asegura que el archivo de Steam sea ejecutable
     chmod +x "$md_inst/bin/steam"
 }
 
