@@ -16,9 +16,6 @@ rp_module_licence="Proprietary https://store.steampowered.com/subscriber_agreeme
 rp_module_section="exp"
 rp_module_flags="!all 64bit"
 
-# Define la ruta del directorio de inicio del usuario actual
-HOME_DIR="$HOME"
-
 function depends_steam() {
     local depends=(curl wget)
     getDepends "${depends[@]}"
@@ -55,7 +52,7 @@ function configure_steam() {
     echo "<system>" >> /etc/emulationstation/es_systems.cfg
     echo "    <name>steam</name>" >> /etc/emulationstation/es_systems.cfg
     echo "    <fullname>Steam</fullname>" >> /etc/emulationstation/es_systems.cfg
-    echo "    <path>$HOME_DIR/RetroPie/roms/steam</path>" >> /etc/emulationstation/es_systems.cfg
+    echo "    <path>$HOME/RetroPie/roms/steam</path>" >> /etc/emulationstation/es_systems.cfg
     echo "    <extension>.sh</extension>" >> /etc/emulationstation/es_systems.cfg
     echo "    <command>%ROM%</command>" >> /etc/emulationstation/es_systems.cfg
     echo "    <platform>steam</platform>" >> /etc/emulationstation/es_systems.cfg
