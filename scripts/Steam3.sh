@@ -55,7 +55,7 @@ function configure_steam() {
     echo "<system>" >> /etc/emulationstation/es_systems.cfg
     echo "    <name>steam</name>" >> /etc/emulationstation/es_systems.cfg
     echo "    <fullname>Steam</fullname>" >> /etc/emulationstation/es_systems.cfg
-    echo "    <path>/home/pi/RetroPie/roms/steam</path>" >> /etc/emulationstation/es_systems.cfg
+    echo "    <path>$HOME_DIR/RetroPie/roms/steam</path>" >> /etc/emulationstation/es_systems.cfg
     echo "    <extension>.sh</extension>" >> /etc/emulationstation/es_systems.cfg
     echo "    <command>%ROM%</command>" >> /etc/emulationstation/es_systems.cfg
     echo "    <platform>steam</platform>" >> /etc/emulationstation/es_systems.cfg
