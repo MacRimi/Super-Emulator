@@ -31,13 +31,13 @@ rp_module_flags="!all 64bit"
 #                        steam-libs-amd64:amd64 steam-libs-i386:i386
 #}
 
-function install_bin_steam() {
-    mkdir -p "$md_inst/bin"
-    wget --content-disposition https://cdn.cloudflare.steamstatic.com/client/installer/steam.deb -O "$md_inst/bin/steam.deb"
-    sudo dpkg -i "$md_inst/bin/steam.deb" || sudo apt -f install -y
-    rm "$md_inst/bin/steam.deb"
-    chmod +x "$md_inst/bin/steam"
-}
+#function install_bin_steam() {
+#    mkdir -p "$md_inst/bin"
+#    wget --content-disposition https://cdn.cloudflare.steamstatic.com/client/installer/steam.deb -O "$md_inst/bin/steam.deb"
+#    sudo dpkg -i "$md_inst/bin/steam.deb" || sudo apt -f install -y
+#    rm "$md_inst/bin/steam.deb"
+#    chmod +x "$md_inst/bin/steam"
+#}
 
 function configure_steam() {
     mkRomDir "steam"
