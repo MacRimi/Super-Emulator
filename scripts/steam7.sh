@@ -31,16 +31,49 @@ function depends_steam() {
                         steam-libs-amd64:amd64 steam-libs-i386:i386
 }
 
+
 function install_bin_steam() {
     mkdir -p "$md_inst/bin"
-    wget --content-disposition https://cdn.cloudflare.steamstatic.com/client/installer/steam.deb -O "$md_inst/bin/steam.deb"
-    sudo dpkg -i "$md_inst/bin/steam.deb" || sudo apt -f install -y
-    rm "$md_inst/bin/steam.deb"
-    chmod +x "$md_inst/bin/steam"
+    wget -O steam.deb https://cdn.cloudflare.steamstatic.com/client/installer/steam.deb
+    sudo apt install -y ./steam.deb || sudo apt -f install -y
+    rm steam.deb
 }
 
 function configure_steam() {
     mkRomDir "steam"
     addEmulator 1 "$md_id" "steam" "$md_inst/bin/steam %ROM%"
     addSystem "steam" ".sh .SH"
+
+function configure_steam() {
+
+    mkRomDir "steam"
+
+    addEmulator 0 "$rp_module_id" "steam" "steam"
+    
+    # Agregar sistema Steam
+    addSystem "steam"
+
+    cat <<EOF >> /etc/emulationstation/es_systems.cfg
+    sudo sed -i "/<\/systemList>/i \
+<system>\
+    <name>steam</name>\
+    <fullname>Steam</fullname>\
+    <path>/home/pi/RetroPie/roms/steam</path>\
+    <extension>.sh</extension>\
+    <command>%ROM%</command>\
+    <platform>steam</platform>\
+    <theme>steam</theme>\
+</system>\
+EOF
+}
+
+
+
+
+
+
+
+
+
+    
 }
