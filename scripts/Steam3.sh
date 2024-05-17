@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
 
-# Este archivo es parte del Proyecto RetroPie
+# This file is part of The RetroPie Project
 #
-# El Proyecto RetroPie es propiedad legal de sus desarrolladores.
-# Consulta el archivo COPYRIGHT.md distribuido con esta fuente.
+# The RetroPie Project is the legal property of its developers, whose names are
+# too numerous to list here. Please refer to the COPYRIGHT.md file distributed with this source.
 #
-# Consulta el archivo LICENSE.md en el directorio raíz de esta distribución y en
-# https://raw.githubusercontent.com/RetroPie/RetroPie-Setup/master/LICENSE.md
-#
+# See the LICENSE.md file at the top-level directory of this distribution and
+# at https://raw.githubusercontent.com/RetroPie/RetroPie-Setup/master/LICENSE.md
 
 rp_module_id="steam"
 rp_module_desc="Steam - Plataforma de distribución de videojuegos"
@@ -46,14 +45,14 @@ function install_bin_steam() {
 function configure_steam() {
     mkRomDir "steam"
     addEmulator 1 "$md_id" "steam" "$md_inst/bin/steam %ROM%"
-    addSystem "steam" ".sh"
+    addSystem "steam"
 
     # Agregar nueva entrada al archivo es_systems.cfg
     echo "<system>" >> /etc/emulationstation/es_systems.cfg
     echo "    <name>steam</name>" >> /etc/emulationstation/es_systems.cfg
     echo "    <fullname>Steam</fullname>" >> /etc/emulationstation/es_systems.cfg
     echo "    <path>$HOME/RetroPie/roms/steam</path>" >> /etc/emulationstation/es_systems.cfg
-    echo "    <extension>.sh</extension>" >> /etc/emulationstation/es_systems.cfg
+    echo "    <extension>.sh .SH</extension>" >> /etc/emulationstation/es_systems.cfg
     echo "    <command>%ROM%</command>" >> /etc/emulationstation/es_systems.cfg
     echo "    <platform>steam</platform>" >> /etc/emulationstation/es_systems.cfg
     echo "    <theme>steam</theme>" >> /etc/emulationstation/es_systems.cfg
