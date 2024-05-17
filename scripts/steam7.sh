@@ -66,14 +66,3 @@ function configure_steam() {
 </system>\
 EOF
 }
-
-
-
-
-
-
-
-
-
-    
-}
