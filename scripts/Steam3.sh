@@ -19,13 +19,10 @@ function depends_steam() {
     local depends=(curl wget)
     getDepends "${depends[@]}"
     
-    # Añade la arquitectura i386
     sudo dpkg --add-architecture i386
 
-    # Actualiza la lista de paquetes
     sudo apt update
 
-    # Instala dependencias para Steam y compatibilidad de arquitectura mixta
     sudo apt install -y libc6:amd64 libc6:i386 \
                         libegl1:amd64 libegl1:i386 \
                         libgbm1:amd64 libgbm1:i386 \
