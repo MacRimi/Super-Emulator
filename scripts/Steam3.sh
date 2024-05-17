@@ -59,7 +59,6 @@ function configure_steam() {
     echo "</system>" >> /etc/emulationstation/es_systems.cfg
 }
 
-# Llama a las funciones según el flujo de trabajo de RetroPie
 depends_steam
 install_bin_steam
 configure_steam
