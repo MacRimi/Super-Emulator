@@ -46,7 +46,7 @@ function install_bin_steam() {
 function configure_steam() {
     mkRomDir "steam"
     addEmulator 1 "$md_id" "steam" "/usr/games/steam %ROM%"
-    addSystem "steam"
+    addSystem "steam" ".sh"
 }
 
 # Llama a las funciones según el flujo de trabajo de RetroPie
