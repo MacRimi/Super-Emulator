@@ -47,6 +47,16 @@ function configure_steam() {
     mkRomDir "steam"
     addEmulator 1 "$md_id" "steam" "/usr/games/steam %ROM%"
     addSystem "steam" ".sh"
+    # Agregar nueva entrada al archivo es_systems.cfg
+    echo "<system>" >> /etc/emulationstation/es_systems.cfg
+    echo "    <name>steam</name>" >> /etc/emulationstation/es_systems.cfg
+    echo "    <fullname>Steam</fullname>" >> /etc/emulationstation/es_systems.cfg
+    echo "    <path>/home/pi/RetroPie/roms/steam</path>" >> /etc/emulationstation/es_systems.cfg
+    echo "    <extension>.sh .SH</extension>" >> /etc/emulationstation/es_systems.cfg
+    echo "    <command>/path/to/open_steam_script.sh</command>" >> /etc/emulationstation/es_systems.cfg
+    echo "    <platform>steam</platform>" >> /etc/emulationstation/es_systems.cfg
+    echo "    <theme>steam</theme>" >> /etc/emulationstation/es_systems.cfg
+    echo "</system>" >> /etc/emulationstation/es_systems.cfg
 }
 
 # Llama a las funciones según el flujo de trabajo de RetroPie
