@@ -26,7 +26,7 @@ bash -c "$(wget -qLO - https://raw.githubusercontent.com/MacRimi/SuperEmulator/m
 
 ######### yuzu ##########
 ```
-wget https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/yuzu.AppImage.sh -O ~/RetroPie-Setup/scriptmodules/emulators/yuzu.AppImage.sh
+wget https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/yuzu-AppImage.sh -O ~/RetroPie-Setup/scriptmodules/emulators/yuzu-AppImage.sh
 ```
 
 ######### cemu ########
@@ -35,7 +35,7 @@ wget https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/cemu.A
 ```
 ######## steam ########
 ```
-wget https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/steam.AppImage.sh -O ~/RetroPie-Setup/scriptmodules/emulators/steam.AppImage.sh
+wget https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/steam-AppImage.sh -O ~/RetroPie-Setup/scriptmodules/emulators/steam-AppImage.sh
 ```
 evitar mensaje de confirmacion al ejecutar:
 ```
