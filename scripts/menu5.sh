@@ -146,16 +146,22 @@ function ajustes_emuladores() {
     done
 
 if ! grep -q '<name>ajustes</name>' "$es_systems_cfg"; then
-    sudo sed -i "/<\/systemList>/i \\
-<system>\
-    <name>ajustes</name>\
-    <fullname>Configuraciones</fullname>\
-    <path>$HOME/RetroPie/roms/ajustes</path>\
-    <extension>.sh</extension>\
-    <command>%ROM%</command>\
-    <platform>config</platform>\
-    <theme>ajustes</theme>\
-</system>" "$es_systems_cfg"
+    # Crear un archivo temporal con el contenido del nuevo sistema
+    echo "<system>
+    <name>ajustes</name>
+    <fullname>Configuraciones</fullname>
+    <path>$HOME/RetroPie/roms/ajustes</path>
+    <extension>.sh</extension>
+    <command>%ROM%</command>
+    <platform>config</platform>
+    <theme>ajustes</theme>
+</system>" > /tmp/nuevo_sistema.xml
+    
+    # Insertar el contenido del archivo temporal en es_systems.cfg
+    sudo sed -i "/<\/systemList>/r /tmp/nuevo_sistema.xml" "$es_systems_cfg"
+    
+    # Eliminar el archivo temporal
+    rm /tmp/nuevo_sistema.xml
 fi
 
 }
