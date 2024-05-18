@@ -28,9 +28,9 @@ ajustes_emuladores() {
 }
 
 # Mostrar el menú y capturar la selección
-opciones=$(dialog --checklist "Seleccione los scripts a ejecutar:" 15 40 4 \
-    1 "Instalar RPCS3" off \
-    2 "Instalar Yuzu" off \
+opciones=$(dialog --checklist "Seleccione los scripts a ejecutar:" 20 60 4 \
+    1 "Instalar RPCS3 (Play Station 3)" off \
+    2 "Instalar Yuzu (Nintendo Switch)" off \
     3 "Instalar Steam" off \
     4 "Ajustes Emuladores" off 3>&1 1>&2 2>&3 3>&-)
 
