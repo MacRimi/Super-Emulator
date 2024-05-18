@@ -151,7 +151,7 @@ if ! grep -q '<name>ajustes</name>' "$es_systems_cfg"; then
 <system>\
     <name>ajustes</name>\
     <fullname>Configuraciones</fullname>\
-    <path>$HOME_DIR/RetroPie/roms/ajustes</path>\
+    <path>$HOME/RetroPie/roms/ajustes</path>\
     <extension>.sh</extension>\
     <command>%ROM%</command>\
     <platform>config</platform>\
