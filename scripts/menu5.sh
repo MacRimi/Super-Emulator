@@ -157,6 +157,7 @@ if ! grep -q '<name>ajustes</name>' "$es_systems_cfg"; then
     <theme>ajustes</theme>
 </system>"
 
+    # Insertar el nuevo sistema antes de la etiqueta </systemList>
     sudo sed -i "/<\/systemList>/i ${nuevo_sistema//$'\n'/\\n}" "$es_systems_cfg"
 fi
 
