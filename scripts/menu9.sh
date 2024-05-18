@@ -148,7 +148,7 @@ function ajustes_emuladores() {
 if ! grep -q '<name>ajustes</name>' "$es_systems_cfg"; then
     # Definir el nuevo sistema
     nuevo_sistema=$(cat << EOF
-  <system>
+<system>
     <name>ajustes</name>
     <fullname>Configuraciones</fullname>
     <path>/root/RetroPie/roms/ajustes</path>
@@ -156,12 +156,11 @@ if ! grep -q '<name>ajustes</name>' "$es_systems_cfg"; then
     <command>%ROM%</command>
     <platform>config</platform>
     <theme>ajustes</theme>
-  </system>
+</system>
 EOF
 )
-
     # Insertar el nuevo sistema antes de la etiqueta </systemList>
-    sudo sed -i "/<\/systemList>/i $nuevo_sistema" "$es_systems_cfg"
+    awk -v new_system="$nuevo_sistema" '/<\/systemList>/ {print new_system} 1' "$es_systems_cfg" > temp.xml && mv temp.xml "$es_systems_cfg"
 fi
 
 }
