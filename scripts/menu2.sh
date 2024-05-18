@@ -14,7 +14,7 @@ platforms_cfg=/opt/retropie/configs/all/platforms.cfg
 # Función para añadir RPCS3
 #############################
 instalar_rpcs3() {
-  local script_path=~/RetroPie-Setup/scriptmodules/emulators/rpcs3-appImage.sh
+    local script_path=~/RetroPie-Setup/scriptmodules/emulators/rpcs3-appImage.sh
     wget -q --show-progress https://raw.githubusercontent.com/raelgc/retropie_rpcs3-appImage/master/rpcs3-appImage.sh -O "$script_path"
     chmod +x "$script_path"
 
@@ -66,7 +66,7 @@ instalar_steam() {
     wget -q --show-progress https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/steam-AppImage.sh -O "$script_path"
     chmod +x "$script_path"
 
-        # Verificar si existe platforms.cfg
+    # Verificar si existe platforms.cfg
     if [ -f "$platforms_cfg" ]; then
         # Agregar las líneas al final del archivo
         echo "Añadiendo configuración de Steam a platforms.cfg..."
@@ -80,11 +80,11 @@ instalar_steam() {
         echo "ajustes_platform=\"config\"" >> "$platforms_cfg"
     else
         # Crear platforms.cfg y agregar las líneas
-        echo "Creando platforms.cfg y añadiendo configuración de Yuzu..."
-        echo "steam_exts=\".nsp .xci\"" > "$platforms_cfg"
+        echo "Creando platforms.cfg y añadiendo configuración de Steam..."
+        echo "steam_exts=\".sh\"" > "$platforms_cfg"
         echo "steam_fullname=\"Steam\"" >> "$platforms_cfg"
         echo "steam_command=\"%ROM%\"" >> "$platforms_cfg"
-         # Añadir ajustes
+        # Añadir ajustes
         echo "ajustes_exts=\".sh\"" >> "$platforms_cfg"
         echo "ajustes_fullname=\"Ajustes\"" >> "$platforms_cfg"
         echo "ajustes_command=\"%ROM%\"" >> "$platforms_cfg"
@@ -98,21 +98,6 @@ instalar_steam() {
 ajustes_emuladores() {
     local emulators_dir=/opt/retropie/emulators
     local ajustes_dir=~/RetroPie/roms/ajustes
-
-        # Verificar si existe platforms.cfg
-    if [ -f "$platforms_cfg" ]; then
-        # Agregar las líneas al final del archivo
-        echo "ajustes_exts=\".sh\"" >> "$platforms_cfg"
-        echo "ajustes_fullname=\"Ajustes\"" >> "$platforms_cfg"
-        echo "ajustes_command=\"%ROM%\"" >> "$platforms_cfg"
-        echo "ajustes_platform=\"config\"" >> "$platforms_cfg"
-    else
-        # Crear platforms.cfg y agregar las líneas
-        echo "ajustes_exts=\".sh\"" >> "$platforms_cfg"
-        echo "ajustes_fullname=\"Ajustes\"" >> "$platforms_cfg"
-        echo "ajustes_command=\"%ROM%\"" >> "$platforms_cfg"
-        echo "ajustes_platform=\"config\"" >> "$platforms_cfg"
-    fi
 
     mkdir -p "$ajustes_dir"
 
@@ -132,6 +117,22 @@ ajustes_emuladores() {
     done
 
     echo "Ajustes de emuladores completados."
+
+    # Verificar si existe platforms.cfg
+    if [ -f "$platforms_cfg" ]; then
+        # Agregar las líneas al final del archivo
+        echo "ajustes_exts=\".sh\"" >> "$platforms_cfg"
+        echo "ajustes_fullname=\"Ajustes\"" >> "$platforms_cfg"
+        echo "ajustes_command=\"%ROM%\"" >> "$platforms_cfg"
+        echo "ajustes_platform=\"config\"" >> "$platforms_cfg"
+    else
+        # Crear platforms.cfg y agregar las líneas
+        echo "Creando platforms.cfg y añadiendo configuración de Ajustes..."
+        echo "ajustes_exts=\".sh\"" > "$platforms_cfg"
+        echo "ajustes_fullname=\"Ajustes\"" >> "$platforms_cfg"
+        echo "ajustes_command=\"%ROM%\"" >> "$platforms_cfg"
+        echo "ajustes_platform=\"config\"" >> "$platforms_cfg"
+    fi
 }
 
 ###################################################
