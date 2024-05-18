@@ -115,14 +115,15 @@ function ajustes_emuladores() {
     fi
     
 
-    for emulador in "$emulators_dir"/*; do
+for emulador in "$emulators_dir"/*; do
     # Obtener el nombre del emulador
     emulador_name=$(basename "$emulador")
     # Directorio binario del emulador
     bin_dir="$emulador/bin"
 
-    # Verificar si el directorio binario existe y no está vacío
-    if [ -d "$bin_dir" ] && [ -n "$(ls -A "$bin_dir")" ]; then
+    # Verificar si el emulador no es retroarch ni mupen64plus,
+    # si el directorio binario existe y no está vacío
+    if [[ "$emulador_name" != "retroarch" && "$emulador_name" != "mupen64plus" && -d "$bin_dir" && -n "$(ls -A "$bin_dir")" ]]; then
         # Iterar sobre los archivos en el directorio binario
         for executable in "$bin_dir"/*; do
             # Verificar si el archivo es ejecutable
@@ -133,10 +134,10 @@ function ajustes_emuladores() {
                 executable_path="$bin_dir/$executable_name"
 
                 # Crear el script en el directorio de ajustes
-                script_path="$ajustes_dir/$emulador_name.sh"
+                script_path="$ajustes_dir/$executable_name"
                 echo "Creando script para el emulador $emulador_name ($executable_name)..."
                 echo "#!/bin/bash" > "$script_path"
-                echo "cd \"$bin_dir\"" >> "$script_path"
+                echo "cd \"$emulador/bin\"" >> "$script_path"
                 echo "./$executable_name" >> "$script_path"
 
                 chmod +x "$script_path"
