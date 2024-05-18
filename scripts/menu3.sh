@@ -92,8 +92,13 @@ instalar_steam() {
 # Función para ajustar emuladores 
 #################################
 ajustes_emuladores() {
-    local emulators_dir=/opt/retropie/emulators
-    local ajustes_dir=~/RetroPie/roms/ajustes
+#    local emulators_dir=/opt/retropie/emulators
+#    local ajustes_dir=~/RetroPie/roms/ajustes
+
+    # Directorio de emuladores
+    local emulators_dir="/opt/retropie/emulators"
+    # Directorio de ajustes
+    local ajustes_dir="$HOME/RetroPie/roms/ajustes"
 
     # Verificar si existe platforms.cfg
     if [ -f "$platforms_cfg" ]; then
@@ -112,21 +117,32 @@ ajustes_emuladores() {
 
     mkdir -p "$ajustes_dir"
 
-   for emulador in "$emulators_dir"/*; do
+    for emulador in "$emulators_dir"/*; do
+        # Obtener el nombre del emulador
         emulador_name=$(basename "$emulador")
+        # Directorio binario del emulador
         bin_dir="$emulador/bin"
-
-        if [[ "$emulador_name" != "retroarch" && "$emulador_name" != "mupen64plus" && -d "$bin_dir" ]]; then
+        
+        # Verificar si el emulador no es retroarch ni mupen64plus, y si el directorio binario existe y no está vacío
+        if [[ "$emulador_name" != "retroarch" && "$emulador_name" != "mupen64plus" ]] && [ -d "$bin_dir" ] && [ -n "$(ls -A "$bin_dir")" ]; then
+            # Iterar sobre los archivos en el directorio binario
             for executable in "$bin_dir"/*; do
-                executable_name=$(basename "$executable")
-                script_path="$ajustes_dir/$executable_name.sh"
-
-                echo "Creando script para el emulador $emulador_name ($executable_name)..."
-                echo "#!/bin/bash" > "$script_path"
-                echo "cd $bin_dir" >> "$script_path"
-                echo "./$executable_name" >> "$script_path"
-
-                chmod +x "$script_path"
+                # Verificar si el archivo es ejecutable y tiene extensión .sh
+                if [ -x "$executable" ] && [[ "$executable" == *.sh ]]; then
+                    # Obtener el nombre del archivo ejecutable
+                    executable_name=$(basename "$executable")
+                    # Crear la ruta completa y correcta del ejecutable
+                    executable_path="$emulador/$executable_name"
+                    
+                    # Crear el script en el directorio de ajustes
+                    script_path="$ajustes_dir/$emulador_name.sh"
+                    echo "Creando script para el emulador $emulador_name ($executable_name)..."
+                    echo "#!/bin/bash" > "$script_path"
+                    echo "cd $emulador" >> "$script_path"
+                    echo "./$executable_name" >> "$script_path"
+                    
+                    chmod +x "$script_path"
+                fi
             done
         fi
     done
