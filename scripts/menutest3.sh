@@ -115,7 +115,7 @@ function ajustes_emuladores() {
     fi
     
 
-  for emulador in "$emulators_dir"/*; do
+ for emulador in "$emulators_dir"/*; do
         # Obtener el nombre del emulador
         emulador_name=$(basename "$emulador")
         # Directorio binario del emulador
@@ -130,6 +130,11 @@ function ajustes_emuladores() {
                 if [ -x "$executable" ]; then
                     # Obtener el nombre del ejecutable
                     executable_name=$(basename "$executable")
+
+                    # Omitir rpcs3.AppImage_old
+                    if [[ "$executable_name" == "rpcs3.AppImage_old" ]]; then
+                        continue
+                    fi
 
                     # Crear el script especial para rpcs3.AppImage
                     if [[ "$emulador_name" == "rpcs3-appImage" && "$executable_name" == "rpcs3.AppImage" ]]; then
@@ -165,6 +170,7 @@ function ajustes_emuladores() {
             done
         fi
     done
+
 
 if ! grep -q '<name>ajustes</name>' "$es_systems_cfg"; then
     # Definir el nuevo sistema
