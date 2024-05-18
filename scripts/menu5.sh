@@ -145,17 +145,20 @@ function ajustes_emuladores() {
         fi
     done
 
-    # Añadir la definición del sistema "Ajustes" a es_systems.cfg
-    echo "Añadiendo sistema 'Ajustes' a es_systems.cfg..."
-    echo "  <system>" >> "$es_systems_cfg"
-    echo "    <name>ajustes</name>" >> "$es_systems_cfg"
-    echo "    <fullname>Ajustes</fullname>" >> "$es_systems_cfg"
-    echo "    <path>$ajustes_dir</path>" >> "$es_systems_cfg"
-    echo "    <extension>.sh</extension>" >> "$es_systems_cfg"
-    echo "    <command>bash %ROM%</command>" >> "$es_systems_cfg"
-    echo "    <platform>config</platform>" >> "$es_systems_cfg"
-    echo "    <theme>systems</theme>" >> "$es_systems_cfg"
-    echo "  </system>" >> "$es_systems_cfg"
+nuevo_sistema="<system>
+    <name>ajustes</name>
+    <fullname>Ajustes</fullname>
+    <path>/root/RetroPie/roms/ajustes</path>
+    <extension>.sh</extension>
+    <command>bash %ROM%</command>
+    <platform>config</platform>
+    <theme>systems</theme>
+  </system>"
+
+contenido_actual=$(<"$es_systems_cfg")
+sistemas=$(echo "$contenido_actual" | grep -oP '<system>.*?</system>' | sort)
+contenido_actualizado=$(echo -e "$sistemas\n$nuevo_sistema" | sort -t ">" -k 2)
+echo "$contenido_actualizado" > "$es_systems_cfg"
 
 }
 
