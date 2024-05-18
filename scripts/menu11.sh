@@ -116,34 +116,34 @@ function ajustes_emuladores() {
     
 
     for emulador in "$emulators_dir"/*; do
-        # Obtener el nombre del emulador
-        emulador_name=$(basename "$emulador")
-        # Directorio binario del emulador
-        bin_dir="$emulador/bin"
-        
-        # Verificar si el emulador no es retroarch ni mupen64plus, y si el directorio binario existe y no está vacío
-        if [[ "$emulador_name" != "retroarch" && "$emulador_name" != "mupen64plus" ]] && [ -d "$bin_dir" ] && [ -n "$(ls -A "$bin_dir")" ]; then
-            # Iterar sobre los archivos en el directorio binario
-            for executable in "$bin_dir"/*; do
-                # Verificar si el archivo es ejecutable y tiene extensión .sh
-                if [ -x "$executable" ] && [[ "$executable" == *.sh ]]; then
-                    # Obtener el nombre del archivo ejecutable
-                    executable_name=$(basename "$executable")
-                    # Crear la ruta completa y correcta del ejecutable
-                    executable_path="$emulador/$executable_name"
-                    
-                    # Crear el script en el directorio de ajustes
-                    script_path="$ajustes_dir/$emulador_name.sh"
-                    echo "Creando script para el emulador $emulador_name ($executable_name)..."
-                    echo "#!/bin/bash" > "$script_path"
-                    echo "cd $emulador" >> "$script_path"
-                    echo "./$executable_name" >> "$script_path"
-                    
-                    chmod +x "$script_path"
-                fi
-            done
-        fi
-    done
+    # Obtener el nombre del emulador
+    emulador_name=$(basename "$emulador")
+    # Directorio binario del emulador
+    bin_dir="$emulador/bin"
+
+    # Verificar si el directorio binario existe y no está vacío
+    if [ -d "$bin_dir" ] && [ -n "$(ls -A "$bin_dir")" ]; then
+        # Iterar sobre los archivos en el directorio binario
+        for executable in "$bin_dir"/*; do
+            # Verificar si el archivo es ejecutable
+            if [ -x "$executable" ]; then
+                # Obtener el nombre del ejecutable
+                executable_name=$(basename "$executable")
+                # Crear la ruta completa y correcta del ejecutable
+                executable_path="$bin_dir/$executable_name"
+
+                # Crear el script en el directorio de ajustes
+                script_path="$ajustes_dir/$emulador_name.sh"
+                echo "Creando script para el emulador $emulador_name ($executable_name)..."
+                echo "#!/bin/bash" > "$script_path"
+                echo "cd \"$bin_dir\"" >> "$script_path"
+                echo "./$executable_name" >> "$script_path"
+
+                chmod +x "$script_path"
+            fi
+        done
+    fi
+done
 
 if ! grep -q '<name>ajustes</name>' "$es_systems_cfg"; then
     # Definir el nuevo sistema
