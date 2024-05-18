@@ -20,6 +20,10 @@ sudo nano /etc/modprobe.d/blacklist.conf
 # Desactivar audio USB
 blacklist snd_usb_audio
 ```
+```
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/menu.sh)"
+```
+
 ######### yuzu ##########
 ```
 wget https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/yuzu.AppImage.sh -O ~/RetroPie-Setup/scriptmodules/emulators/yuzu.AppImage.sh
