@@ -134,7 +134,7 @@ for emulador in "$emulators_dir"/*; do
                 executable_path="$bin_dir/$executable_name"
 
                 # Crear el script en el directorio de ajustes
-                script_path="$ajustes_dir/$executable_name"
+                script_path="$ajustes_dir/$executable_name.sh"
                 echo "Creando script para el emulador $emulador_name ($executable_name)..."
                 echo "#!/bin/bash" > "$script_path"
                 echo "cd \"$emulador/bin\"" >> "$script_path"
