@@ -115,7 +115,7 @@ function ajustes_emuladores() {
     fi
     
 
-    for emulador in "$emulators_dir"/*; do
+  for emulador in "$emulators_dir"/*; do
         # Obtener el nombre del emulador
         emulador_name=$(basename "$emulador")
         # Directorio binario del emulador
@@ -133,11 +133,23 @@ function ajustes_emuladores() {
 
                     # Crear el script especial para rpcs3.AppImage
                     if [[ "$emulador_name" == "rpcs3-appImage" && "$executable_name" == "rpcs3.AppImage" ]]; then
-                        script_path="$ajustes_dir/$executable_name.sh"
-                        echo "Creando script especial para el emulador $emulador_name ($executable_name)..."
-                        echo "#!/bin/bash" > "$script_path"
-                        echo "cd \"$bin_dir\"" >> "$script_path"
-                        echo "./$executable_name --no-sandbox" >> "$script_path"
+                        # Script para actualizar rpcs3
+                        update_script_path="$ajustes_dir/actualizar_rpcs3.sh"
+                        echo "Creando script especial para actualizar el emulador $emulador_name ($executable_name)..."
+                        echo "#!/bin/bash" > "$update_script_path"
+                        echo "cd \"$bin_dir\"" >> "$update_script_path"
+                        echo "sudo ./$executable_name" >> "$update_script_path"
+                        chmod +x "$update_script_path"
+
+                        # Script para ejecutar rpcs3 después de la actualización
+                        if [ -f "$bin_dir/rpcs3.AppImage_old" ]; then
+                            execute_script_path="$ajustes_dir/rpcs3.sh"
+                            echo "Creando script para ejecutar el emulador actualizado $emulador_name..."
+                            echo "#!/bin/bash" > "$execute_script_path"
+                            echo "cd \"$bin_dir\"" >> "$execute_script_path"
+                            echo "./$executable_name" >> "$execute_script_path"
+                            chmod +x "$execute_script_path"
+                        fi
                     else
                         # Crear la ruta completa y correcta del ejecutable
                         executable_path="$bin_dir/$executable_name"
@@ -147,9 +159,8 @@ function ajustes_emuladores() {
                         echo "#!/bin/bash" > "$script_path"
                         echo "cd \"$bin_dir\"" >> "$script_path"
                         echo "./$executable_name" >> "$script_path"
+                        chmod +x "$script_path"
                     fi
-
-                    chmod +x "$script_path"
                 fi
             done
         fi
