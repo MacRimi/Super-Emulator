@@ -31,7 +31,7 @@ ajustes_emuladores() {
     ./script_ajustes_emuladores.sh
 }
 
-# Función para mostrar el menú
+# Función para mostrar el menú y capturar la selección
 mostrar_menu() {
     opciones=$(dialog --checklist "Seleccione los scripts a ejecutar:" 20 60 4 \
         1 "Instalar RPCS3 (Play Station 3)" off \
@@ -42,23 +42,21 @@ mostrar_menu() {
     echo $respuesta $opciones
 }
 
-# Mostrar el menú inicialmente
-respuesta_opciones=$(mostrar_menu)
-respuesta=$(echo $respuesta_opciones | awk '{print $1}')
-opciones=$(echo $respuesta_opciones | cut -d' ' -f2-)
+while true; do
+    # Mostrar el menú de selección
+    respuesta_opciones=$(mostrar_menu)
+    respuesta=$(echo $respuesta_opciones | awk '{print $1}')
+    opciones=$(echo $respuesta_opciones | cut -d' ' -f2-)
 
-# Mantenerse en el bucle hasta que se elija continuar o salir
-while [[ $respuesta -eq 0 ]]; do
+    # Verificar si se seleccionó la opción 2 (Yuzu)
     if echo "$opciones" | grep -q "2"; then
         dialog --msgbox "Para poder instalar Yuzu necesitas previamente tener yuzu.AppImage descargado en la carpeta de Descargas de tu equipo." 10 60
     fi
+
+    # Confirmar la selección
     confirmacion=$(dialog --yesno "¿Desea continuar con la instalación de los scripts seleccionados?" 10 60 3>&1 1>&2 2>&3 3>&-)
     if [[ $? -eq 0 ]]; then
         break
-    else
-        respuesta_opciones=$(mostrar_menu)
-        respuesta=$(echo $respuesta_opciones | awk '{print $1}')
-        opciones=$(echo $respuesta_opciones | cut -d' ' -f2-)
     fi
 done
 
