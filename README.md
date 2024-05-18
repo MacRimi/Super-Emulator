@@ -21,7 +21,7 @@ sudo nano /etc/modprobe.d/blacklist.conf
 blacklist snd_usb_audio
 ```
 ```
-sudo bash -c "$(wget -qLO - https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/menu.sh)"
+sudo bash -c "$(wget -qLO - https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/menu-super-retropie.sh)"
 ```
 
 ######### yuzu ##########
