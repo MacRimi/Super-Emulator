@@ -114,12 +114,8 @@ ajustes_emuladores() {
         echo "ajustes_command=\"%ROM%\"" >> "$platforms_cfg"
         echo "ajustes_platform=\"config\"" >> "$platforms_cfg"
     fi
-     function configure_ajustes() {
-            mkdir -p "$ajustes_dir"
-            addEmulator 1 "$md_id" "ajustes"
-            addSystem "ajustes"
-    }
 
+    
     for emulador in "$emulators_dir"/*; do
         # Obtener el nombre del emulador
         emulador_name=$(basename "$emulador")
