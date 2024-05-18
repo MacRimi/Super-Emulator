@@ -31,55 +31,49 @@ ajustes_emuladores() {
     ./script_ajustes_emuladores.sh
 }
 
-# Función para mostrar el menú y capturar la selección
-mostrar_menu() {
-    opciones=$(dialog --checklist "Seleccione los scripts a ejecutar:" 20 60 4 \
-        1 "Instalar RPCS3 (Play Station 3)" off \
-        2 "Instalar Yuzu (Nintendo Switch)" off \
-        3 "Instalar Steam" off \
-        4 "Ajustes Emuladores" off 3>&1 1>&2 2>&3 3>&-)
-    respuesta=$?
-    echo $respuesta $opciones
-}
+# Mostrar el menú y capturar la selección
+opciones=$(dialog --checklist "Seleccione los scripts a ejecutar:" 20 60 4 \
+    1 "Instalar RPCS3 (Play Station 3)" off \
+    2 "Instalar Yuzu (Nintendo Switch)" off \
+    3 "Instalar Steam" off \
+    4 "Ajustes Emuladores" off 3>&1 1>&2 2>&3 3>&-)
 
-while true; do
-    # Mostrar el menú de selección
-    respuesta_opciones=$(mostrar_menu)
-    respuesta=$(echo $respuesta_opciones | awk '{print $1}')
-    opciones=$(echo $respuesta_opciones | cut -d' ' -f2-)
+# Capturar el código de retorno
+respuesta=$?
 
-    # Verificar si se seleccionó la opción 2 (Yuzu)
-    if echo "$opciones" | grep -q "2"; then
-        dialog --msgbox "Para poder instalar Yuzu necesitas previamente tener yuzu.AppImage descargado en la carpeta de Descargas de tu equipo." 10 60
-    fi
+# Acciones basadas en la respuesta del usuario
+case $respuesta in
+    0) # OK fue seleccionado
+        clear
+        for opcion in $opciones; do
+            case $opcion in
+                1)
+                    echo "Instalando RPCS3..."
+                    instalar_rpcs3
+                    ;;
+                2)
+                    echo "Instalando Yuzu..."
+                    instalar_yuzu
+                    ;;
+                3)
+                    echo "Instalando Steam..."
+                    instalar_steam
+                    ;;
+                4)
+                    echo "Ajustando Emuladores..."
+                    ajustes_emuladores
+                    ;;
+            esac
+        done
+        echo "Instalación completada."
+        ;;
+    1) # Cancelar fue seleccionado
+        clear
+        echo "Instalación cancelada."
+        ;;
+    255) # Salir fue seleccionado (Esc o cerrar ventana)
+        clear
+        echo "Ha salido del script."
+        ;;
+esac
 
-    # Confirmar la selección
-    confirmacion=$(dialog --yesno "¿Desea continuar con la instalación de los scripts seleccionados?" 10 60 3>&1 1>&2 2>&3 3>&-)
-    if [[ $? -eq 0 ]]; then
-        break
-    fi
-done
-
-# Acciones basadas en la selección del usuario
-clear
-for opcion in $opciones; do
-    case $opcion in
-        1)
-            echo "Instalando RPCS3..."
-            instalar_rpcs3
-            ;;
-        2)
-            echo "Instalando Yuzu..."
-            instalar_yuzu
-            ;;
-        3)
-            echo "Instalando Steam..."
-            instalar_steam
-            ;;
-        4)
-            echo "Ajustando Emuladores..."
-            ajustes_emuladores
-            ;;
-    esac
-done
-echo "Instalación completada."
