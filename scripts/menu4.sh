@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # Comprobar si 'dialog' está instalado
