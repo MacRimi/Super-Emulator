@@ -114,16 +114,20 @@ ajustes_emuladores() {
 
     for emulador in "$emulators_dir"/*; do
         emulador_name=$(basename "$emulador")
+        bin_dir="$emulador/bin"
 
-        if [[ "$emulador_name" != "retroarch" && "$emulador_name" != "mupen64plus" ]]; then
-            script_path="$ajustes_dir/$emulador_name.sh"
+        if [[ -d "$bin_dir" ]]; then
+            for executable in "$bin_dir"/*; do
+                executable_name=$(basename "$executable")
+                script_path="$ajustes_dir/$executable_name.sh"
 
-            echo "Creando script para el emulador $emulador_name..."
-            echo "#!/bin/bash" > "$script_path"
-            echo "cd $emulador" >> "$script_path"
-            echo "./$emulador_name" >> "$script_path"
+                echo "Creando script para el emulador $emulador_name ($executable_name)..."
+                echo "#!/bin/bash" > "$script_path"
+                echo "cd $bin_dir" >> "$script_path"
+                echo "./$executable_name" >> "$script_path"
 
-            chmod +x "$script_path"
+                chmod +x "$script_path"
+            done
         fi
     done
 
