@@ -150,7 +150,7 @@ while true; do
 
     # Mostrar advertencia si se selecciona Yuzu
     if echo "$opciones" | grep -q "2"; then
-        dialog --msgbox "Para poder instalar Yuzu, necesitas previamente tener yuzu.AppImage descargado en la carpeta de Descargas de tu equipo." 10 60
+        dialog --msgbox "Para poder instalar Yuzu, necesitas previamente tener yuzu.AppImage en la carpeta de Descargas de tu equipo." 10 60
     fi
 
     # Confirmar la selección
