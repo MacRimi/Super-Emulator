@@ -8,7 +8,7 @@ if ! command -v dialog &> /dev/null; then
 fi
 
 # Definir variables globales
-platforms_cfg=/opt/retropie/configs/all/platforms.cfg
+platforms_cfg="/opt/retropie/configs/all/platforms.cfg"
 es_systems_cfg="/etc/emulationstation/es_systems.cfg"
 
 
