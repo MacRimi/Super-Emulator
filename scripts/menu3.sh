@@ -112,11 +112,11 @@ ajustes_emuladores() {
 
     mkdir -p "$ajustes_dir"
 
-    for emulador in "$emulators_dir"/*; do
+   for emulador in "$emulators_dir"/*; do
         emulador_name=$(basename "$emulador")
         bin_dir="$emulador/bin"
 
-        if [[ -d "$bin_dir" ]]; then
+        if [[ "$emulador_name" != "retroarch" && "$emulador_name" != "mupen64plus" && -d "$bin_dir" ]]; then
             for executable in "$bin_dir"/*; do
                 executable_name=$(basename "$executable")
                 script_path="$ajustes_dir/$executable_name.sh"
