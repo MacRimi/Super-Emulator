@@ -7,15 +7,14 @@ if ! command -v dialog &> /dev/null; then
     sudo apt-get install -y dialog
 fi
 
+# Definir variables globales
+platforms_cfg=/opt/retropie/configs/all/platforms.cfg
+
 #############################
 # Función para añadir RPCS3
 #############################
 instalar_rpcs3() {
   local script_path=~/RetroPie-Setup/scriptmodules/emulators/rpcs3-appImage.sh
-    local platforms_cfg=/opt/retropie/configs/all/platforms.cfg
-
-
-    echo "Añadir script de instalación de RPCS3..."
     wget -q --show-progress https://raw.githubusercontent.com/raelgc/retropie_rpcs3-appImage/master/rpcs3-appImage.sh -O "$script_path"
     chmod +x "$script_path"
 
@@ -37,13 +36,11 @@ instalar_rpcs3() {
 # Función para añadir Yuzu
 ############################
 instalar_yuzu() {
-     local script_path=~/RetroPie-Setup/scriptmodules/emulators/yuzu-AppImage.sh
-    local platforms_cfg=/opt/retropie/configs/all/platforms.cfg
+    local script_path=~/RetroPie-Setup/scriptmodules/emulators/yuzu-AppImage.sh
     if [ ! -f ~/Descargas/yuzu.AppImage ]; then
         dialog --msgbox "Para poder instalar Yuzu necesitas previamente tener yuzu.AppImage descargado en la carpeta de Descargas de tu equipo." 10 60
         return 1
     fi
-    echo "Descargando o actualizando script de instalación de Yuzu..."
     wget -q --show-progress https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/yuzu-AppImage.sh -O "$script_path"
     chmod +x "$script_path"
 
@@ -66,10 +63,6 @@ instalar_yuzu() {
 ###########################
 instalar_steam() {
     local script_path=~/RetroPie-Setup/scriptmodules/emulators/steam-AppImage.sh
-    local platforms_cfg=/opt/retropie/configs/all/platforms.cfg
-    
-    # Descargar o actualizar el script de instalación de Steam
-    echo "Descargando o actualizando script de instalación de Steam..."
     wget -q --show-progress https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/steam-AppImage.sh -O "$script_path"
     chmod +x "$script_path"
 
