@@ -153,12 +153,21 @@ nuevo_sistema="<system>
     <command>bash %ROM%</command>
     <platform>config</platform>
     <theme>systems</theme>
-  </system>"
+</system>"
 
+# Lee el contenido actual del archivo es_systems.cfg
 contenido_actual=$(<"$es_systems_cfg")
+
+# Extrae las líneas de los sistemas existentes y su contenido
 sistemas=$(echo "$contenido_actual" | grep -oP '<system>.*?</system>' | sort)
-contenido_actualizado=$(echo -e "$sistemas\n$nuevo_sistema" | sort -t ">" -k 2)
+
+# Agrega las nuevas líneas del sistema "ajustes" al contenido
+contenido_actualizado=$(echo -e "$sistemas\n$nuevo_sistema")
+
+# Escribe el contenido actualizado en el archivo es_systems.cfg
 echo "$contenido_actualizado" > "$es_systems_cfg"
+
+echo "Sistema 'ajustes' añadido correctamente en es_systems.cfg."
 
 }
 
