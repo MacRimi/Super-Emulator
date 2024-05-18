@@ -146,8 +146,7 @@ function ajustes_emuladores() {
     done
 
 if ! grep -q '<name>ajustes</name>' "$es_systems_cfg"; then
- 
-    sudo sed -i "/<\/systemList>/i \
+    sudo sed -i "/<\/systemList>/i \\
 <system>\
     <name>ajustes</name>\
     <fullname>Configuraciones</fullname>\
