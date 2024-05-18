@@ -143,8 +143,18 @@ function ajustes_emuladores() {
         fi
     done
 
-    # Configurar ajustes
-    configure_ajustes
+    # Añadir la definición del sistema "Ajustes" a es_systems.cfg
+    echo "Añadiendo sistema 'Ajustes' a es_systems.cfg..."
+    echo "  <system>" >> "$es_systems_cfg"
+    echo "    <name>ajustes</name>" >> "$es_systems_cfg"
+    echo "    <fullname>Ajustes</fullname>" >> "$es_systems_cfg"
+    echo "    <path>$ajustes_dir</path>" >> "$es_systems_cfg"
+    echo "    <extension>.sh</extension>" >> "$es_systems_cfg"
+    echo "    <command>bash %ROM%</command>" >> "$es_systems_cfg"
+    echo "    <platform>config</platform>" >> "$es_systems_cfg"
+    echo "    <theme>systems</theme>" >> "$es_systems_cfg"
+    echo "  </system>" >> "$es_systems_cfg"
+
 }
 
 ###################################################
