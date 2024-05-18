@@ -14,6 +14,10 @@ instalar_rpcs3() {
 
 # Función para instalar Yuzu
 instalar_yuzu() {
+    if [ ! -f ~/Descargas/yuzu.AppImage ]; then
+        dialog --msgbox "Para poder instalar Yuzu necesitas previamente tener yuzu.AppImage descargado en la carpeta de Descargas de tu equipo." 10 60
+        return 1
+    fi
     ./script_instalar_yuzu.sh
 }
 
