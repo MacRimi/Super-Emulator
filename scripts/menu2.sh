@@ -106,6 +106,21 @@ ajustes_emuladores() {
     local emulators_dir=/opt/retropie/emulators
     local ajustes_dir=~/RetroPie/roms/ajustes
 
+        # Verificar si existe platforms.cfg
+    if [ -f "$platforms_cfg" ]; then
+        # Agregar las líneas al final del archivo
+        echo "ajustes_exts=\".sh\"" >> "$platforms_cfg"
+        echo "ajustes_fullname=\"Ajustes\"" >> "$platforms_cfg"
+        echo "ajustes_command=\"%ROM%\"" >> "$platforms_cfg"
+        echo "ajustes_platform=\"config\"" >> "$platforms_cfg"
+    else
+        # Crear platforms.cfg y agregar las líneas
+        echo "ajustes_exts=\".sh\"" >> "$platforms_cfg"
+        echo "ajustes_fullname=\"Ajustes\"" >> "$platforms_cfg"
+        echo "ajustes_command=\"%ROM%\"" >> "$platforms_cfg"
+        echo "ajustes_platform=\"config\"" >> "$platforms_cfg"
+    fi
+
     mkdir -p "$ajustes_dir"
 
     for emulador in "$emulators_dir"/*; do
@@ -125,6 +140,8 @@ ajustes_emuladores() {
 
     echo "Ajustes de emuladores completados."
 }
+
+###################################################
 
 # Mostrar el menú y capturar la selección
 while true; do
