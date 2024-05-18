@@ -97,7 +97,7 @@ function ajustes_emuladores() {
     # Directorio de emuladores
     local emulators_dir="/opt/retropie/emulators"
     # Directorio de ajustes
-    local ajustes_dir="$HOME/RetroPie/roms/ajustes"
+    local ajustes_dir="/home/$SUDO_USER/RetroPie/roms/ajustes"
 
     # Verificar si existe platforms.cfg
     if [ -f "$platforms_cfg" ]; then
