@@ -145,29 +145,19 @@ function ajustes_emuladores() {
         fi
     done
 
-nuevo_sistema="<system>
-    <name>ajustes</name>
-    <fullname>Ajustes</fullname>
-    <path>/root/RetroPie/roms/ajustes</path>
-    <extension>.sh</extension>
-    <command>bash %ROM%</command>
-    <platform>config</platform>
-    <theme>systems</theme>
-</system>"
-
-# Lee el contenido actual del archivo es_systems.cfg
-contenido_actual=$(<"$es_systems_cfg")
-
-# Extrae las líneas de los sistemas existentes y su contenido
-sistemas=$(echo "$contenido_actual" | grep -oP '<system>.*?</system>' | sort)
-
-# Agrega las nuevas líneas del sistema "ajustes" al contenido
-contenido_actualizado=$(echo -e "$sistemas\n$nuevo_sistema")
-
-# Escribe el contenido actualizado en el archivo es_systems.cfg
-echo "$contenido_actualizado" > "$es_systems_cfg"
-
-echo "Sistema 'ajustes' añadido correctamente en es_systems.cfg."
+if ! grep -q '<name>ajustes</name>' "$es_systems_cfg"; then
+ 
+    sudo sed -i "/<\/systemList>/i \
+<system>\
+    <name>ajustes</name>\
+    <fullname>Configuraciones</fullname>\
+    <path>$home_dir/RetroPie/roms/ajustes</path>\
+    <extension>.sh</extension>\
+    <command>%ROM%</command>\
+    <platform>config</platform>\
+    <theme>ajustes</theme>\
+</system>" "$es_systems_cfg"
+fi
 
 }
 
