@@ -1,43 +1,74 @@
 #!/bin/bash
 
-# Lista de scripts disponibles
-options=("Script 1" "Script 2" "Script 3")
+# Comprobar si 'dialog' está instalado
+if ! command -v dialog &> /dev/null; then
+    echo "'dialog' no está instalado. Instalando 'dialog'..."
+    sudo apt-get update
+    sudo apt-get install -y dialog
+fi
 
-# Función para mostrar la lista de opciones y obtener la selección del usuario
-select_scripts() {
-    local selected_scripts=()
-    while true; do
-        local choice=$(whiptail --title "Seleccionar Scripts" --checklist "Seleccione los scripts para instalar:" 15 60 4 "${options[@]}" 3>&1 1>&2 2>&3)
-        if [[ -z $choice ]]; then
-            whiptail --title "Mensaje" --msgbox "No se seleccionaron scripts. Por favor, seleccione al menos uno." 8 60
-        else
-            selected_scripts=($choice)
-            break
-        fi
-    done
-    install_scripts "${selected_scripts[@]}"
+# Función para instalar RPCS3
+instalar_rpcs3() {
+    ./script_instalar_rpcs3.sh
 }
 
-# Función para instalar los scripts seleccionados
-install_scripts() {
-    local scripts=("$@")
-    for script in "${scripts[@]}"; do
-        case $script in
-            "Script 1")
-                echo "Instalando Script 1..."
-                # Llamar al script 1
-                ;;
-            "Script 2")
-                echo "Instalando Script 2..."
-                # Llamar al script 2
-                ;;
-            "Script 3")
-                echo "Instalando Script 3..."
-                # Llamar al script 3
-                ;;
-        esac
-    done
+# Función para instalar Yuzu
+instalar_yuzu() {
+    ./script_instalar_yuzu.sh
 }
 
-# Ejecutar la función para mostrar la lista de opciones
-select_scripts
+# Función para instalar Steam
+instalar_steam() {
+    ./script_instalar_steam.sh
+}
+
+# Función para ajustes de emuladores
+ajustes_emuladores() {
+    ./script_ajustes_emuladores.sh
+}
+
+# Mostrar el menú y capturar la selección
+opciones=$(dialog --checklist "Seleccione los scripts a ejecutar:" 15 40 4 \
+    1 "Instalar RPCS3" off \
+    2 "Instalar Yuzu" off \
+    3 "Instalar Steam" off \
+    4 "Ajustes Emuladores" off 3>&1 1>&2 2>&3 3>&-)
+
+# Capturar el código de retorno
+respuesta=$?
+
+# Acciones basadas en la respuesta del usuario
+case $respuesta in
+    0) # OK fue seleccionado
+        clear
+        for opcion in $opciones; do
+            case $opcion in
+                1)
+                    echo "Instalando RPCS3..."
+                    instalar_rpcs3
+                    ;;
+                2)
+                    echo "Instalando Yuzu..."
+                    instalar_yuzu
+                    ;;
+                3)
+                    echo "Instalando Steam..."
+                    instalar_steam
+                    ;;
+                4)
+                    echo "Ajustando Emuladores..."
+                    ajustes_emuladores
+                    ;;
+            esac
+        done
+        echo "Instalación completada."
+        ;;
+    1) # Cancelar fue seleccionado
+        clear
+        echo "Instalación cancelada."
+        ;;
+    255) # Salir fue seleccionado (Esc o cerrar ventana)
+        clear
+        echo "Ha salido del script."
+        ;;
+esac
