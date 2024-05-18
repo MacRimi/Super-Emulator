@@ -112,11 +112,6 @@ function ajustes_emuladores() {
         echo "ajustes_platform=\"config\"" >> "$platforms_cfg"
     fi
     
-    # Definir función para configurar ajustes
-    function configure_ajustes() {
-        addEmulator 1 "$md_id" "ajustes"
-        addSystem "ajustes"
-    }
 
     for emulador in "$emulators_dir"/*; do
         # Obtener el nombre del emulador
