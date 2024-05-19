@@ -73,31 +73,28 @@ EOF
 
 # Función para mostrar el menú y capturar la selección del usuario
 show_menu() {
-  while true; do
-    dialog --menu "Seleccione una opción:" 10 60 2 \
-      1 "Instalar RetroPie" \
-      2 "Extender disco a su máxima capacidad" 2> /tmp/option
+  local opciones=("1" "Instalar RetroPie")
+  if ! check_volume; then
+    opciones+=("2" "Extender disco a su máxima capacidad")
+  fi
 
-    respuesta=$?
+  dialog --menu "Seleccione una opción:" 10 60 2 "${opciones[@]}" 2> /tmp/option
 
-    if [ $respuesta -eq 1 ]; then
-      clear
-      echo "Operación cancelada."
-      exit 0
-    fi
+  respuesta=$?
 
-    seleccion=$(cat /tmp/option)
+  if [ $respuesta -eq 1 ]; then
+    clear
+    echo "Operación cancelada."
+    exit 0
+  fi
 
-    case $seleccion in
-      1) install_retropie;;
-      2) if ! check_volume; then extend_volume; fi;;
-    esac
-  done
+  seleccion=$(cat /tmp/option)
+
+  case $seleccion in
+    1) install_retropie;;
+    2) if ! check_volume; then extend_volume; fi;;
+  esac
 }
 
 # Inicio del script
-if check_volume; then
-  show_menu
-else
-  show_menu | grep -v "Extender disco a su máxima capacidad"
-fi
+show_menu
