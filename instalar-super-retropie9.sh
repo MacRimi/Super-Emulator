@@ -74,49 +74,20 @@ EOF
 # Función para mostrar el menú y capturar la selección del usuario
 show_menu() {
   while true; do
-    opciones=$(dialog --checklist "Seleccione los scripts a ejecutar:" 20 60 2 \
-        1 "Instalar RetroPie" off \
-        2 "Extender disco a su máxima capacidad" off 3>&1 1>&2 2>&3 3>&-)
-
-    respuesta=$?
-
-    if [[ $respuesta -eq 1 || $respuesta -eq 255 ]]; then
-        clear
-        echo "Instalación cancelada o salida del script."
-        exit 1
+    opciones="1 Instalar RetroPie off"
+    if check_volume; then
+      opciones="$opciones 2 Extender disco a su máxima capacidad off"
+    else
+      opciones="$opciones 2 Extender disco a su máxima capacidad on"
     fi
 
-    # Si se seleccionó instalar RetroPie
-    if echo "$opciones" | grep -q "1"; then
-        if check_volume; then
-            dialog --yesno "El volumen de instalación no está usando toda la capacidad del disco, esto podría ocasionar que pudieras quedarte sin espacio pronto. ¿Quieres expandir la capacidad del disco y luego instalar RetroPie?" 10 60
-            if [[ $? -eq 0 ]]; then
-                extend_volume
-                install_retropie
-            else
-                continue
-            fi
-        else
-            dialog --yesno "¿Desea continuar con la instalación de RetroPie?" 10 60
-            if [[ $? -eq 0 ]]; then
-                install_retropie
-            else
-                continue
-            fi
-        fi
-    fi
+    seleccion=$(dialog --menu "Seleccione una opción:" 10 60 3 $opciones 3>&1 1>&2 2>&3 3>&-)
 
-    # Si se seleccionó extender el disco
-    if echo "$opciones" | grep -q "2"; then
-        dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
-        if [[ $? -eq 0 ]]; then
-            extend_volume
-        else
-            clear
-            show_menu
-        fi
-    fi
-    break
+    case $seleccion in
+      1) install_retropie;;
+      2) if ! check_volume; then extend_volume; fi;;
+      *) clear && exit;;
+    esac
   done
 }
 
