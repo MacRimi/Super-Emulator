@@ -112,7 +112,8 @@ show_menu() {
         if [[ $? -eq 0 ]]; then
             extend_volume
         else
-            echo "Operación de extensión del disco cancelada."
+            clear
+            show_menu
         fi
     fi
     break
