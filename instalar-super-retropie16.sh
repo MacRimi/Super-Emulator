@@ -24,7 +24,7 @@ check_volume() {
 
 # Función para extender el volumen lógico
 extend_volume() {
-  local LV_PATH=$(lvscan | grep "ACTIVE" | awk '{print $2}')
+  local LV_PATH=$(lvscan | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
   echo "Extendiendo el volumen lógico..."
   lvextend -l +100%FREE "$LV_PATH"
   if [ $? -ne 0 ]; then
@@ -41,6 +41,7 @@ extend_volume() {
 
   echo "El volumen lógico y el sistema de archivos se han extendido correctamente."
 }
+
 
 # Función para instalar RetroPie
 install_retropie() {
