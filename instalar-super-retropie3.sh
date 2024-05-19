@@ -87,7 +87,7 @@ show_menu() {
     fi
 
     # Confirmar la selección
-    dialog --yesno "¿Desea continuar con la instalación de los scripts seleccionados?" 10 60 3>&1 1>&2 2>&3 3>&-
+    confirmacion=$(dialog --yesno "¿Desea continuar con la instalación de los scripts seleccionados?" 10 60 3>&1 1>&2 2>&3 3>&-)
     if [[ $? -eq 0 ]]; then
         break
     fi
@@ -97,19 +97,21 @@ show_menu() {
   for opcion in $opciones; do
     case $opcion in
         1)
-            if ! check_volume; then
+            if check_volume; then
+                install_retropie
+            else
                 dialog --yesno "El volumen de instalación no está usando toda la capacidad del disco, esto podría ocasionar que pudieras quedarte sin espacio pronto. ¿Quieres expandir la capacidad del disco y luego instalar RetroPie?" 10 60
                 if [[ $? -eq 0 ]]; then
                     extend_volume
+                    install_retropie
+                else
+                    install_retropie
                 fi
             fi
-            echo "Instalando RetroPie..."
-            install_retropie
             ;;
         2)
             dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
             if [[ $? -eq 0 ]]; then
-                echo "Extendiendo disco a su máxima capacidad..."
                 extend_volume
             else
                 echo "Operación de extensión del disco cancelada."
@@ -122,3 +124,4 @@ show_menu() {
 # Inicio del script
 check_volume
 show_menu
+
