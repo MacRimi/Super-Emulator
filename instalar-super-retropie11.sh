@@ -75,21 +75,31 @@ EOF
 show_menu() {
   while true; do
     if check_volume; then
-      opciones=("1" "Instalar RetroPie" "2" "Extender disco a su máxima capacidad (No disponible)")
+      dialog --menu "Seleccione una opción:" 10 60 2 \
+        1 "Instalar RetroPie" \
+        2 "Extender disco a su máxima capacidad (No disponible)" 2> /tmp/option
     else
-      opciones=("1" "Instalar RetroPie" "2" "Extender disco a su máxima capacidad")
+      dialog --menu "Seleccione una opción:" 10 60 2 \
+        1 "Instalar RetroPie" \
+        2 "Extender disco a su máxima capacidad" 2> /tmp/option
     fi
 
-    seleccion=$(dialog --menu "Seleccione una opción:" 10 60 3 "${opciones[@]}" 3>&1 1>&2 2>&3 3>&-)
+    respuesta=$?
+
+    if [ $respuesta -eq 1 ]; then
+      clear
+      echo "Operación cancelada."
+      exit 0
+    fi
+
+    seleccion=$(cat /tmp/option)
 
     case $seleccion in
       1) install_retropie;;
       2) if ! check_volume; then extend_volume; fi;;
-      *) clear && exit;;
     esac
   done
 }
 
 # Inicio del script
 show_menu
-
