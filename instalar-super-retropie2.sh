@@ -107,8 +107,13 @@ show_menu() {
             install_retropie
             ;;
         2)
-            echo "Extendiendo disco a su máxima capacidad..."
-            extend_volume
+            dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
+            if [[ $? -eq 0 ]]; then
+                echo "Extendiendo disco a su máxima capacidad..."
+                extend_volume
+            else
+                echo "Operación de extensión del disco cancelada."
+            fi
             ;;
     esac
   done
