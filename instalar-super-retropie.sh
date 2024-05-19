@@ -120,7 +120,7 @@ show_menu() {
 
     if [[ $respuesta -eq 1 || $respuesta -eq 255 ]]; then
         clear
-        echo "Instalación cancelada o salida del script."
+        echo "Instalación cancelada."
         exit 1
     fi
 
