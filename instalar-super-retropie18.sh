@@ -25,6 +25,15 @@ check_volume() {
 # Función para extender el volumen lógico
 extend_volume() {
   local LV_PATH=$(lvscan | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
+  
+  # Verificar si el volumen ya está extendido al máximo
+  local EXTEND_STATUS=$(lvdisplay "$LV_PATH" | grep "Allocated to snapshot")
+  if [[ -z "$EXTEND_STATUS" ]]; then
+    echo "El volumen lógico ya está extendido al máximo."
+    show_menu
+    return
+  fi
+
   echo "Extendiendo el volumen lógico..."
   lvextend -l +100%FREE "$LV_PATH"
   if [ $? -ne 0 ]; then
@@ -44,6 +53,7 @@ extend_volume() {
   # Volver a mostrar el menú principal
   show_menu
 }
+
 
 
 # Función para instalar RetroPie
