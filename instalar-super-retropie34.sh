@@ -12,12 +12,6 @@ if command -v emulationstation &> /dev/null; then
     # Descargar y ejecutar el otro script
     wget -qO- https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/instalar-scripts-adicionales.sh | sudo bash
 
-    # Verificar si el usuario canceló la instalación adicional
-    if [[ $? -eq 1 ]]; then
-        # Si se cancela, salir del primer script también
-        exit 1
-    fi
-
 else
     # RetroPie no está instalado, mostrar mensaje informativo
     echo "RetroPie no está instalado. Las siguientes opciones estarán disponibles:"
