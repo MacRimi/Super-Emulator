@@ -40,6 +40,9 @@ extend_volume() {
   fi
 
   echo "El volumen lógico y el sistema de archivos se han extendido correctamente."
+  
+  # Volver a mostrar el menú principal
+  show_menu
 }
 
 
