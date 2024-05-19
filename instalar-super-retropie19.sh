@@ -89,8 +89,8 @@ EOF
 show_menu() {
   while true; do
     opciones=$(dialog --checklist "Seleccione los scripts a ejecutar:" 20 60 2 \
-        1 "Instalar RetroPie" off \
-        2 "Extender disco a su máxima capacidad" off 3>&1 1>&2 2>&3 3>&-)
+        1 "Extender disco a su máxima capacidad" off \
+        2 "Instalar RetroPie" off 3>&1 1>&2 2>&3 3>&-)
 
     respuesta=$?
 
@@ -101,30 +101,21 @@ show_menu() {
     fi
 
     # Si se seleccionó instalar RetroPie
-    if echo "$opciones" | grep -q "1"; then
-        if check_volume; then
-            dialog --yesno "El volumen de instalación no está usando toda la capacidad del disco, esto podría ocasionar que pudieras quedarte sin espacio pronto. ¿Quieres expandir la capacidad del disco y luego instalar RetroPie?" 10 60
-            if [[ $? -eq 0 ]]; then
-                extend_volume
-                install_retropie
-            else
-                continue
-            fi
+    if echo "$opciones" | grep -q "2"; then
+        dialog --yesno "¿Desea continuar con la instalación de RetroPie?" 10 60
+        if [[ $? -eq 0 ]]; then
+            install_retropie
         else
-            dialog --yesno "¿Desea continuar con la instalación de RetroPie?" 10 60
-            if [[ $? -eq 0 ]]; then
-                install_retropie
-            else
-                continue
-            fi
+            clear
+            show_menu
         fi
     fi
 
     # Si se seleccionó extender el disco
-    if echo "$opciones" | grep -q "2"; then
+    if echo "$opciones" | grep -q "1"; then
         dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
         if [[ $? -eq 0 ]]; then
-            extend_volume
+            resize_volume
         else
             clear
             show_menu
