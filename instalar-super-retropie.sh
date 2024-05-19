@@ -71,40 +71,49 @@ EOF
   reboot
 }
 
-# Menú principal
-main_menu() {
-  echo "Seleccione una opción:"
-  echo "[1] Instalar RetroPie"
-  echo "[2] Extender disco a su máxima capacidad e instalar RetroPie"
-  echo "[3] Salir"
-  read -p "Opción: " option
+# Función para mostrar el menú y capturar la selección del usuario
+show_menu() {
+  while true; do
+    opciones=$(dialog --checklist "Seleccione los scripts a ejecutar:" 20 60 2 \
+        1 "Instalar RetroPie" off \
+        2 "Extender disco a su máxima capacidad" off 3>&1 1>&2 2>&3 3>&-)
 
-  case $option in
-    1)
-      if ! check_volume; then
-        echo "El volumen de instalación no está usando toda la capacidad del disco, esto podría ocasionar que pudieras quedarte sin espacio pronto."
-        read -p "¿Quieres expandir la capacidad del disco y luego instalar RetroPie? (s/n): " expand
-        if [[ "$expand" == "s" || "$expand" == "S" ]]; then
-          extend_volume
-        fi
-      fi
-      install_retropie
-      ;;
-    2)
-      extend_volume
-      install_retropie
-      ;;
-    3)
-      echo "Saliendo..."
-      exit 0
-      ;;
-    *)
-      echo "Opción no válida."
-      main_menu
-      ;;
-  esac
+    respuesta=$?
+
+    if [[ $respuesta -eq 1 || $respuesta -eq 255 ]]; then
+        clear
+        echo "Instalación cancelada o salida del script."
+        exit 1
+    fi
+
+    # Confirmar la selección
+    dialog --yesno "¿Desea continuar con la instalación de los scripts seleccionados?" 10 60 3>&1 1>&2 2>&3 3>&-
+    if [[ $? -eq 0 ]]; then
+        break
+    fi
+  done
+
+  clear
+  for opcion in $opciones; do
+    case $opcion in
+        1)
+            if ! check_volume; then
+                dialog --yesno "El volumen de instalación no está usando toda la capacidad del disco, esto podría ocasionar que pudieras quedarte sin espacio pronto. ¿Quieres expandir la capacidad del disco y luego instalar RetroPie?" 10 60
+                if [[ $? -eq 0 ]]; then
+                    extend_volume
+                fi
+            fi
+            echo "Instalando RetroPie..."
+            install_retropie
+            ;;
+        2)
+            echo "Extendiendo disco a su máxima capacidad..."
+            extend_volume
+            ;;
+    esac
+  done
 }
 
 # Inicio del script
 check_volume
-main_menu
+show_menu
