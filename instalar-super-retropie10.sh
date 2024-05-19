@@ -74,14 +74,13 @@ EOF
 # Función para mostrar el menú y capturar la selección del usuario
 show_menu() {
   while true; do
-    opciones="1 Instalar RetroPie off"
     if check_volume; then
-      opciones="$opciones 2 Extender disco a su máxima capacidad off"
+      opciones=("1" "Instalar RetroPie" "2" "Extender disco a su máxima capacidad (No disponible)")
     else
-      opciones="$opciones 2 Extender disco a su máxima capacidad on"
+      opciones=("1" "Instalar RetroPie" "2" "Extender disco a su máxima capacidad")
     fi
 
-    seleccion=$(dialog --menu "Seleccione una opción:" 10 60 3 $opciones 3>&1 1>&2 2>&3 3>&-)
+    seleccion=$(dialog --menu "Seleccione una opción:" 10 60 3 "${opciones[@]}" 3>&1 1>&2 2>&3 3>&-)
 
     case $seleccion in
       1) install_retropie;;
@@ -93,3 +92,4 @@ show_menu() {
 
 # Inicio del script
 show_menu
+
