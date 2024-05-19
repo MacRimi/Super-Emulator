@@ -122,6 +122,4 @@ show_menu() {
 }
 
 # Inicio del script
-check_volume
 show_menu
-
