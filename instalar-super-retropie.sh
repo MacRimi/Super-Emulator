@@ -1,16 +1,22 @@
 #!/bin/bash
 
 # Verificar si RetroPie está instalado
-if command -v emulationstation &> /dev/null; then
+if [ -d "$HOME/RetroPie" ]; then
     # RetroPie está instalado, proceder con la instalación adicional
-    echo "RetroPie está instalado. Procediendo con la instalación de las funciones adicionales..."
+    echo "RetroPie está instalado. Procediendo con la instalación de las funciones de Super RetroPie..."
 
-    ##############################
-    # Lógica de instalación aquí #
-    ##############################
+    ###################################
+    # Llamada a script Super RetroPie #
+    ###################################
 
     # Descargar y ejecutar el otro script
     wget -qO- https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/instalar-scripts-adicionales.sh | sudo bash
+
+    # Verificar si el usuario canceló la instalación adicional
+    if [[ $? -eq 1 ]]; then
+        # Si se cancela, salir del primer script también
+        exit 1
+    fi
 
 else
     # RetroPie no está instalado, mostrar mensaje informativo
