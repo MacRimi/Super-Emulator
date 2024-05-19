@@ -94,12 +94,14 @@ show_menu() {
                 extend_volume
                 install_retropie
             else
-                install_retropie
+                continue
             fi
         else
             dialog --yesno "¿Desea continuar con la instalación de RetroPie?" 10 60
             if [[ $? -eq 0 ]]; then
                 install_retropie
+            else
+                continue
             fi
         fi
     fi
