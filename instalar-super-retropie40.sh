@@ -1,7 +1,16 @@
 #!/bin/bash
 
+# Función para comprobar si el usuario actual es pi y RetroPie está instalado
+check_retropie_installed() {
+    if [ "$USER" = "pi" ] && [ -d "/home/pi/RetroPie" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 # Verificar si RetroPie está instalado
-if [ -d "$HOME/RetroPie" ]; then
+if check_retropie_installed; then
     # RetroPie está instalado, proceder con la instalación adicional
     echo "RetroPie está instalado. Procediendo con la instalación de las funciones de Super RetroPie..."
 
@@ -17,7 +26,6 @@ if [ -d "$HOME/RetroPie" ]; then
         # Si se cancela, salir del primer script también
         exit 1
     fi
-
 else
     # RetroPie no está instalado, mostrar mensaje informativo
     echo "RetroPie no está instalado. Las siguientes opciones estarán disponibles:"
