@@ -54,8 +54,6 @@ extend_volume() {
   show_menu
 }
 
-
-
 # Función para instalar RetroPie
 install_retropie() {
   # Verificar si expect está instalado, si no, instalarlo
@@ -115,7 +113,7 @@ show_menu() {
     if echo "$opciones" | grep -q "1"; then
         dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
         if [[ $? -eq 0 ]]; then
-            resize_volume
+            extend_volume
         else
             clear
             show_menu
