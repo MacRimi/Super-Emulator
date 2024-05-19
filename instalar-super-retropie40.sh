@@ -1,31 +1,23 @@
 #!/bin/bash
 
-# Función para comprobar si el usuario actual es pi y RetroPie está instalado
-check_retropie_installed() {
-    if [ "$USER" = "pi" ] && [ -d "/home/pi/RetroPie" ]; then
-        return 0
-    else
-        return 1
-    fi
-}
-
 # Verificar si RetroPie está instalado
-if check_retropie_installed; then
+if command -v emulationstation &> /dev/null; then
     # RetroPie está instalado, proceder con la instalación adicional
-    echo "RetroPie está instalado. Procediendo con la instalación de las funciones de Super RetroPie..."
+    echo "RetroPie está instalado. Procediendo con la instalación de las funciones adicionales..."
 
-    ###################################
-    # Llamada a script Super RetroPie #
-    ###################################
+    ##############################
+    # Lógica de instalación aquí #
+    ##############################
 
     # Descargar y ejecutar el otro script
-    wget -qO- https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/instalar-scripts-adicionales.sh | sudo bash
+    wget -qO- https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/menu-super-retropie.sh | sudo bash
 
     # Verificar si el usuario canceló la instalación adicional
     if [[ $? -eq 1 ]]; then
         # Si se cancela, salir del primer script también
         exit 1
     fi
+
 else
     # RetroPie no está instalado, mostrar mensaje informativo
     echo "RetroPie no está instalado. Las siguientes opciones estarán disponibles:"
