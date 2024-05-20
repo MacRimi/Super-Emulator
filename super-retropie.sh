@@ -28,18 +28,14 @@ install_if_missing git
 install_if_missing lvextend
 install_if_missing expect
 
-# Crear directorios y archivos necesarios en /opt/Super-RetroPie si no existen
-mkdir -p "$GLOBAL_INSTALL_DIR/scripts"
-
-# Crear directorios y archivos necesarios en /home/pi/Super-RetroPie si no existen
+# Crear directorio del usuario si no existe
 mkdir -p "$USER_INSTALL_DIR"
 if [ ! -f "$USER_INSTALL_DIR/version.txt" ]; then
     echo "0.0" > "$USER_INSTALL_DIR/version.txt"
 fi
 
-SCRIPT_PATH="$GLOBAL_INSTALL_DIR/scripts/menu-super-retropie.sh"
-USER_SCRIPT_PATH="$USER_INSTALL_DIR/super-retropie.sh"
 VERSION_FILE="$USER_INSTALL_DIR/version.txt"
+USER_SCRIPT_PATH="$USER_INSTALL_DIR/super-retropie.sh"
 
 # Función para actualizar el script
 update_script() {
@@ -54,36 +50,44 @@ update_script() {
   echo "Contenido del directorio clonado:"
   ls -l "$TMP_DIR"
 
-  if [ ! -d "$TMP_DIR/scripts" ]; then
-    echo "El directorio $TMP_DIR/scripts no existe después de la clonación. Verifica la URL del repositorio."
-    rm -rf "$TMP_DIR"
-    exit 1
-  fi
-
-  echo "Contenido del directorio 'scripts' clonado:"
-  ls -l "$TMP_DIR/scripts"
-
-  if [ ! -f "$TMP_DIR/scripts/menu-super-retropie.sh" ]; then
-    echo "El archivo $TMP_DIR/scripts/menu-super-retropie.sh no existe después de la clonación. Verifica la URL del repositorio."
-    rm -rf "$TMP_DIR"
-    exit 1
-  fi
-
   NEW_VERSION=$(cat "$TMP_DIR/version.txt")
   CURRENT_VERSION=$(cat "$VERSION_FILE")
+
   if [ "$NEW_VERSION" != "$CURRENT_VERSION" ]; then
     echo "Nueva versión disponible: $NEW_VERSION. Actualizando..."
-    cp "$TMP_DIR/scripts/menu-super-retropie.sh" "$GLOBAL_INSTALL_DIR/scripts/"
-    cp "$TMP_DIR/super-retropie.sh" "$USER_INSTALL_DIR/"
+
+    if command -v emulationstation &> /dev/null; then
+      echo "emulationstation está instalado. Copiando archivos a $GLOBAL_INSTALL_DIR..."
+      mkdir -p "$GLOBAL_INSTALL_DIR/scripts"
+      chmod -R 755 "$GLOBAL_INSTALL_DIR"
+
+      cp "$TMP_DIR/scripts/menu-super-retropie.sh" "$GLOBAL_INSTALL_DIR/scripts/"
+      if [ $? -ne 0 ]; then
+        echo "Error al copiar $TMP_DIR/scripts/menu-super-retropie.sh a $GLOBAL_INSTALL_DIR/scripts/"
+        rm -rf "$TMP_DIR"
+        exit 1
+      fi
+
+      chmod +x "$GLOBAL_INSTALL_DIR/scripts/menu-super-retropie.sh"
+
+    else
+      echo "emulationstation no está instalado. Copiando archivos a $USER_INSTALL_DIR..."
+      cp "$TMP_DIR/super-retropie.sh" "$USER_INSTALL_DIR/"
+      if [ $? -ne 0 ]; then
+        echo "Error al copiar $TMP_DIR/super-retropie.sh a $USER_INSTALL_DIR/"
+        rm -rf "$TMP_DIR"
+        exit 1
+      fi
+
+      chmod +x "$USER_SCRIPT_PATH"
+    fi
+
     echo "$NEW_VERSION" > "$VERSION_FILE"
-    chmod +x "$USER_SCRIPT_PATH"
-    echo "Actualización completada. Reiniciando script..."
-    rm -rf "$TMP_DIR"
-    exec "$USER_SCRIPT_PATH" "$@"
-    exit 0
+    echo "Actualización completada."
   else
     echo "El script ya está actualizado."
   fi
+
   rm -rf "$TMP_DIR"
 }
 
@@ -91,13 +95,27 @@ update_script() {
 update_script
 
 # Proceder con la ejecución del script
-if [ -f "$SCRIPT_PATH" ]; then
-    echo "Procediendo con la ejecución del script..."
-    chmod +x "$SCRIPT_PATH"
-    exec "$SCRIPT_PATH" "$@"
+if command -v emulationstation &> /dev/null; then
+  SCRIPT_PATH="$GLOBAL_INSTALL_DIR/scripts/menu-super-retropie.sh"
+  if [ -f "$SCRIPT_PATH" ]; then
+      echo "Procediendo con la ejecución del script..."
+      exec "$SCRIPT_PATH" "$@"
+  else
+      echo "Error: $SCRIPT_PATH no existe."
+      echo "Contenido de $GLOBAL_INSTALL_DIR/scripts/:"
+      ls -l "$GLOBAL_INSTALL_DIR/scripts/"
+      exit 1
+  fi
 else
-    echo "Error: $SCRIPT_PATH no existe."
-    exit 1
+  if [ -f "$USER_SCRIPT_PATH" ]; then
+      echo "Procediendo con la ejecución del script del usuario..."
+      exec "$USER_SCRIPT_PATH" "$@"
+  else
+      echo "Error: $USER_SCRIPT_PATH no existe."
+      echo "Contenido de $USER_INSTALL_DIR/:"
+      ls -l "$USER_INSTALL_DIR/"
+      exit 1
+  fi
 fi
 
 # Función para comprobar si el volumen lógico está usando todo el espacio disponible
@@ -109,7 +127,7 @@ check_volume() {
   fi
 
   local FREE_SPACE=$(vgdisplay | grep "Free  PE / Size" | awk '{print $5}')
-  if [ "$FREE_SPACE" -gt 0 ]; then
+  if [ "$FREE_SPACE" -gt 0 ]; entonces
     return 1
   else
     return 0
@@ -119,24 +137,24 @@ check_volume() {
 # Función para extender el volumen lógico
 extend_volume() {
   local LV_PATH=$(lvscan | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
-  
+
   # Verificar si el volumen ya está extendido al máximo
   local EXTEND_STATUS=$(lvdisplay "$LV_PATH" | grep "Allocated to snapshot")
-  if [[ -z "$EXTEND_STATUS" ]]; then
+  if [[ -z "$EXTEND_STATUS" ]]; entonces
     echo "El volumen lógico ya está extendido al máximo."
     return
   fi
 
   echo "Extendiendo el volumen lógico..."
   lvextend -l +100%FREE "$LV_PATH"
-  if [ $? -ne 0 ]; then
+  if [ $? -ne 0 ]; entonces
     echo "Error al extender el volumen lógico."
     exit 1
   fi
 
   echo "Redimensionando el sistema de archivos..."
   resize2fs "$LV_PATH"
-  if [ $? -ne 0 ];then
+  if [ $? -ne 0 ]; entonces
     echo "Error al redimensionar el sistema de archivos."
     exit 1
   fi
@@ -146,36 +164,36 @@ extend_volume() {
 
 # Función para instalar RetroPie con comprobación de volumen
 install_retropie() {
-    # Comprobar el estado del volumen antes de proceder
-    check_volume
-    local volume_status=$?
-    if [ "$volume_status" -eq 1 ]; then
-        # El volumen tiene espacio libre, advertir al usuario
-        dialog --yesno "Se va a proceder a instalar RetroPie en un volumen de espacio reducido, esto podría hacer que te quedaras sin espacio pronto. ¿Desea continuar?" 10 60
-        if [[ $? -eq 0 ]]; then
-            echo "Instalando RetroPie..."
-        else
-            echo "Instalación cancelada por el usuario."
-            return
-        fi
+  # Comprobar el estado del volumen antes de proceder
+  check_volume
+  local volume_status=$?
+  if [ "$volume_status" -eq 1 ]; entonces
+    # El volumen tiene espacio libre, advertir al usuario
+    dialog --yesno "Se va a proceder a instalar RetroPie en un volumen de espacio reducido, esto podría hacer que te quedaras sin espacio pronto. ¿Desea continuar?" 10 60
+    if [[ $? -eq 0 ]]; entonces
+      echo "Instalando RetroPie..."
+    else
+      echo "Instalación cancelada por el usuario."
+      return
     fi
+  fi
 
-    # Descargar y ejecutar el script de instalación de RetroPie
-    wget -q https://raw.githubusercontent.com/MizterB/RetroPie-Setup-Ubuntu/master/bootstrap.sh
-    bash ./bootstrap.sh
+  # Descargar y ejecutar el script de instalación de RetroPie
+  wget -q https://raw.githubusercontent.com/MizterB/RetroPie-Setup-Ubuntu/master/bootstrap.sh
+  bash ./bootstrap.sh
 
-    # Automatizar la interacción con el script de instalación de RetroPie
-    expect << EOF
-    spawn sudo ./RetroPie-Setup-Ubuntu/retropie_setup_ubuntu.sh
-    expect {
-        "Press any key to continue" { send "\r"; exp_continue }
-        "RetroPie Setup" { send "\r"; exp_continue }
-        "Exit" { send "\r" }
-    }
+  # Automatizar la interacción con el script de instalación de RetroPie
+  expect << EOF
+  spawn sudo ./RetroPie-Setup-Ubuntu/retropie_setup_ubuntu.sh
+  expect {
+      "Press any key to continue" { send "\r"; exp_continue }
+      "RetroPie Setup" { send "\r"; exp_continue }
+      "Exit" { send "\r" }
+  }
 EOF
 
-    # Reiniciar el sistema tras la instalación
-    reboot
+  # Reiniciar el sistema tras la instalación
+  reboot
 }
 
 # Función para mostrar el menú y capturar la selección del usuario
@@ -187,15 +205,15 @@ show_menu() {
 
     respuesta=$?
 
-    if [[ $respuesta -eq 1 || $respuesta -eq 255 ]]; then
+    if [[ $respuesta -eq 1 || $respuesta -eq 255 ]]; entonces
         clear
         echo "Instalación cancelada."
         exit 1
     fi
 
-    if echo "$opciones" | grep -q "2"; then
+    if echo "$opciones" | grep -q "2"; entonces
         dialog --yesno "¿Desea continuar con la instalación de RetroPie?" 10 60
-        if [[ $? -eq 0 ]]; then
+        if [[ $? -eq 0 ]]; entonces
             install_retropie
             return
         else
@@ -203,9 +221,9 @@ show_menu() {
         fi
     fi
 
-    if echo "$opciones" | grep -q "1"; then
+    if echo "$opciones" | grep -q "1"; entonces
         dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
-        if [[ $? -eq 0 ]]; then
+        if [[ $? -eq 0 ]]; entonces
             extend_volume
             return
         else
