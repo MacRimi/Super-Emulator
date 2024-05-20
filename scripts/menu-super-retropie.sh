@@ -1,234 +1,245 @@
 #!/bin/bash
 
-REPO_URL="https://github.com/MacRimi/Super-RetroPie"
-GLOBAL_INSTALL_DIR="/opt/Super-RetroPie"
-USER_HOME=$(eval echo ~$SUDO_USER)
-USER_INSTALL_DIR="$USER_HOME/Super-RetroPie"
-TMP_DIR=$(mktemp -d)
-
-# Asegurarse de que el script se ejecute con permisos de superusuario
-if [ "$EUID" -ne 0 ]; then
-  echo "Por favor, ejecute este script como root."
-  exit 1
+# Comprobar si 'dialog' está instalado
+if ! command -v dialog &> /dev/null; then
+    echo "'dialog' no está instalado. Instalando 'dialog'..."
+    sudo apt-get update
+    sudo apt-get install -y dialog
 fi
 
-# Función para verificar e instalar dependencias
-install_if_missing() {
-  PACKAGE_NAME=$1
-  if ! command -v $PACKAGE_NAME &> /dev/null; then
-    echo "El paquete '$PACKAGE_NAME' no está instalado. Instalándolo..."
-    apt-get update
-    apt-get install -y $PACKAGE_NAME
-  fi
+# Definir variables globales
+platforms_cfg="/opt/retropie/configs/all/platforms.cfg"
+es_systems_cfg="/etc/emulationstation/es_systems.cfg"
+
+#############################
+# Función para añadir RPCS3
+#############################
+instalar_rpcs3() {
+    local script_path=~/RetroPie-Setup/scriptmodules/emulators/rpcs3-appImage.sh
+    wget -q --show-progress https://raw.githubusercontent.com/raelgc/retropie_rpcs3-appImage/master/rpcs3-appImage.sh -O "$script_path"
+    chmod +x "$script_path"
+
+    # Verificar si existe platforms.cfg
+    if [ -f "$platforms_cfg" ]; then
+        # Agregar las líneas al final del archivo
+        echo "Añadiendo configuración de RPCS3 a platforms.cfg..."
+        echo "ps3_exts=\".ps3\"" >> "$platforms_cfg"
+        echo "ps3_fullname=\"PlayStation 3\"" >> "$platforms_cfg"
+    else
+        # Crear platforms.cfg y agregar las líneas
+        echo "Creando platforms.cfg y añadiendo configuración de RPCS3..."
+        echo "ps3_exts=\".ps3\"" > "$platforms_cfg"
+        echo "ps3_fullname=\"PlayStation 3\"" >> "$platforms_cfg"
+    fi
 }
 
-# Verificar e instalar dependencias necesarias
-install_if_missing dialog
-install_if_missing git
-install_if_missing lvextend
-install_if_missing expect
+############################
+# Función para añadir Yuzu
+############################
+instalar_yuzu() {
+    local script_path=~/RetroPie-Setup/scriptmodules/emulators/yuzu-AppImage.sh
+    wget -q --show-progress https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/scripts/yuzu-AppImage.sh -O "$script_path"
+    chmod +x "$script_path"
 
-# Crear directorios y archivos necesarios en /opt/Super-RetroPie si no existen
-mkdir -p "$GLOBAL_INSTALL_DIR/scripts"
+    # Verificar si existe platforms.cfg
+    if [ -f "$platforms_cfg" ]; then
+        # Agregar las líneas al final del archivo
+        echo "Añadiendo configuración de Yuzu a platforms.cfg..."
+        echo "yuzu_exts=\".nsp .xci\"" >> "$platforms_cfg"
+        echo "yuzu_fullname=\"Nintendo Switch\"" >> "$platforms_cfg"
+    else
+        # Crear platforms.cfg y agregar las líneas
+        echo "Creando platforms.cfg y añadiendo configuración de Yuzu..."
+        echo "yuzu_exts=\".nsp .xci\"" > "$platforms_cfg"
+        echo "yuzu_fullname=\"Nintendo Switch\"" >> "$platforms_cfg"
+    fi
+}
 
-# Crear directorios y archivos necesarios en /home/pi/Super-RetroPie si no existen
-mkdir -p "$USER_INSTALL_DIR"
-if [ ! -f "$USER_INSTALL_DIR/version.txt" ]; then
-    echo "0.0" > "$USER_INSTALL_DIR/version.txt"
-fi
+###########################
+# Función para añadir Steam
+###########################
+instalar_steam() {
+    local script_path=~/RetroPie-Setup/scriptmodules/emulators/steam-AppImage.sh
+    wget -q --show-progress https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/scripts/steam-AppImage.sh -O "$script_path"
+    chmod +x "$script_path"
 
-SCRIPT_PATH="$GLOBAL_INSTALL_DIR/scripts/menu-super-retropie.sh"
-USER_SCRIPT_PATH="$USER_INSTALL_DIR/super-retropie.sh"
-VERSION_FILE="$USER_INSTALL_DIR/version.txt"
+    # Verificar si existe platforms.cfg
+    if [ -f "$platforms_cfg" ]; then
+        # Agregar las líneas al final del archivo
+        echo "Añadiendo configuración de Steam a platforms.cfg..."
+        echo "steam_exts=\".sh\"" >> "$platforms_cfg"
+        echo "steam_fullname=\"Steam\"" >> "$platforms_cfg"
+        echo "steam_command=\"%ROM%\"" >> "$platforms_cfg"
+        # Añadir ajustes
+        echo "ajustes_exts=\".sh\"" >> "$platforms_cfg"
+        echo "ajustes_fullname=\"Ajustes\"" >> "$platforms_cfg"
+        echo "ajustes_command=\"%ROM%\"" >> "$platforms_cfg"
+        echo "ajustes_platform=\"config\"" >> "$platforms_cfg"
+    else
+        # Crear platforms.cfg y agregar las líneas
+        echo "Creando platforms.cfg y añadiendo configuración de Steam..."
+        echo "steam_exts=\".sh\"" > "$platforms_cfg"
+        echo "steam_fullname=\"Steam\"" >> "$platforms_cfg"
+        echo "steam_command=\"%ROM%\"" >> "$platforms_cfg"
+        # Añadir ajustes
+        echo "ajustes_exts=\".sh\"" >> "$platforms_cfg"
+        echo "ajustes_fullname=\"Ajustes\"" >> "$platforms_cfg"
+        echo "ajustes_command=\"%ROM%\"" >> "$platforms_cfg"
+        echo "ajustes_platform=\"config\"" >> "$platforms_cfg"
+    fi
+}
 
-# Función para actualizar el script
-update_script() {
-  echo "Verificando actualizaciones del script..."
-  git clone --depth=1 "$REPO_URL" "$TMP_DIR"
-  if [ $? -ne 0 ]; then
-    echo "Error al clonar el repositorio."
-    rm -rf "$TMP_DIR"
-    exit 1
-  fi
+#################################
+# Función para ajustar emuladores
+#################################
+ajustes_emuladores() {
+    # Directorio de emuladores
+    local emulators_dir="/opt/retropie/emulators"
+    # Directorio de ajustes
+    local ajustes_dir="/home/$SUDO_USER/RetroPie/roms/ajustes"
 
-  echo "Contenido del directorio clonado:"
-  ls -l "$TMP_DIR"
-
-  if [ ! -d "$TMP_DIR/scripts" ]; then
-    echo "El directorio $TMP_DIR/scripts no existe después de la clonación. Verifica la URL del repositorio."
-    rm -rf "$TMP_DIR"
-    exit 1
-  fi
-
-  echo "Contenido del directorio 'scripts' clonado:"
-  ls -l "$TMP_DIR/scripts"
-
-  if [ ! -f "$TMP_DIR/scripts/menu-super-retropie.sh" ]; entonces
-    echo "El archivo $TMP_DIR/scripts/menu-super-retropie.sh no existe después de la clonación. Verifica la URL del repositorio."
-    rm -rf "$TMP_DIR"
-    exit 1
-  fi
-
-  NEW_VERSION=$(cat "$TMP_DIR/version.txt")
-  CURRENT_VERSION=$(cat "$VERSION_FILE")
-  if [ "$NEW_VERSION" != "$CURRENT_VERSION" ]; then
-    echo "Nueva versión disponible: $NEW_VERSION. Actualizando..."
-
-    echo "Copiando $TMP_DIR/scripts/menu-super-retropie.sh a $GLOBAL_INSTALL_DIR/scripts/..."
-    cp "$TMP_DIR/scripts/menu-super-retropie.sh" "$GLOBAL_INSTALL_DIR/scripts/"
-    if [ $? -ne 0 ]; then
-      echo "Error al copiar $TMP_DIR/scripts/menu-super-retropie.sh a $GLOBAL_INSTALL_DIR/scripts/"
-      rm -rf "$TMP_DIR"
-      exit 1
+    # Verificar si existe platforms.cfg
+    if [ -f "$platforms_cfg" ]; then
+        # Agregar las líneas al final del archivo
+        echo "ajustes_exts=\".sh\"" >> "$platforms_cfg"
+        echo "ajustes_fullname=\"Ajustes\"" >> "$platforms_cfg"
+        echo "ajustes_command=\"%ROM%\"" >> "$platforms_cfg"
+        echo "ajustes_platform=\"config\"" >> "$platforms_cfg"
+    else
+        # Crear platforms.cfg y agregar las líneas
+        echo "ajustes_exts=\".sh\"" > "$platforms_cfg"
+        echo "ajustes_fullname=\"Ajustes\"" >> "$platforms_cfg"
+        echo "ajustes_command=\"%ROM%\"" >> "$platforms_cfg"
+        echo "ajustes_platform=\"config\"" >> "$platforms_cfg"
     fi
 
-    echo "Copiando $TMP_DIR/super-retropie.sh a $USER_INSTALL_DIR/..."
-    cp "$TMP_DIR/super-retropie.sh" "$USER_INSTALL_DIR/"
-    if [ $? -ne 0 ]; then
-      echo "Error al copiar $TMP_DIR/super-retropie.sh a $USER_INSTALL_DIR/"
-      rm -rf "$TMP_DIR"
-      exit 1
-    fi
+    mkdir -p "$ajustes_dir"
 
-    echo "$NEW_VERSION" > "$VERSION_FILE"
-    chmod +x "$USER_SCRIPT_PATH"
-    echo "Actualización completada. Reiniciando script..."
-    rm -rf "$TMP_DIR"
-    exec "$USER_SCRIPT_PATH" "$@"
-    exit 0
-  else
-    echo "El script ya está actualizado."
-  fi
-  rm -rf "$TMP_DIR"
-}
+    for emulador in "$emulators_dir"/*; do
+        # Obtener el nombre del emulador
+        emulador_name=$(basename "$emulador")
+        # Directorio binario del emulador
+        bin_dir="$emulador/bin"
 
-# Llamar a la función de actualización si es necesario y proceder con la ejecución del script principal
-update_script
+        # Verificar si el emulador no es retroarch ni mupen64plus,
+        # si el directorio binario existe y no está vacío
+        if [[ "$emulador_name" != "retroarch" && "$emulador_name" != "mupen64plus" && -d "$bin_dir" && -n "$(ls -A "$bin_dir")" ]]; then
+            # Iterar sobre los archivos en el directorio binario
+            for executable in "$bin_dir"/*; do
+                # Verificar si el archivo es ejecutable
+                if [ -x "$executable" ]; then
+                    # Obtener el nombre del ejecutable
+                    executable_name=$(basename "$executable")
 
-# Proceder con la ejecución del script
-if [ -f "$SCRIPT_PATH" ]; then
-    echo "Procediendo con la ejecución del script..."
-    chmod +x "$SCRIPT_PATH"
-    exec "$SCRIPT_PATH" "$@"
-else
-    echo "Error: $SCRIPT_PATH no existe."
-    exit 1
-fi
+                    # Omitir rpcs3.AppImage_old
+                    if [[ "$executable_name" == "rpcs3.AppImage_old" ]]; then
+                        continue
+                    fi
 
-# Función para comprobar si el volumen lógico está usando todo el espacio disponible
-check_volume() {
-  local LV_PATH=$(lvscan | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
-  if [ -z "$LV_PATH" ]; then
-    echo "No se pudo determinar la ruta del volumen lógico. Asegúrate de que el volumen lógico está activo."
-    exit 1
-  fi
+                    # Crear el script especial para rpcs3.AppImage
+                    if [[ "$emulador_name" == "rpcs3-appImage" && "$executable_name" == "rpcs3.AppImage" ]]; then
+                        # Script para actualizar rpcs3
+                        update_script_path="$ajustes_dir/actualizar_rpcs3.sh"
+                        echo "Creando script especial para actualizar el emulador $emulador_name ($executable_name)..."
+                        echo "#!/bin/bash" > "$update_script_path"
+                        echo "cd \"$bin_dir\"" >> "$update_script_path"
+                        echo "sudo ./$executable_name" >> "$update_script_path"
+                        chmod +x "$update_script_path"
 
-  local FREE_SPACE=$(vgdisplay | grep "Free  PE / Size" | awk '{print $5}')
-  if [ "$FREE_SPACE" -gt 0 ]; entonces
-    return 1
-  else
-    return 0
-  fi
-}
-
-# Función para extender el volumen lógico
-extend_volume() {
-  local LV_PATH=$(lvscan | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
-  
-  # Verificar si el volumen ya está extendido al máximo
-  local EXTEND_STATUS=$(lvdisplay "$LV_PATH" | grep "Allocated to snapshot")
-  if [[ -z "$EXTEND_STATUS" ]]; then
-    echo "El volumen lógico ya está extendido al máximo."
-    return
-  fi
-
-  echo "Extendiendo el volumen lógico..."
-  lvextend -l +100%FREE "$LV_PATH"
-  if [ $? -ne 0 ]; then
-    echo "Error al extender el volumen lógico."
-    exit 1
-  fi
-
-  echo "Redimensionando el sistema de archivos..."
-  resize2fs "$LV_PATH"
-  if [ $? -ne 0 ]; then
-    echo "Error al redimensionar el sistema de archivos."
-    exit 1
-  fi
-
-  echo "El volumen lógico y el sistema de archivos se han extendido correctamente."
-}
-
-# Función para instalar RetroPie con comprobación de volumen
-install_retropie() {
-    # Comprobar el estado del volumen antes de proceder
-    check_volume
-    local volume_status=$?
-    if [ "$volume_status" -eq 1 ]; then
-        # El volumen tiene espacio libre, advertir al usuario
-        dialog --yesno "Se va a proceder a instalar RetroPie en un volumen de espacio reducido, esto podría hacer que te quedaras sin espacio pronto. ¿Desea continuar?" 10 60
-        if [[ $? -eq 0 ]]; entonces
-            echo "Instalando RetroPie..."
-        else
-            echo "Instalación cancelada por el usuario."
-            return
+                        # Script para ejecutar rpcs3 después de la actualización
+                        if [ -f "$bin_dir/rpcs3.AppImage_old" ]; then
+                            execute_script_path="$ajustes_dir/rpcs3.sh"
+                            echo "Creando script para ejecutar el emulador actualizado $emulador_name..."
+                            echo "#!/bin/bash" > "$execute_script_path"
+                            echo "cd \"$bin_dir\"" >> "$execute_script_path"
+                            echo "./$executable_name" >> "$execute_script_path"
+                            chmod +x "$execute_script_path"
+                        fi
+                    else
+                        # Crear la ruta completa y correcta del ejecutable
+                        executable_path="$bin_dir/$executable_name"
+                        # Crear el script en el directorio de ajustes
+                        script_path="$ajustes_dir/$executable_name.sh"
+                        echo "Creando script para el emulador $emulador_name ($executable_name)..."
+                        echo "#!/bin/bash" > "$script_path"
+                        echo "cd \"$bin_dir\"" >> "$script_path"
+                        echo "./$executable_name" >> "$script_path"
+                        chmod +x "$script_path"
+                    fi
+                fi
+            done
         fi
-    fi
+    done
 
-    # Descargar y ejecutar el script de instalación de RetroPie
-    wget -q https://raw.githubusercontent.com/MizterB/RetroPie-Setup-Ubuntu/master/bootstrap.sh
-    bash ./bootstrap.sh
-
-    # Automatizar la interacción con el script de instalación de RetroPie
-    expect << EOF
-    spawn sudo ./RetroPie-Setup-Ubuntu/retropie_setup_ubuntu.sh
-    expect {
-        "Press any key to continue" { send "\r"; exp_continue }
-        "RetroPie Setup" { send "\r"; exp_continue }
-        "Exit" { send "\r" }
-    }
+    if ! grep -q '<name>ajustes</name>' "$es_systems_cfg"; then
+        # Definir el nuevo sistema
+        nuevo_sistema=$(cat << EOF
+  <system>
+    <name>ajustes</name>
+    <fullname>Configuraciones</fullname>
+    <path>/root/RetroPie/roms/ajustes</path>
+    <extension>.sh</extension>
+    <command>%ROM%</command>
+    <platform>config</platform>
+    <theme>ajustes</theme>
+  </system>
 EOF
-
-    # Reiniciar el sistema tras la instalación
-    reboot
+)
+        # Insertar el nuevo sistema antes de la etiqueta </systemList>
+        awk -v new_system="$nuevo_sistema" '/<\/systemList>/ {print new_system} 1' "$es_systems_cfg" > temp.xml && mv temp.xml "$es_systems_cfg"
+    fi
 }
 
-# Función para mostrar el menú y capturar la selección del usuario
-show_menu() {
-  while true; do
-    opciones=$(dialog --checklist "Seleccione los scripts a ejecutar:" 20 60 2 \
-        1 "Extender disco a su máxima capacidad" off \
-        2 "Instalar RetroPie" off 3>&1 1>&2 2>&3 3>&-)
+###################################################
+
+while true; do
+    # Mostrar el menú y capturar la selección
+    opciones=$(dialog --checklist "Seleccione los scripts a ejecutar:" 20 60 5 \
+        1 "Instalar RPCS3 (Play Station 3)" off \
+        2 "Instalar Yuzu (Nintendo Switch)" off \
+        3 "Instalar Steam" off \
+        4 "Ajustes Emuladores" off \
+        5 "Salir" off 3>&1 1>&2 2>&3 3>&-)
 
     respuesta=$?
 
-    if [[ $respuesta -eq 1 || $respuesta -eq 255 ]]; then
+    if [[ $respuesta -eq 1 || $respuesta -eq 255 || "$opciones" == *5* ]]; then
         clear
+        echo "Salida del script de Super-Retropie."
         echo "Instalación cancelada."
         exit 1
     fi
 
+    # Mostrar advertencia si se selecciona Yuzu
     if echo "$opciones" | grep -q "2"; then
-        dialog --yesno "¿Desea continuar con la instalación de RetroPie?" 10 60
-        if [[ $? -eq 0 ]]; entonces
-            install_retropie
-            return
-        else
-            clear
-        fi
+        dialog --msgbox "Para poder instalar Yuzu, necesitas previamente tener yuzu.AppImage en la carpeta de Descargas de tu equipo." 10 60
     fi
 
-    if echo "$opciones" | grep -q "1"; then
-        dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
-        if [[ $? -eq 0 ]]; entonces
-            extend_volume
-            return
-        else
-            clear
-        fi
+    # Confirmar la selección
+    dialog --yesno "¿Desea continuar con la instalación de los scripts seleccionados?" 10 60
+    if [[ $? -eq 0 ]]; then
+        # Acciones basadas en la selección del usuario
+        clear
+        for opcion in $opciones; do
+            case $opcion in
+                1)
+                    echo "Instalando RPCS3..."
+                    instalar_rpcs3
+                    ;;
+                2)
+                    echo "Instalando Yuzu..."
+                    instalar_yuzu
+                    ;;
+                3)
+                    echo "Instalando Steam..."
+                    instalar_steam
+                    ;;
+                4)
+                    echo "Ajustando Emuladores..."
+                    ajustes_emuladores
+                    ;;
+            esac
+        done
+        echo "Instalación completada."
     fi
-  done
-}
-
-# Inicio del script
-show_menu
+done
