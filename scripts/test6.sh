@@ -1,10 +1,25 @@
 #!/bin/bash
 
 REPO_URL="https://github.com/MacRimi/Super-RetroPie"
-INSTALL_DIR="/opt/Super-RetroPie"
-SCRIPT_PATH="$INSTALL_DIR/scripts/menu-super-retropie.sh"  # Ruta al script ajustada
-VERSION_FILE="$INSTALL_DIR/version.txt"
+GLOBAL_INSTALL_DIR="/opt/Super-RetroPie"
+USER_HOME=$(eval echo ~$USER)
+USER_INSTALL_DIR="$USER_HOME/Super-RetroPie"
 TMP_DIR=$(mktemp -d)
+
+# Determinar los directorios y archivos en función de la instalación de RetroPie
+if command -v emulationstation &> /dev/null; then
+    INSTALL_DIR="$GLOBAL_INSTALL_DIR"
+    echo "RetroPie está instalado. Usando el directorio global: $INSTALL_DIR"
+else
+    INSTALL_DIR="$USER_INSTALL_DIR"
+    echo "RetroPie no está instalado. Configurando en el directorio del usuario: $INSTALL_DIR"
+    mkdir -p "$INSTALL_DIR/scripts"
+    touch "$INSTALL_DIR/version.txt"
+    echo "0.0" > "$INSTALL_DIR/version.txt"
+fi
+
+SCRIPT_PATH="$INSTALL_DIR/scripts/menu-super-retropie.sh"
+VERSION_FILE="$INSTALL_DIR/version.txt"
 
 # Asegurarse de que el script se ejecute con permisos de superusuario
 if [ "$EUID" -ne 0 ]; then
@@ -15,28 +30,18 @@ fi
 # Función para actualizar el script
 update_script() {
   echo "Verificando actualizaciones del script..."
-  
-  # Clonar temporalmente el repositorio
   git clone --depth=1 "$REPO_URL" "$TMP_DIR"
-  
-  # Verificar si la clonación fue exitosa
   if [ $? -ne 0 ]; then
     echo "Error al clonar el repositorio para la actualización. Saliendo..."
     rm -rf "$TMP_DIR"
     exit 1
   fi
 
-  # Comparar versiones
   NEW_VERSION=$(cat "$TMP_DIR/version.txt")
   CURRENT_VERSION=$(cat "$VERSION_FILE")
-
   if [ "$NEW_VERSION" != "$CURRENT_VERSION" ]; then
     echo "Nueva versión disponible: $NEW_VERSION. Actualizando..."
-
-    # Crear el directorio scripts si no existe
     mkdir -p "$INSTALL_DIR/scripts"
-
-    # Copiar nuevos archivos
     cp "$TMP_DIR/scripts/"* "$INSTALL_DIR/scripts"
     echo "$NEW_VERSION" > "$VERSION_FILE"
     chmod +x "$SCRIPT_PATH"
@@ -47,30 +52,19 @@ update_script() {
   else
     echo "El script ya está actualizado."
   fi
-
-  # Limpiar el directorio temporal
   rm -rf "$TMP_DIR"
 }
 
-# Verificar si RetroPie está instalado
-if command -v emulationstation &> /dev/null; then
-    echo "RetroPie está instalado."
-    
-    # Llamar a la función de actualización si es necesario
-    update_script
-
-    # Si no hay actualización, proceder con la ejecución del script principal
-    echo "Procediendo con la ejecución del script..."
-    chmod +x "$SCRIPT_PATH"
-    exec "$SCRIPT_PATH" "$@"
-else
-    echo "RetroPie no está instalado. Las siguientes opciones estarán disponibles:"
-fi
+# Llamar a la función de actualización si es necesario y proceder con la ejecución del script principal
+update_script
+echo "Procediendo con la ejecución del script..."
+chmod +x "$SCRIPT_PATH"
+exec "$SCRIPT_PATH" "$@"
 
 # Función para comprobar si el volumen lógico está usando todo el espacio disponible
 check_volume() {
   local LV_PATH=$(lvscan | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
-  if [ -z "$LV_PATH" ];hen
+  if [ -z "$LV_PATH" ]; then
     echo "No se pudo determinar la ruta del volumen lógico. Asegúrate de que el volumen lógico está activo."
     exit 1
   fi
@@ -96,14 +90,14 @@ extend_volume() {
 
   echo "Extendiendo el volumen lógico..."
   lvextend -l +100%FREE "$LV_PATH"
-  if [ $? -ne 0 ];hen
+  if [ $? -ne 0 ]; then
     echo "Error al extender el volumen lógico."
     exit 1
   fi
 
   echo "Redimensionando el sistema de archivos..."
   resize2fs "$LV_PATH"
-  if [ $? -ne 0 ];hen
+  if [ $? -ne 0 ]; then
     echo "Error al redimensionar el sistema de archivos."
     exit 1
   fi
@@ -151,7 +145,7 @@ show_menu() {
 
     if echo "$opciones" | grep -q "2"; then
         dialog --yesno "¿Desea continuar con la instalación de RetroPie?" 10 60
-        if [[ $? -eq 0 ]];hen
+        if [[ $? -eq 0 ]]; then
             install_retropie
             return
         else
@@ -161,7 +155,7 @@ show_menu() {
 
     if echo "$opciones" | grep -q "1"; then
         dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
-        if [[ $? -eq 0 ]];hen
+        if [[ $? -eq 0 ]]; then
             extend_volume
             return
         else
