@@ -57,7 +57,7 @@ update_script() {
   fi
 
   echo "Contenido del directorio clonado:"
-  ls -l "$TMP_DIR"
+  ls -lR "$TMP_DIR"  # Lista recursiva para ver todos los archivos y directorios
 
   if [ ! -f "$TMP_DIR/version.txt" ]; then
     echo "Error: El archivo version.txt no existe en el repositorio clonado."
