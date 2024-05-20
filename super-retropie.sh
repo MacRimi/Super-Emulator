@@ -136,7 +136,7 @@ if command -v emulationstation &> /dev/null; then
       exit 1
   fi
 else
-  if [ -f "$USER_SCRIPT_PATH" ]; then
+  if [ -f "$USER_SCRIPT_PATH" ];then
       echo "Procediendo con la ejecución del script del usuario..."
       exec "$USER_SCRIPT_PATH" "$@"
   else
