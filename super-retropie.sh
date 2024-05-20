@@ -67,47 +67,37 @@ update_script() {
   echo "Versión actual: $CURRENT_VERSION"
   echo "Nueva versión: $NEW_VERSION"
 
-  if [ "$NEW_VERSION" != "$CURRENT_VERSION" ]; entonces
+  if [ "$NEW_VERSION" != "$CURRENT_VERSION" ]; then
     echo "Nueva versión disponible: $NEW_VERSION. Actualizando..."
 
-    if command -v emulationstation &> /dev/null; entonces
-      echo "emulationstation está instalado. Copiando archivos a $GLOBAL_INSTALL_DIR..."
-      mkdir -p "$GLOBAL_INSTALL_DIR/scripts"
-      chmod -R 755 "$GLOBAL_INSTALL_DIR"
+    echo "Copiando archivos a $GLOBAL_INSTALL_DIR y $USER_INSTALL_DIR..."
+    mkdir -p "$GLOBAL_INSTALL_DIR/scripts"
+    chmod -R 755 "$GLOBAL_INSTALL_DIR"
 
-      # Verificar si el directorio scripts existe y contiene archivos
-      if [ -d "$TMP_DIR/scripts" ]; entonces
-        echo "Copiando archivos del directorio $TMP_DIR/scripts a $GLOBAL_INSTALL_DIR/scripts/..."
-        cp -v "$TMP_DIR/scripts/"* "$GLOBAL_INSTALL_DIR/scripts/"
-        if [ $? -ne 0 ]; entonces
-          echo "Error al copiar los archivos del directorio $TMP_DIR/scripts a $GLOBAL_INSTALL_DIR/scripts/"
-          rm -rf "$TMP_DIR"
-          exit 1
-        fi
-        chmod +x "$GLOBAL_INSTALL_DIR/scripts/"*
-      else
-        echo "Error: El directorio $TMP_DIR/scripts no existe."
+    # Verificar si el directorio scripts existe y contiene archivos
+    if [ -d "$TMP_DIR/scripts" ]; then
+      echo "Copiando archivos del directorio $TMP_DIR/scripts a $GLOBAL_INSTALL_DIR/scripts/..."
+      cp -v "$TMP_DIR/scripts/"* "$GLOBAL_INSTALL_DIR/scripts/"
+      if [ $? -ne 0 ]; then
+        echo "Error al copiar los archivos del directorio $TMP_DIR/scripts a $GLOBAL_INSTALL_DIR/scripts/"
         rm -rf "$TMP_DIR"
         exit 1
       fi
-
+      chmod +x "$GLOBAL_INSTALL_DIR/scripts/"*
     else
-      echo "emulationstation no está instalado. Copiando archivos a $USER_INSTALL_DIR..."
-      if [ -f "$TMP_DIR/super-retropie.sh" ]; entonces
-        echo "Copiando archivo $TMP_DIR/super-retropie.sh a $USER_INSTALL_DIR/"
-        cp -v "$TMP_DIR/super-retropie.sh" "$USER_INSTALL_DIR/"
-        if [ $? -ne 0 ]; entonces
-          echo "Error al copiar $TMP_DIR/super-retropie.sh a $USER_INSTALL_DIR/"
-          rm -rf "$TMP_DIR"
-          exit 1
-        fi
-        chmod +x "$USER_SCRIPT_PATH"
-      else
-        echo "Error: $TMP_DIR/super-retropie.sh no existe."
-        rm -rf "$TMP_DIR"
-        exit 1
-      fi
+      echo "Error: El directorio $TMP_DIR/scripts no existe."
+      rm -rf "$TMP_DIR"
+      exit 1
     fi
+
+    echo "Copiando archivo $TMP_DIR/super-retropie.sh a $USER_INSTALL_DIR/"
+    cp -v "$TMP_DIR/super-retropie.sh" "$USER_INSTALL_DIR/"
+    if [ $? -ne 0 ]; then
+      echo "Error al copiar $TMP_DIR/super-retropie.sh a $USER_INSTALL_DIR/"
+      rm -rf "$TMP_DIR"
+      exit 1
+    fi
+    chmod +x "$USER_SCRIPT_PATH"
 
     echo "$NEW_VERSION" > "$VERSION_FILE"
     echo "Actualización completada."
@@ -125,27 +115,15 @@ update_script() {
 update_script
 
 # Proceder con la ejecución del script
-if command -v emulationstation &> /dev/null; entonces
-  SCRIPT_PATH="$GLOBAL_INSTALL_DIR/scripts/menu-super-retropie.sh"
-  if [ -f "$SCRIPT_PATH" ]; entonces
-      echo "Procediendo con la ejecución del script..."
-      exec "$SCRIPT_PATH" "$@"
-  else
-      echo "Error: $SCRIPT_PATH no existe."
-      echo "Contenido de $GLOBAL_INSTALL_DIR/scripts/:"
-      ls -l "$GLOBAL_INSTALL_DIR/scripts/"
-      exit 1
-  fi
+SCRIPT_PATH="$GLOBAL_INSTALL_DIR/scripts/menu-super-retropie.sh"
+if [ -f "$SCRIPT_PATH" ]; then
+    echo "Procediendo con la ejecución del script..."
+    exec "$SCRIPT_PATH" "$@"
 else
-  if [ -f "$USER_SCRIPT_PATH" ]; entonces
-      echo "Procediendo con la ejecución del script del usuario..."
-      exec "$USER_SCRIPT_PATH" "$@"
-  else
-      echo "Error: $USER_SCRIPT_PATH no existe."
-      echo "Contenido de $USER_INSTALL_DIR/:"
-      ls -l "$USER_INSTALL_DIR/"
-      exit 1
-  fi
+    echo "Error: $SCRIPT_PATH no existe."
+    echo "Contenido de $GLOBAL_INSTALL_DIR/scripts/:"
+    ls -l "$GLOBAL_INSTALL_DIR/scripts/"
+    exit 1
 fi
 
 # Función para comprobar si el volumen lógico está usando todo el espacio disponible
@@ -265,4 +243,3 @@ show_menu() {
 
 # Inicio del script
 show_menu
-
