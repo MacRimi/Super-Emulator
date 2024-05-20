@@ -59,6 +59,7 @@ update_script() {
 
   if [ ! -f "$TMP_DIR/scripts/menu-super-retropie.sh" ]; then
     echo "El archivo $TMP_DIR/scripts/menu-super-retropie.sh no existe después de la clonación. Verifica la URL del repositorio."
+    ls -l "$TMP_DIR/scripts"  # Mostrar contenido del directorio scripts
     rm -rf "$TMP_DIR"
     exit 1
   fi
