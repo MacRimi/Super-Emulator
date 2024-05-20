@@ -22,11 +22,11 @@ blacklist snd_usb_audio
 ```
 instalar super retropie:
 ```
-sudo bash -c "$(wget -qLO - https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/instalar-super-retropie.sh)"
+sudo bash -c "$(wget -qLO - https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/super-retropie.sh)"
 ```
 menu:
 ```
-sudo bash -c "$(wget -qLO - https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/menu-super-retropie.sh)"
+sudo bash -c "$(wget -qLO - https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/scripts/menu-super-retropie.sh)"
 ```
 
 ######### yuzu ##########
