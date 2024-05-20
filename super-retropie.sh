@@ -82,6 +82,7 @@ update_script() {
 
       # Verificar si el directorio scripts existe y contiene archivos
       if [ -d "$TMP_DIR/scripts" ]; then
+        echo "Copiando archivos del directorio $TMP_DIR/scripts a $GLOBAL_INSTALL_DIR/scripts/..."
         cp -r "$TMP_DIR/scripts/"* "$GLOBAL_INSTALL_DIR/scripts/"
         if [ $? -ne 0 ]; then
           echo "Error al copiar los archivos del directorio $TMP_DIR/scripts a $GLOBAL_INSTALL_DIR/scripts/"
@@ -98,6 +99,7 @@ update_script() {
     else
       echo "emulationstation no está instalado. Copiando archivos a $USER_INSTALL_DIR..."
       if [ -f "$TMP_DIR/super-retropie.sh" ]; then
+        echo "Copiando archivo $TMP_DIR/super-retropie.sh a $USER_INSTALL_DIR/"
         cp "$TMP_DIR/super-retropie.sh" "$USER_INSTALL_DIR/"
         if [ $? -ne 0 ]; then
           echo "Error al copiar $TMP_DIR/super-retropie.sh a $USER_INSTALL_DIR/"
