@@ -41,14 +41,6 @@ USER_SCRIPT_PATH="$USER_INSTALL_DIR/super-retropie.sh"
 update_script() {
   echo "Verificando actualizaciones del script..."
   
-  # Verificar si TMP_DIR está vacío
-  if [ -z "$(ls -A $TMP_DIR)" ]; then
-    echo "Directorio temporal está vacío. Clonando el repositorio..."
-  else
-    echo "Directorio temporal no está vacío. Contenido del directorio temporal:"
-    ls -l "$TMP_DIR"
-  fi
-  
   git clone --depth=1 "$REPO_URL" "$TMP_DIR"
   if [ $? -ne 0 ]; then
     echo "Error al clonar el repositorio."
@@ -72,6 +64,9 @@ update_script() {
     CURRENT_VERSION="0.0"
   fi
 
+  echo "Versión actual: $CURRENT_VERSION"
+  echo "Nueva versión: $NEW_VERSION"
+
   if [ "$NEW_VERSION" != "$CURRENT_VERSION" ]; then
     echo "Nueva versión disponible: $NEW_VERSION. Actualizando..."
 
@@ -83,7 +78,7 @@ update_script() {
       # Verificar si el directorio scripts existe y contiene archivos
       if [ -d "$TMP_DIR/scripts" ]; then
         echo "Copiando archivos del directorio $TMP_DIR/scripts a $GLOBAL_INSTALL_DIR/scripts/..."
-        cp -r "$TMP_DIR/scripts/"* "$GLOBAL_INSTALL_DIR/scripts/"
+        cp -v "$TMP_DIR/scripts/"* "$GLOBAL_INSTALL_DIR/scripts/"
         if [ $? -ne 0 ]; then
           echo "Error al copiar los archivos del directorio $TMP_DIR/scripts a $GLOBAL_INSTALL_DIR/scripts/"
           rm -rf "$TMP_DIR"
@@ -100,7 +95,7 @@ update_script() {
       echo "emulationstation no está instalado. Copiando archivos a $USER_INSTALL_DIR..."
       if [ -f "$TMP_DIR/super-retropie.sh" ]; then
         echo "Copiando archivo $TMP_DIR/super-retropie.sh a $USER_INSTALL_DIR/"
-        cp "$TMP_DIR/super-retropie.sh" "$USER_INSTALL_DIR/"
+        cp -v "$TMP_DIR/super-retropie.sh" "$USER_INSTALL_DIR/"
         if [ $? -ne 0 ]; then
           echo "Error al copiar $TMP_DIR/super-retropie.sh a $USER_INSTALL_DIR/"
           rm -rf "$TMP_DIR"
@@ -233,7 +228,7 @@ show_menu() {
   while true; do
     opciones=$(dialog --checklist "Seleccione los scripts a ejecutar:" 20 60 2 \
         1 "Extender disco a su máxima capacidad" off \
-        2 "Instalar RetroPie" off 3>&1 1>&2 2>&3 3>&-)
+         2 "Instalar RetroPie" off 3>&1 1>&2 2>&3 3>&-)
 
     respuesta=$?
 
@@ -245,7 +240,7 @@ show_menu() {
 
     if echo "$opciones" | grep -q "2"; then
         dialog --yesno "¿Desea continuar con la instalación de RetroPie?" 10 60
-        if [[ $? -eq 0 ]];then
+        if [[ $? -eq 0 ]]; then
             install_retropie
             return
         else
@@ -255,7 +250,7 @@ show_menu() {
 
     if echo "$opciones" | grep -q "1"; then
         dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
-        if [[ $? -eq 0 ]];then
+        if [[ $? -eq 0 ]]; then
             extend_volume
             return
         else
