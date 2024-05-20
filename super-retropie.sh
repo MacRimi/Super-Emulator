@@ -57,7 +57,7 @@ update_script() {
   fi
 
   NEW_VERSION=$(cat "$TMP_DIR/version.txt")
-  if [ -f "$VERSION_FILE" ];then
+  if [ -f "$VERSION_FILE" ]; then
     CURRENT_VERSION=$(cat "$VERSION_FILE")
   else
     CURRENT_VERSION="0.0"
@@ -71,25 +71,35 @@ update_script() {
       mkdir -p "$GLOBAL_INSTALL_DIR/scripts"
       chmod -R 755 "$GLOBAL_INSTALL_DIR"
 
-      cp "$TMP_DIR/scripts/menu-super-retropie.sh" "$GLOBAL_INSTALL_DIR/scripts/"
-      if [ $? -ne 0 ]; then
-        echo "Error al copiar $TMP_DIR/scripts/menu-super-retropie.sh a $GLOBAL_INSTALL_DIR/scripts/"
+      if [ -f "$TMP_DIR/scripts/menu-super-retropie.sh" ]; then
+        cp "$TMP_DIR/scripts/menu-super-retropie.sh" "$GLOBAL_INSTALL_DIR/scripts/"
+        if [ $? -ne 0 ]; then
+          echo "Error al copiar $TMP_DIR/scripts/menu-super-retropie.sh a $GLOBAL_INSTALL_DIR/scripts/"
+          rm -rf "$TMP_DIR"
+          exit 1
+        fi
+        chmod +x "$GLOBAL_INSTALL_DIR/scripts/menu-super-retropie.sh"
+      else
+        echo "Error: $TMP_DIR/scripts/menu-super-retropie.sh no existe."
         rm -rf "$TMP_DIR"
         exit 1
       fi
-
-      chmod +x "$GLOBAL_INSTALL_DIR/scripts/menu-super-retropie.sh"
 
     else
       echo "emulationstation no está instalado. Copiando archivos a $USER_INSTALL_DIR..."
-      cp "$TMP_DIR/super-retropie.sh" "$USER_INSTALL_DIR/"
-      if [ $? -ne 0 ]; then
-        echo "Error al copiar $TMP_DIR/super-retropie.sh a $USER_INSTALL_DIR/"
+      if [ -f "$TMP_DIR/super-retropie.sh" ]; then
+        cp "$TMP_DIR/super-retropie.sh" "$USER_INSTALL_DIR/"
+        if [ $? -ne 0 ]; then
+          echo "Error al copiar $TMP_DIR/super-retropie.sh a $USER_INSTALL_DIR/"
+          rm -rf "$TMP_DIR"
+          exit 1
+        fi
+        chmod +x "$USER_SCRIPT_PATH"
+      else
+        echo "Error: $TMP_DIR/super-retropie.sh no existe."
         rm -rf "$TMP_DIR"
         exit 1
       fi
-
-      chmod +x "$USER_SCRIPT_PATH"
     fi
 
     echo "$NEW_VERSION" > "$VERSION_FILE"
@@ -164,7 +174,7 @@ extend_volume() {
 
   echo "Redimensionando el sistema de archivos..."
   resize2fs "$LV_PATH"
-  if [ $? -ne 0 ];then
+  if [ $? -ne 0 ]; then
     echo "Error al redimensionar el sistema de archivos."
     exit 1
   fi
