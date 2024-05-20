@@ -52,8 +52,12 @@ update_script() {
   rm -rf "$TMP_DIR"
 }
 
-# Llamar a la función de actualización al inicio del script
-update_script
+# Verificar si RetroPie está instalado
+if command -v emulationstation &> /dev/null; then
+    echo "RetroPie está instalado."
+    
+    # Llamar a la función de actualización si es necesario
+    update_script
 
 # Verificar si RetroPie está instalado
 if command -v emulationstation &> /dev/null; then
