@@ -137,9 +137,9 @@ show_menu() {
         exit 1
     fi
 
-    if echo "$opciones" | grep -q "2"; entonces
+    if echo "$opciones" | grep -q "2"; then
         dialog --yesno "¿Desea continuar con la instalación de RetroPie?" 10 60
-        if [[ $? -eq 0 ]]; entonces
+        if [[ $? -eq 0 ]]; then
             install_retropie
             return
         else
@@ -147,9 +147,9 @@ show_menu() {
         fi
     fi
 
-    if echo "$opciones" | grep -q "1"; entonces
+    if echo "$opciones" | grep -q "1"; then
         dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
-        if [[ $? -eq 0 ]]; entonces
+        if [[ $? -eq 0 ]]; then
             extend_volume
             return
         else
