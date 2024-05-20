@@ -41,6 +41,14 @@ USER_SCRIPT_PATH="$USER_INSTALL_DIR/super-retropie.sh"
 update_script() {
   echo "Verificando actualizaciones del script..."
   
+  # Verificar si TMP_DIR está vacío
+  if [ -z "$(ls -A $TMP_DIR)" ]; then
+    echo "Directorio temporal está vacío. Clonando el repositorio..."
+  else
+    echo "Directorio temporal no está vacío. Contenido del directorio temporal:"
+    ls -l "$TMP_DIR"
+  fi
+  
   git clone --depth=1 "$REPO_URL" "$TMP_DIR"
   if [ $? -ne 0 ]; then
     echo "Error al clonar el repositorio."
@@ -49,7 +57,7 @@ update_script() {
   fi
 
   echo "Contenido del directorio clonado:"
-  ls -lR "$TMP_DIR"  # Lista recursiva para ver todos los archivos y directorios
+  ls -l "$TMP_DIR"
 
   if [ ! -f "$TMP_DIR/version.txt" ]; then
     echo "Error: El archivo version.txt no existe en el repositorio clonado."
@@ -58,7 +66,7 @@ update_script() {
   fi
 
   NEW_VERSION=$(cat "$TMP_DIR/version.txt")
-  if [ -f "$VERSION_FILE" ]; entonces
+  if [ -f "$VERSION_FILE" ]; then
     CURRENT_VERSION=$(cat "$VERSION_FILE")
   else
     CURRENT_VERSION="0.0"
@@ -67,7 +75,7 @@ update_script() {
   echo "Versión actual: $CURRENT_VERSION"
   echo "Nueva versión: $NEW_VERSION"
 
-  if [ "$NEW_VERSION" != "$CURRENT_VERSION" ]; entonces
+  if [ "$NEW_VERSION" != "$CURRENT_VERSION" ]; then
     echo "Nueva versión disponible: $NEW_VERSION. Actualizando..."
 
     echo "Copiando archivos a $GLOBAL_INSTALL_DIR y $USER_INSTALL_DIR..."
@@ -75,10 +83,10 @@ update_script() {
     chmod -R 755 "$GLOBAL_INSTALL_DIR"
 
     # Verificar si el directorio scripts existe y contiene archivos
-    if [ -d "$TMP_DIR/scripts" ]; entonces
+    if [ -d "$TMP_DIR/scripts" ]; then
       echo "Copiando archivos del directorio $TMP_DIR/scripts a $GLOBAL_INSTALL_DIR/scripts/..."
       cp -v "$TMP_DIR/scripts/"* "$GLOBAL_INSTALL_DIR/scripts/"
-      if [ $? -ne 0 ]; entonces
+      if [ $? -ne 0 ]; then
         echo "Error al copiar los archivos del directorio $TMP_DIR/scripts a $GLOBAL_INSTALL_DIR/scripts/"
         rm -rf "$TMP_DIR"
         exit 1
@@ -92,7 +100,7 @@ update_script() {
 
     echo "Copiando archivo $TMP_DIR/super-retropie.sh a $USER_INSTALL_DIR/"
     cp -v "$TMP_DIR/super-retropie.sh" "$USER_INSTALL_DIR/"
-    if [ $? -ne 0 ]; entonces
+    if [ $? -ne 0 ]; then
       echo "Error al copiar $TMP_DIR/super-retropie.sh a $USER_INSTALL_DIR/"
       rm -rf "$TMP_DIR"
       exit 1
@@ -116,7 +124,7 @@ update_script
 
 # Proceder con la ejecución del script
 SCRIPT_PATH="$GLOBAL_INSTALL_DIR/scripts/menu-super-retropie.sh"
-if [ -f "$SCRIPT_PATH" ]; entonces
+if [ -f "$SCRIPT_PATH" ]; then
     echo "Procediendo con la ejecución del script..."
     exec "$SCRIPT_PATH" "$@"
 else
