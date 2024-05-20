@@ -205,7 +205,7 @@ while true; do
 
     if [[ $respuesta -eq 1 || $respuesta -eq 255 || "$opciones" == *5* ]]; then
         clear
-        echo "Instalación cancelada o salida del script."
+        echo "Salida del script de Super-Retropie."
         exit 1
     fi
 
