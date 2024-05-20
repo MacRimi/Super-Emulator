@@ -24,6 +24,7 @@ install_if_missing() {
 
 # Verificar e instalar dependencias necesarias
 install_if_missing dialog
+install_if_missing git
 install_if_missing lvextend
 install_if_missing expect
 
@@ -45,7 +46,19 @@ update_script() {
   echo "Verificando actualizaciones del script..."
   git clone --depth=1 "$REPO_URL" "$TMP_DIR"
   if [ $? -ne 0 ]; then
-    echo "Error al clonar el repositorio para la actualización. Saliendo..."
+    echo "Error al clonar el repositorio."
+    rm -rf "$TMP_DIR"
+    exit 1
+  fi
+
+  if [ ! -d "$TMP_DIR/scripts" ]; then
+    echo "El directorio $TMP_DIR/scripts no existe después de la clonación. Verifica la URL del repositorio."
+    rm -rf "$TMP_DIR"
+    exit 1
+  fi
+
+  if [ ! -f "$TMP_DIR/scripts/menu-super-retropie.sh" ]; then
+    echo "El archivo $TMP_DIR/scripts/menu-super-retropie.sh no existe después de la clonación. Verifica la URL del repositorio."
     rm -rf "$TMP_DIR"
     exit 1
   fi
