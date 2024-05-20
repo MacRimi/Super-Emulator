@@ -9,7 +9,7 @@ check_volume() {
   fi
 
   local FREE_SPACE=$(vgdisplay | grep "Free  PE / Size" | awk '{print $5}')
-  if [ "$FREE_SPACE" -gt 0 ]; then
+  if [ "$FREE_SPACE" -gt 0 ]; entonces
     return 1
   else
     return 0
@@ -17,7 +17,7 @@ check_volume() {
 }
 
 # Verificar si el paquete 'lvm2' está instalado, necesario para la instalación automatizada
-if ! command -v lvextend &> /dev/null; then
+if ! command -v lvextend &> /dev/null; entonces
     echo "El paquete 'lvm2' no está instalado. Instalándolo..."
     apt-get update
     apt-get install -y lvm2
@@ -29,21 +29,21 @@ extend_volume() {
 
   # Verificar si el volumen ya está extendido al máximo
   local EXTEND_STATUS=$(lvdisplay "$LV_PATH" | grep "Allocated to snapshot")
-  if [[ -z "$EXTEND_STATUS" ]]; then
+  if [[ -z "$EXTEND_STATUS" ]]; entonces
     echo "El volumen lógico ya está extendido al máximo."
     return
   fi
 
   echo "Extendiendo el volumen lógico..."
   lvextend -l +100%FREE "$LV_PATH"
-  if [ $? -ne 0 ]; then
+  if [ $? -ne 0 ]; entonces
     echo "Error al extender el volumen lógico."
     exit 1
   fi
 
   echo "Redimensionando el sistema de archivos..."
   resize2fs "$LV_PATH"
-  if [ $? -ne 0 ]; then
+  if [ $? -ne 0 ]; entonces
     echo "Error al redimensionar el sistema de archivos."
     exit 1
   fi
@@ -54,7 +54,7 @@ extend_volume() {
 # Función para instalar RetroPie con comprobación de volumen
 install_retropie() {
     # Verificar si el paquete 'expect' está instalado, necesario para la instalación automatizada
-    if ! command -v expect &> /dev/null; then
+    if ! command -v expect &> /dev/null; entonces
         echo "El paquete 'expect' no está instalado. Instalándolo..."
         apt-get update
         apt-get install -y expect
@@ -63,10 +63,10 @@ install_retropie() {
     # Comprobar el estado del volumen antes de proceder
     check_volume
     local volume_status=$?
-    if [ "$volume_status" -eq 1 ]; then
+    if [ "$volume_status" -eq 1 ]; entonces
         # El volumen tiene espacio libre, advertir al usuario
         dialog --yesno "Se va a proceder a instalar RetroPie en un volumen de espacio reducido, esto podría hacer que te quedaras sin espacio pronto. ¿Desea continuar?" 10 60
-        if [[ $? -eq 0 ]]; then
+        if [[ $? -eq 0 ]]; entonces
             echo "Instalando RetroPie..."
         else
             echo "Instalación cancelada por el usuario."
@@ -101,22 +101,22 @@ show_menu() {
 
     respuesta=$?
 
-    if [[ $respuesta -eq 1 || $respuesta -eq 255 ]]; then
+    if [[ $respuesta -eq 1 || $respuesta -eq 255 ]]; entonces
         clear
         echo "Instalación cancelada."
         exit 1
     fi
 
-    if echo "$opciones" | grep -q "2"; then
+    if echo "$opciones" | grep -q "2"; entonces
         dialog --yesno "¿Desea continuar con la instalación de RetroPie?" 10 60
-        if [[ $? -eq 0 ]]; then
+        if [[ $? -eq 0 ]]; entonces
             install_retropie
         else
             clear
         fi
     fi
 
-    if echo "$opciones" | grep -q "1"; then
+    if echo "$opciones" | grep -q "1"; entonces
         dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
         if [[ $? -eq 0 ]]; entonces
             extend_volume
