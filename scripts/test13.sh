@@ -19,7 +19,6 @@ if ! command -v dialog &> /dev/null; then
     sudo apt-get install -y dialog
 fi
 
-
 # Comprobación de RetroPie instalado y configuración de directorios
 if command -v emulationstation &> /dev/null; then
     INSTALL_DIR="$GLOBAL_INSTALL_DIR"
@@ -85,14 +84,14 @@ check_volume() {
   fi
 }
 
-# Función para extender el volumen lógico
-
 # Verificar si el paquete 'lvm2' está instalado, necesario para la instalación automatizada
-    if ! command -v lvm2 &> /dev/null; then
-        echo "El paquete 'lvm2' no está instalado. Instalándolo..."
-        apt-get update
-        apt-get install -y lvm2
-    fi
+if ! command -v lvextend &> /dev/null; then
+    echo "El paquete 'lvm2' no está instalado. Instalándolo..."
+    apt-get update
+    apt-get install -y lvm2
+fi
+
+# Función para extender el volumen lógico
 extend_volume() {
   local LV_PATH=$(lvscan | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
   
