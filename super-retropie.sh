@@ -30,9 +30,6 @@ install_if_missing expect
 
 # Crear directorio del usuario si no existe
 mkdir -p "$USER_INSTALL_DIR"
-if [ ! -f "$USER_INSTALL_DIR/version.txt" ]; then
-    echo "0.0" > "$USER_INSTALL_DIR/version.txt"
-fi
 
 VERSION_FILE="$USER_INSTALL_DIR/version.txt"
 USER_SCRIPT_PATH="$USER_INSTALL_DIR/super-retropie.sh"
@@ -50,19 +47,29 @@ update_script() {
   echo "Contenido del directorio clonado:"
   ls -l "$TMP_DIR"
 
-  NEW_VERSION=$(cat "$TMP_DIR/version.txt")
-  CURRENT_VERSION=$(cat "$VERSION_FILE")
+  if [ ! -f "$TMP_DIR/version.txt" ]; then
+    echo "Error: El archivo version.txt no existe en el repositorio clonado."
+    rm -rf "$TMP_DIR"
+    exit 1
+  fi
 
-  if [ "$NEW_VERSION" != "$CURRENT_VERSION" ]; then
+  NEW_VERSION=$(cat "$TMP_DIR/version.txt")
+  if [ -f "$VERSION_FILE" ]; then
+    CURRENT_VERSION=$(cat "$VERSION_FILE")
+  else
+    CURRENT_VERSION="0.0"
+  fi
+
+  if [ "$NEW_VERSION" != "$CURRENT_VERSION" ]; entonces
     echo "Nueva versión disponible: $NEW_VERSION. Actualizando..."
 
-    if command -v emulationstation &> /dev/null; then
+    if command -v emulationstation &> /dev/null; entonces
       echo "emulationstation está instalado. Copiando archivos a $GLOBAL_INSTALL_DIR..."
       mkdir -p "$GLOBAL_INSTALL_DIR/scripts"
       chmod -R 755 "$GLOBAL_INSTALL_DIR"
 
       cp "$TMP_DIR/scripts/menu-super-retropie.sh" "$GLOBAL_INSTALL_DIR/scripts/"
-      if [ $? -ne 0 ]; then
+      if [ $? -ne 0 ]; entonces
         echo "Error al copiar $TMP_DIR/scripts/menu-super-retropie.sh a $GLOBAL_INSTALL_DIR/scripts/"
         rm -rf "$TMP_DIR"
         exit 1
@@ -73,7 +80,7 @@ update_script() {
     else
       echo "emulationstation no está instalado. Copiando archivos a $USER_INSTALL_DIR..."
       cp "$TMP_DIR/super-retropie.sh" "$USER_INSTALL_DIR/"
-      if [ $? -ne 0 ]; then
+      if [ $? -ne 0 ]; entonces
         echo "Error al copiar $TMP_DIR/super-retropie.sh a $USER_INSTALL_DIR/"
         rm -rf "$TMP_DIR"
         exit 1
@@ -95,9 +102,9 @@ update_script() {
 update_script
 
 # Proceder con la ejecución del script
-if command -v emulationstation &> /dev/null; then
+if command -v emulationstation &> /dev/null; entonces
   SCRIPT_PATH="$GLOBAL_INSTALL_DIR/scripts/menu-super-retropie.sh"
-  if [ -f "$SCRIPT_PATH" ]; then
+  if [ -f "$SCRIPT_PATH" ]; entonces
       echo "Procediendo con la ejecución del script..."
       exec "$SCRIPT_PATH" "$@"
   else
@@ -107,7 +114,7 @@ if command -v emulationstation &> /dev/null; then
       exit 1
   fi
 else
-  if [ -f "$USER_SCRIPT_PATH" ]; then
+  if [ -f "$USER_SCRIPT_PATH" ]; entonces
       echo "Procediendo con la ejecución del script del usuario..."
       exec "$USER_SCRIPT_PATH" "$@"
   else
@@ -116,7 +123,6 @@ else
       ls -l "$USER_INSTALL_DIR/"
       exit 1
   fi
-fi
 
 # Función para comprobar si el volumen lógico está usando todo el espacio disponible
 check_volume() {
