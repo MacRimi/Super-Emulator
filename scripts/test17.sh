@@ -2,7 +2,7 @@
 
 REPO_URL="https://github.com/MacRimi/Super-RetroPie"
 GLOBAL_INSTALL_DIR="/opt/Super-RetroPie"
-USER_HOME=$(eval echo ~$USER)
+USER_HOME=$(eval echo ~$SUDO_USER)
 USER_INSTALL_DIR="$USER_HOME/Super-RetroPie"
 TMP_DIR=$(mktemp -d)
 
@@ -26,15 +26,6 @@ install_if_missing() {
 install_if_missing dialog
 install_if_missing lvextend
 install_if_missing expect
-
-# Comprobación de RetroPie instalado y configuración de directorios
-if command -v emulationstation &> /dev/null; then
-    INSTALL_DIR="$GLOBAL_INSTALL_DIR"
-    echo "RetroPie está instalado. Usando el directorio global: $INSTALL_DIR"
-else
-    INSTALL_DIR="$USER_INSTALL_DIR"
-    echo "RetroPie no está instalado. Configurando en el directorio del usuario: $INSTALL_DIR"
-fi
 
 # Crear directorios y archivos necesarios en /opt/Super-RetroPie si no existen
 mkdir -p "$GLOBAL_INSTALL_DIR/scripts"
@@ -64,12 +55,12 @@ update_script() {
   if [ "$NEW_VERSION" != "$CURRENT_VERSION" ]; then
     echo "Nueva versión disponible: $NEW_VERSION. Actualizando..."
     cp "$TMP_DIR/scripts/menu-super-retropie.sh" "$GLOBAL_INSTALL_DIR/scripts/"
-    cp "$TMP_DIR/version.txt" "$USER_INSTALL_DIR/"
+    cp "$TMP_DIR/super-retropie.sh" "$USER_INSTALL_DIR/"
     echo "$NEW_VERSION" > "$VERSION_FILE"
-    chmod +x "$SCRIPT_PATH"
+    chmod +x "$USER_SCRIPT_PATH"
     echo "Actualización completada. Reiniciando script..."
     rm -rf "$TMP_DIR"
-    exec "$SCRIPT_PATH" "$@"
+    exec "$USER_SCRIPT_PATH" "$@"
     exit 0
   else
     echo "El script ya está actualizado."
@@ -79,6 +70,8 @@ update_script() {
 
 # Llamar a la función de actualización si es necesario y proceder con la ejecución del script principal
 update_script
+
+# Proceder con la ejecución del script
 echo "Procediendo con la ejecución del script..."
 chmod +x "$SCRIPT_PATH"
 exec "$SCRIPT_PATH" "$@"
