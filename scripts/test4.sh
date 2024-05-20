@@ -2,7 +2,7 @@
 
 REPO_URL="https://github.com/MacRimi/Super-RetroPie"
 INSTALL_DIR="/opt/Super-RetroPie"
-SCRIPT_PATH="$INSTALL_DIR/scripts/menu-super-retropie.sh"
+SCRIPT_PATH="$INSTALL_DIR/scripts/menu-super-retropie.sh"  # Ruta al script ajustada
 VERSION_FILE="$INSTALL_DIR/version.txt"
 TMP_DIR=$(mktemp -d)
 
@@ -32,8 +32,12 @@ update_script() {
 
   if [ "$NEW_VERSION" != "$CURRENT_VERSION" ]; then
     echo "Nueva versión disponible: $NEW_VERSION. Actualizando..."
+
+    # Crear el directorio scripts si no existe
+    mkdir -p "$INSTALL_DIR/scripts"
+
     # Copiar nuevos archivos
-    cp -r "$TMP_DIR/scripts" "$INSTALL_DIR"
+    cp "$TMP_DIR/scripts/"* "$INSTALL_DIR/scripts"
     echo "$NEW_VERSION" > "$VERSION_FILE"
     chmod +x "$SCRIPT_PATH"
     echo "Actualización completada. Reiniciando script..."
