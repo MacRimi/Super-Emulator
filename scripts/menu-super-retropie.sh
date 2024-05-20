@@ -39,7 +39,7 @@ instalar_rpcs3() {
 ############################
 instalar_yuzu() {
     local script_path=~/RetroPie-Setup/scriptmodules/emulators/yuzu-AppImage.sh
-    wget -q --show-progress https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/yuzu-AppImage.sh -O "$script_path"
+    wget -q --show-progress https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/scripts/yuzu-AppImage.sh -O "$script_path"
     chmod +x "$script_path"
 
     # Verificar si existe platforms.cfg
@@ -61,7 +61,7 @@ instalar_yuzu() {
 ###########################
 instalar_steam() {
     local script_path=~/RetroPie-Setup/scriptmodules/emulators/steam-AppImage.sh
-    wget -q --show-progress https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/steam-AppImage.sh -O "$script_path"
+    wget -q --show-progress https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/scripts/steam-AppImage.sh -O "$script_path"
     chmod +x "$script_path"
 
     # Verificar si existe platforms.cfg
