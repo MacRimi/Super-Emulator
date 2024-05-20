@@ -4,7 +4,6 @@ REPO_URL="https://github.com/MacRimi/Super-RetroPie"
 GLOBAL_INSTALL_DIR="/opt/Super-RetroPie"
 USER_HOME=$(eval echo ~$SUDO_USER)
 USER_INSTALL_DIR="$USER_HOME/Super-RetroPie"
-TMP_DIR=$(mktemp -d)
 
 # Asegurarse de que el script se ejecute con permisos de superusuario
 if [ "$EUID" -ne 0 ]; then
@@ -28,89 +27,34 @@ install_if_missing git
 install_if_missing lvextend
 install_if_missing expect
 
-# Crear directorios y archivos necesarios en /opt/Super-RetroPie si no existen
-mkdir -p "$GLOBAL_INSTALL_DIR/scripts"
+# Función para clonar el repositorio y ejecutar el script adecuado
+clone_and_execute() {
+  local DEST_DIR=$1
+  local SCRIPT_PATH=$2
 
-# Crear directorios y archivos necesarios en /home/pi/Super-RetroPie si no existen
-mkdir -p "$USER_INSTALL_DIR"
-
-VERSION_FILE="$USER_INSTALL_DIR/version.txt"
-USER_SCRIPT_PATH="$USER_INSTALL_DIR/super-retropie.sh"
-
-# Función para actualizar el script
-update_script() {
-  echo "Verificando actualizaciones del script..."
-
-  # Clonar el repositorio en el directorio temporal
-  git clone --depth=1 "$REPO_URL" "$TMP_DIR"
+  echo "Clonando el repositorio en $DEST_DIR..."
+  rm -rf "$DEST_DIR"
+  git clone "$REPO_URL" "$DEST_DIR"
   if [ $? -ne 0 ]; then
-    echo "Error al clonar el repositorio."
-    rm -rf "$TMP_DIR"
+    echo "Error al clonar el repositorio en $DEST_DIR."
     exit 1
   fi
 
-  echo "Contenido del directorio clonado:"
-  ls -l "$TMP_DIR"
-
-  if [ ! -f "$TMP_DIR/version.txt" ]; then
-    echo "Error: El archivo version.txt no existe en el repositorio clonado."
-    rm -rf "$TMP_DIR"
+  if [ -f "$SCRIPT_PATH" ]; then
+    echo "Ejecutando el script..."
+    chmod +x "$SCRIPT_PATH"
+    exec "$SCRIPT_PATH" "$@"
+  else
+    echo "Error: $SCRIPT_PATH no existe."
     exit 1
   fi
-
-  NEW_VERSION=$(cat "$TMP_DIR/version.txt")
-  if [ -f "$VERSION_FILE" ]; then
-    CURRENT_VERSION=$(cat "$VERSION_FILE")
-  else
-    CURRENT_VERSION="0.0"
-  fi
-
-  if [ "$NEW_VERSION" != "$CURRENT_VERSION" ]; then
-    echo "Nueva versión disponible: $NEW_VERSION. Actualizando..."
-
-    echo "Copiando archivos a $GLOBAL_INSTALL_DIR..."
-    mkdir -p "$GLOBAL_INSTALL_DIR/scripts"
-    cp -r "$TMP_DIR/scripts/"* "$GLOBAL_INSTALL_DIR/scripts/"
-    chmod -R 755 "$GLOBAL_INSTALL_DIR/scripts"
-
-    echo "Copiando archivos a $USER_INSTALL_DIR..."
-    cp "$TMP_DIR/super-retropie.sh" "$USER_INSTALL_DIR/"
-    chmod +x "$USER_SCRIPT_PATH"
-
-    echo "$NEW_VERSION" > "$VERSION_FILE"
-    echo "Actualización completada."
-  else
-    echo "El script ya está actualizado."
-  fi
-
-  rm -rf "$TMP_DIR"
 }
 
-# Llamar a la función de actualización si es necesario y proceder con la ejecución del script principal
-update_script
-
-# Proceder con la ejecución del script
+# Clonar el repositorio y ejecutar el script dependiendo de si emulationstation está instalado
 if command -v emulationstation &> /dev/null; then
-  SCRIPT_PATH="$GLOBAL_INSTALL_DIR/scripts/menu-super-retropie.sh"
-  if [ -f "$SCRIPT_PATH" ]; then
-      echo "Procediendo con la ejecución del script..."
-      exec "$SCRIPT_PATH" "$@"
-  else
-      echo "Error: $SCRIPT_PATH no existe."
-      echo "Contenido de $GLOBAL_INSTALL_DIR/scripts/:"
-      ls -l "$GLOBAL_INSTALL_DIR/scripts/"
-      exit 1
-  fi
+  clone_and_execute "$GLOBAL_INSTALL_DIR" "$GLOBAL_INSTALL_DIR/scripts/menu-super-retropie.sh"
 else
-  if [ -f "$USER_SCRIPT_PATH" ]; then
-      echo "Procediendo con la ejecución del script del usuario..."
-      exec "$USER_SCRIPT_PATH" "$@"
-  else
-      echo "Error: $USER_SCRIPT_PATH no existe."
-      echo "Contenido de $USER_INSTALL_DIR/:"
-      ls -l "$USER_INSTALL_DIR/"
-      exit 1
-  fi
+  clone_and_execute "$USER_INSTALL_DIR" "$USER_INSTALL_DIR/super-retropie.sh"
 fi
 
 # Función para comprobar si el volumen lógico está usando todo el espacio disponible
@@ -209,9 +153,9 @@ show_menu() {
         fi
     fi
 
-    if echo "$opciones" | grep -q "1"; entonces
+    if echo "$opciones" | grep -q "1"; then
         dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
-        if [[ $? -eq 0 ]]; entonces
+        if [[ $? -eq 0 ]]; then
             extend_volume
             return
         else
