@@ -80,16 +80,17 @@ update_script() {
       mkdir -p "$GLOBAL_INSTALL_DIR/scripts"
       chmod -R 755 "$GLOBAL_INSTALL_DIR"
 
-      if [ -f "$TMP_DIR/scripts/menu-super-retropie.sh" ]; then
-        cp "$TMP_DIR/scripts/menu-super-retropie.sh" "$GLOBAL_INSTALL_DIR/scripts/"
+      # Verificar si el directorio scripts existe y contiene archivos
+      if [ -d "$TMP_DIR/scripts" ]; then
+        cp -r "$TMP_DIR/scripts/"* "$GLOBAL_INSTALL_DIR/scripts/"
         if [ $? -ne 0 ]; then
-          echo "Error al copiar $TMP_DIR/scripts/menu-super-retropie.sh a $GLOBAL_INSTALL_DIR/scripts/"
+          echo "Error al copiar los archivos del directorio $TMP_DIR/scripts a $GLOBAL_INSTALL_DIR/scripts/"
           rm -rf "$TMP_DIR"
           exit 1
         fi
-        chmod +x "$GLOBAL_INSTALL_DIR/scripts/menu-super-retropie.sh"
+        chmod +x "$GLOBAL_INSTALL_DIR/scripts/"*
       else
-        echo "Error: $TMP_DIR/scripts/menu-super-retropie.sh no existe."
+        echo "Error: El directorio $TMP_DIR/scripts no existe."
         rm -rf "$TMP_DIR"
         exit 1
       fi
@@ -136,7 +137,7 @@ if command -v emulationstation &> /dev/null; then
       exit 1
   fi
 else
-  if [ -f "$USER_SCRIPT_PATH" ];then
+  if [ -f "$USER_SCRIPT_PATH" ]; then
       echo "Procediendo con la ejecución del script del usuario..."
       exec "$USER_SCRIPT_PATH" "$@"
   else
@@ -242,7 +243,7 @@ show_menu() {
 
     if echo "$opciones" | grep -q "2"; then
         dialog --yesno "¿Desea continuar con la instalación de RetroPie?" 10 60
-        if [[ $? -eq 0 ]]; then
+        if [[ $? -eq 0 ]];then
             install_retropie
             return
         else
@@ -252,7 +253,7 @@ show_menu() {
 
     if echo "$opciones" | grep -q "1"; then
         dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
-        if [[ $? -eq 0 ]]; then
+        if [[ $? -eq 0 ]];then
             extend_volume
             return
         else
