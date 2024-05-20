@@ -1,11 +1,6 @@
 #!/bin/bash
 
 
-# Llamar a la función de actualización si es necesario y proceder con la ejecución del script principal
-update_script
-echo "Procediendo con la ejecución del script..."
-chmod +x "$SCRIPT_PATH"
-exec "$SCRIPT_PATH" "$@"
 
 # Función para comprobar si el volumen lógico está usando todo el espacio disponible
 check_volume() {
