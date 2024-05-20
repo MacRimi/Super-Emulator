@@ -72,9 +72,14 @@ update_script() {
 update_script
 
 # Proceder con la ejecución del script
-echo "Procediendo con la ejecución del script..."
-chmod +x "$SCRIPT_PATH"
-exec "$SCRIPT_PATH" "$@"
+if [ -f "$SCRIPT_PATH" ]; then
+    echo "Procediendo con la ejecución del script..."
+    chmod +x "$SCRIPT_PATH"
+    exec "$SCRIPT_PATH" "$@"
+else
+    echo "Error: $SCRIPT_PATH no existe."
+    exit 1
+fi
 
 # Función para comprobar si el volumen lógico está usando todo el espacio disponible
 check_volume() {
