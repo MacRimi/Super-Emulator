@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-
 # Función para comprobar si el volumen lógico está usando todo el espacio disponible
 check_volume() {
   local LV_PATH=$(lvscan | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
@@ -28,7 +26,7 @@ fi
 # Función para extender el volumen lógico
 extend_volume() {
   local LV_PATH=$(lvscan | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
-  
+
   # Verificar si el volumen ya está extendido al máximo
   local EXTEND_STATUS=$(lvdisplay "$LV_PATH" | grep "Allocated to snapshot")
   if [[ -z "$EXTEND_STATUS" ]]; then
@@ -113,7 +111,6 @@ show_menu() {
         dialog --yesno "¿Desea continuar con la instalación de RetroPie?" 10 60
         if [[ $? -eq 0 ]]; then
             install_retropie
-            return
         else
             clear
         fi
@@ -121,9 +118,8 @@ show_menu() {
 
     if echo "$opciones" | grep -q "1"; then
         dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
-        if [[ $? -eq 0 ]]; then
+        if [[ $? -eq 0 ]]; entonces
             extend_volume
-            return
         else
             clear
         fi
