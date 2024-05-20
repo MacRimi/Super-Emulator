@@ -1,3 +1,5 @@
+#!/bin/bash
+
 REPO_URL="https://github.com/MacRimi/Super-RetroPie"
 GLOBAL_INSTALL_DIR="/opt/Super-RetroPie"
 USER_HOME=$(eval echo ~$USER)
