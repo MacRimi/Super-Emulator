@@ -51,15 +51,20 @@ update_script() {
     exit 1
   fi
 
+  echo "Contenido del directorio clonado:"
+  ls -l "$TMP_DIR"
+
   if [ ! -d "$TMP_DIR/scripts" ]; then
     echo "El directorio $TMP_DIR/scripts no existe después de la clonación. Verifica la URL del repositorio."
     rm -rf "$TMP_DIR"
     exit 1
   fi
 
+  echo "Contenido del directorio 'scripts' clonado:"
+  ls -l "$TMP_DIR/scripts"
+
   if [ ! -f "$TMP_DIR/scripts/menu-super-retropie.sh" ]; then
     echo "El archivo $TMP_DIR/scripts/menu-super-retropie.sh no existe después de la clonación. Verifica la URL del repositorio."
-    ls -l "$TMP_DIR/scripts"  # Mostrar contenido del directorio scripts
     rm -rf "$TMP_DIR"
     exit 1
   fi
@@ -131,7 +136,7 @@ extend_volume() {
 
   echo "Redimensionando el sistema de archivos..."
   resize2fs "$LV_PATH"
-  if [ $? -ne 0 ]; then
+  if [ $? -ne 0 ];then
     echo "Error al redimensionar el sistema de archivos."
     exit 1
   fi
