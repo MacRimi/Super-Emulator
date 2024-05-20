@@ -1,9 +1,11 @@
 #!/bin/bash
 
-REPO_URL="https://github.com/MacRimi/Super-RetroPie"
+REPO_URL="https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/super-retropie.sh"
 GLOBAL_INSTALL_DIR="/opt/Super-RetroPie"
 USER_HOME=$(eval echo ~$SUDO_USER)
 USER_INSTALL_DIR="$USER_HOME/Super-RetroPie"
+SCRIPT_NAME="super-retropie.sh"
+USER_SCRIPT_PATH="$USER_INSTALL_DIR/$SCRIPT_NAME"
 
 # Asegurarse de que el script se ejecute con permisos de superusuario
 if [ "$EUID" -ne 0 ]; then
@@ -23,38 +25,30 @@ install_if_missing() {
 
 # Verificar e instalar dependencias necesarias
 install_if_missing dialog
-install_if_missing git
+install_if_missing wget
 install_if_missing lvextend
 install_if_missing expect
 
-# Función para clonar el repositorio y ejecutar el script adecuado
-clone_and_execute() {
-  local DEST_DIR=$1
-  local SCRIPT_PATH=$2
-
-  echo "Clonando el repositorio en $DEST_DIR..."
-  rm -rf "$DEST_DIR"
-  git clone "$REPO_URL" "$DEST_DIR"
+# Descargar y ejecutar el script si emulationstation no está instalado
+if ! command -v emulationstation &> /dev/null; then
+  echo "emulationstation no está instalado. Descargando y ejecutando $SCRIPT_NAME..."
+  mkdir -p "$USER_INSTALL_DIR"
+  wget -q "$REPO_URL" -O "$USER_SCRIPT_PATH"
   if [ $? -ne 0 ]; then
-    echo "Error al clonar el repositorio en $DEST_DIR."
+    echo "Error al descargar $SCRIPT_NAME en $USER_INSTALL_DIR."
     exit 1
   fi
 
-  if [ -f "$SCRIPT_PATH" ]; then
+  if [ -f "$USER_SCRIPT_PATH" ]; then
     echo "Ejecutando el script..."
-    chmod +x "$SCRIPT_PATH"
-    exec "$SCRIPT_PATH" "$@"
+    chmod +x "$USER_SCRIPT_PATH"
+    exec "$USER_SCRIPT_PATH" "$@"
   else
-    echo "Error: $SCRIPT_PATH no existe."
+    echo "Error: $USER_SCRIPT_PATH no existe."
     exit 1
   fi
-}
-
-# Clonar el repositorio y ejecutar el script dependiendo de si emulationstation está instalado
-if command -v emulationstation &> /dev/null; then
-  clone_and_execute "$GLOBAL_INSTALL_DIR" "$GLOBAL_INSTALL_DIR/scripts/menu-super-retropie.sh"
 else
-  clone_and_execute "$USER_INSTALL_DIR" "$USER_INSTALL_DIR/super-retropie.sh"
+  echo "emulationstation está instalado. No se necesita descargar ni ejecutar $SCRIPT_NAME."
 fi
 
 # Función para comprobar si el volumen lógico está usando todo el espacio disponible
@@ -143,9 +137,9 @@ show_menu() {
         exit 1
     fi
 
-    if echo "$opciones" | grep -q "2"; then
+    if echo "$opciones" | grep -q "2"; entonces
         dialog --yesno "¿Desea continuar con la instalación de RetroPie?" 10 60
-        if [[ $? -eq 0 ]]; then
+        if [[ $? -eq 0 ]]; entonces
             install_retropie
             return
         else
@@ -153,9 +147,9 @@ show_menu() {
         fi
     fi
 
-    if echo "$opciones" | grep -q "1"; then
+    if echo "$opciones" | grep -q "1"; entonces
         dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
-        if [[ $? -eq 0 ]]; then
+        if [[ $? -eq 0 ]]; entonces
             extend_volume
             return
         else
