@@ -1,19 +1,56 @@
 #!/bin/bash
 
+REPO_URL="https://github.com/MacRimi/Super-RetroPie"
+INSTALL_DIR="/opt/Super-RetroPie"
+SCRIPT_PATH="$INSTALL_DIR/scripts/menu-super-retropie.sh"
+CURRENT_SCRIPT="$(realpath "$0")"
+
 # Asegurarse de que el script se ejecute con permisos de superusuario
 if [ "$EUID" -ne 0 ]; then
   echo "Por favor, ejecute este script como root."
   exit 1
 fi
 
+# Función para actualizar el script
+update_script() {
+  echo "Verificando actualizaciones del script..."
+  
+  # Clonar temporalmente el repositorio
+  TMP_DIR=$(mktemp -d)
+  git clone --depth=1 "$REPO_URL" "$TMP_DIR"
+  
+  # Verificar si la clonación fue exitosa
+  if [ $? -ne 0 ]; then
+    echo "Error al clonar el repositorio para la actualización. Saliendo..."
+    rm -rf "$TMP_DIR"
+    exit 1
+  fi
+  
+  # Reemplazar el script actual con el nuevo
+  cp "$TMP_DIR/scripts/menu-super-retropie.sh" "$CURRENT_SCRIPT"
+  chmod +x "$CURRENT_SCRIPT"
+  
+  # Limpiar el directorio temporal
+  rm -rf "$TMP_DIR"
+  
+  echo "Script actualizado. Reiniciando..."
+  exec "$CURRENT_SCRIPT" "$@"
+  exit 0
+}
+
+# Llamar a la función de actualización al inicio del script
+update_script
+
 # Verificar si RetroPie está instalado
 if command -v emulationstation &> /dev/null; then
-    # RetroPie está instalado, proceder con la descarga y ejecución del nuevo script
     echo "RetroPie está instalado. Procediendo con la descarga del repositorio y ejecución del nuevo script..."
-
+    
+    # Crear el directorio de instalación si no existe
+    mkdir -p "$INSTALL_DIR"
+    
     # Clonar el repositorio
-    git clone https://github.com/MacRimi/Super-RetroPie.git /opt/Super-RetroPie
-
+    git clone "$REPO_URL" "$INSTALL_DIR"
+    
     # Verificar si la clonación fue exitosa
     if [ $? -ne 0 ]; then
         echo "Error al clonar el repositorio. Saliendo..."
@@ -21,15 +58,14 @@ if command -v emulationstation &> /dev/null; then
     fi
 
     # Dar permisos de ejecución al script descargado
-    chmod +x /opt/Super-RetroPie/scripts/menu-super-retropie.sh
+    chmod +x "$SCRIPT_PATH"
 
     # Ejecutar el nuevo script
-    /opt/Super-RetroPie/scripts/menu-super-retropie.sh
+    exec "$SCRIPT_PATH"
 
     # Salir del script actual
     exit 0
 else
-    # RetroPie no está instalado, mostrar mensaje informativo
     echo "RetroPie no está instalado. Las siguientes opciones estarán disponibles:"
 fi
 
@@ -79,20 +115,15 @@ extend_volume() {
 
 # Función para instalar RetroPie
 install_retropie() {
-  # Verificar si expect está instalado, si no, instalarlo
   if ! command -v expect &> /dev/null; then
     echo "El paquete expect no está instalado. Instalándolo..."
     apt-get update
     apt-get install -y expect
   fi
 
-  # Descargar el script bootstrap.sh
   wget -q https://raw.githubusercontent.com/MizterB/RetroPie-Setup-Ubuntu/master/bootstrap.sh
-
-  # Ejecutar el script bootstrap.sh
   bash ./bootstrap.sh
 
-  # Simular presionar Enter para aceptar el disclaimer y continuar con la instalación (usando expect)
   expect << EOF
   spawn sudo ./RetroPie-Setup-Ubuntu/retropie_setup_ubuntu.sh
   expect {
@@ -102,7 +133,6 @@ install_retropie() {
   }
 EOF
 
-  # Reboot del sistema
   reboot
 }
 
@@ -121,7 +151,6 @@ show_menu() {
         exit 1
     fi
 
-    # Si se seleccionó instalar RetroPie
     if echo "$opciones" | grep -q "2"; then
         dialog --yesno "¿Desea continuar con la instalación de RetroPie?" 10 60
         if [[ $? -eq 0 ]]; then
@@ -132,7 +161,6 @@ show_menu() {
         fi
     fi
 
-    # Si se seleccionó extender el disco
     if echo "$opciones" | grep -q "1"; then
         dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
         if [[ $? -eq 0 ]]; then
