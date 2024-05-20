@@ -40,6 +40,15 @@ USER_SCRIPT_PATH="$USER_INSTALL_DIR/super-retropie.sh"
 # Función para actualizar el script
 update_script() {
   echo "Verificando actualizaciones del script..."
+  
+  # Verificar si TMP_DIR está vacío
+  if [ -z "$(ls -A $TMP_DIR)" ]; then
+    echo "Directorio temporal está vacío. Clonando el repositorio..."
+  else
+    echo "Directorio temporal no está vacío. Contenido del directorio temporal:"
+    ls -l "$TMP_DIR"
+  fi
+  
   git clone --depth=1 "$REPO_URL" "$TMP_DIR"
   if [ $? -ne 0 ]; then
     echo "Error al clonar el repositorio."
