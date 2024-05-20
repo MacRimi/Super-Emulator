@@ -46,10 +46,13 @@ update_script() {
   echo "Verificando actualizaciones del script..."
   git clone --depth=1 "$REPO_URL" "$TMP_DIR"
   if [ $? -ne 0 ]; then
-    echo "Error al clonar el repositorio. Detalles:"
-    echo "------------------------"
-    cat "$TMP_DIR/git_error.log"
-    echo "------------------------"
+    echo "Error al clonar el repositorio."
+    rm -rf "$TMP_DIR"
+    exit 1
+  fi
+
+  if [ ! -d "$TMP_DIR/scripts" ]; then
+    echo "El directorio $TMP_DIR/scripts no existe después de la clonación. Verifica la URL del repositorio."
     rm -rf "$TMP_DIR"
     exit 1
   fi
