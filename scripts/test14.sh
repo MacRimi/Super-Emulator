@@ -12,12 +12,20 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
-# Comprobar si 'dialog' está instalado
-if ! command -v dialog &> /dev/null; then
-    echo "'dialog' no está instalado. Instalando 'dialog'..."
-    sudo apt-get update
-    sudo apt-get install -y dialog
-fi
+# Función para verificar e instalar dependencias
+install_if_missing() {
+  PACKAGE_NAME=$1
+  if ! command -v $PACKAGE_NAME &> /dev/null; then
+    echo "El paquete '$PACKAGE_NAME' no está instalado. Instalándolo..."
+    apt-get update
+    apt-get install -y $PACKAGE_NAME
+  fi
+}
+
+# Verificar e instalar dependencias necesarias
+install_if_missing dialog
+install_if_missing lvextend
+install_if_missing expect
 
 # Comprobación de RetroPie instalado y configuración de directorios
 if command -v emulationstation &> /dev/null; then
@@ -84,13 +92,6 @@ check_volume() {
   fi
 }
 
-# Verificar si el paquete 'lvm2' está instalado, necesario para la instalación automatizada
-if ! command -v lvextend &> /dev/null; then
-    echo "El paquete 'lvm2' no está instalado. Instalándolo..."
-    apt-get update
-    apt-get install -y lvm2
-fi
-
 # Función para extender el volumen lógico
 extend_volume() {
   local LV_PATH=$(lvscan | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
@@ -121,13 +122,6 @@ extend_volume() {
 
 # Función para instalar RetroPie con comprobación de volumen
 install_retropie() {
-    # Verificar si el paquete 'expect' está instalado, necesario para la instalación automatizada
-    if ! command -v expect &> /dev/null; then
-        echo "El paquete 'expect' no está instalado. Instalándolo..."
-        apt-get update
-        apt-get install -y expect
-    fi
-
     # Comprobar el estado del volumen antes de proceder
     check_volume
     local volume_status=$?
