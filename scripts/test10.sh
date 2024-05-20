@@ -43,11 +43,6 @@ fi
 SCRIPT_PATH="$INSTALL_DIR/scripts/menu-super-retropie.sh"
 VERSION_FILE="$INSTALL_DIR/version.txt"
 
-# Asegurarse de que el script se ejecute con permisos de superusuario
-if [ "$EUID" -ne 0 ]; then
-  echo "Por favor, ejecute este script como root."
-  exit 1
-fi
 
 # Función para actualizar el script
 update_script() {
