@@ -8,22 +8,26 @@ fi
 
 # Verificar si RetroPie está instalado
 if command -v emulationstation &> /dev/null; then
-    # RetroPie está instalado, proceder con la instalación adicional
-    echo "RetroPie está instalado. Procediendo con la instalación de las funciones adicionales..."
+    # RetroPie está instalado, proceder con la descarga y ejecución del nuevo script
+    echo "RetroPie está instalado. Procediendo con la descarga del repositorio y ejecución del nuevo script..."
 
-    ##############################
-    # Lógica de instalación aquí #
-    ##############################
+    # Clonar el repositorio
+    git clone https://github.com/MacRimi/Super-RetroPie.git /opt/Super-RetroPie
 
-    # Descargar y ejecutar el otro script
-    wget -qO- https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/scripts/menu-super-retropie.sh | sudo bash
-
-    # Verificar si el usuario canceló la instalación adicional
-    if [[ $? -eq 1 ]]; then
-        # Si se cancela, salir del primer script también
+    # Verificar si la clonación fue exitosa
+    if [ $? -ne 0 ]; then
+        echo "Error al clonar el repositorio. Saliendo..."
         exit 1
     fi
 
+    # Dar permisos de ejecución al script descargado
+    chmod +x /opt/Super-RetroPie/scripts/menu-super-retropie.sh
+
+    # Ejecutar el nuevo script
+    /opt/Super-RetroPie/scripts/menu-super-retropie.sh
+
+    # Salir del script actual
+    exit 0
 else
     # RetroPie no está instalado, mostrar mensaje informativo
     echo "RetroPie no está instalado. Las siguientes opciones estarán disponibles:"
