@@ -129,13 +129,13 @@ fi
 # Función para comprobar si el volumen lógico está usando todo el espacio disponible
 check_volume() {
   local LV_PATH=$(lvscan | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
-  if [ -z "$LV_PATH" ]; entonces
+  if [ -z "$LV_PATH" ]; then
     echo "No se pudo determinar la ruta del volumen lógico. Asegúrate de que el volumen lógico está activo."
     exit 1
   fi
 
   local FREE_SPACE=$(vgdisplay | grep "Free  PE / Size" | awk '{print $5}')
-  if [ "$FREE_SPACE" -gt 0 ]; entonces
+  if [ "$FREE_SPACE" -gt 0 ]; then
     return 1
   else
     return 0
@@ -148,14 +148,14 @@ extend_volume() {
 
   # Verificar si el volumen ya está extendido al máximo
   local EXTEND_STATUS=$(lvdisplay "$LV_PATH" | grep "Allocated to snapshot")
-  if [[ -z "$EXTEND_STATUS" ]]; entonces
+  if [[ -z "$EXTEND_STATUS" ]]; then
     echo "El volumen lógico ya está extendido al máximo."
     return
   fi
 
   echo "Extendiendo el volumen lógico..."
   lvextend -l +100%FREE "$LV_PATH"
-  if [ $? -ne 0 ]; entonces
+  if [ $? -ne 0 ]; then
     echo "Error al extender el volumen lógico."
     exit 1
   fi
@@ -178,7 +178,7 @@ install_retropie() {
   if [ "$volume_status" -eq 1 ]; entonces
     # El volumen tiene espacio libre, advertir al usuario
     dialog --yesno "Se va a proceder a instalar RetroPie en un volumen de espacio reducido, esto podría hacer que te quedaras sin espacio pronto. ¿Desea continuar?" 10 60
-    if [[ $? -eq 0 ]]; entonces
+    if [[ $? -eq 0 ]; entonces
       echo "Instalando RetroPie..."
     else
       echo "Instalación cancelada por el usuario."
