@@ -28,7 +28,10 @@ install_if_missing git
 install_if_missing lvextend
 install_if_missing expect
 
-# Crear directorio del usuario si no existe
+# Crear directorios y archivos necesarios en /opt/Super-RetroPie si no existen
+mkdir -p "$GLOBAL_INSTALL_DIR/scripts"
+
+# Crear directorios y archivos necesarios en /home/pi/Super-RetroPie si no existen
 mkdir -p "$USER_INSTALL_DIR"
 
 VERSION_FILE="$USER_INSTALL_DIR/version.txt"
@@ -54,7 +57,7 @@ update_script() {
   fi
 
   NEW_VERSION=$(cat "$TMP_DIR/version.txt")
-  if [ -f "$VERSION_FILE" ]; then
+  if [ -f "$VERSION_FILE" ];then
     CURRENT_VERSION=$(cat "$VERSION_FILE")
   else
     CURRENT_VERSION="0.0"
@@ -161,7 +164,7 @@ extend_volume() {
 
   echo "Redimensionando el sistema de archivos..."
   resize2fs "$LV_PATH"
-  if [ $? -ne 0 ]; then
+  if [ $? -ne 0 ];then
     echo "Error al redimensionar el sistema de archivos."
     exit 1
   fi
