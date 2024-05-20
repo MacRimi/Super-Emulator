@@ -1,6 +1,7 @@
 #!/bin/bash
 
 REPO_URL="https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/super-retropie.sh"
+REPO_URL_FULL="https://github.com/MacRimi/Super-RetroPie.git"
 GLOBAL_INSTALL_DIR="/opt/Super-RetroPie"
 USER_HOME=$(eval echo ~$SUDO_USER)
 USER_INSTALL_DIR="$USER_HOME/Super-RetroPie"
@@ -26,6 +27,7 @@ install_if_missing() {
 # Verificar e instalar dependencias necesarias
 install_if_missing dialog
 install_if_missing wget
+install_if_missing git
 install_if_missing lvextend
 install_if_missing expect
 
@@ -48,7 +50,23 @@ if ! command -v emulationstation &> /dev/null; then
     exit 1
   fi
 else
-  echo "emulationstation está instalado. No se necesita descargar ni ejecutar $SCRIPT_NAME."
+  echo "emulationstation está instalado. Clonando el repositorio en $GLOBAL_INSTALL_DIR..."
+  rm -rf "$GLOBAL_INSTALL_DIR"
+  git clone "$REPO_URL_FULL" "$GLOBAL_INSTALL_DIR"
+  if [ $? -ne 0 ]; then
+    echo "Error al clonar el repositorio en $GLOBAL_INSTALL_DIR."
+    exit 1
+  fi
+
+  SCRIPT_PATH="$GLOBAL_INSTALL_DIR/scripts/menu-super-retropie.sh"
+  if [ -f "$SCRIPT_PATH" ]; then
+    echo "Ejecutando el script de menú..."
+    chmod +x "$SCRIPT_PATH"
+    exec "$SCRIPT_PATH" "$@"
+  else
+    echo "Error: $SCRIPT_PATH no existe."
+    exit 1
+  fi
 fi
 
 # Función para comprobar si el volumen lógico está usando todo el espacio disponible
