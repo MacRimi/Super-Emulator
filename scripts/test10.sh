@@ -14,6 +14,7 @@ fi
 
 # Función para instalar dependencias
 install_dependencies() {
+    apt-get update  # Asegurarse de que la lista de paquetes está actualizada
     local dependencies=("git" "wget" "dialog" "expect" "lvm2")
     echo "Verificando e instalando dependencias necesarias..."
     for pkg in "${dependencies[@]}"; do
