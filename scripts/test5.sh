@@ -59,30 +59,10 @@ if command -v emulationstation &> /dev/null; then
     # Llamar a la función de actualización si es necesario
     update_script
 
-# Verificar si RetroPie está instalado
-if command -v emulationstation &> /dev/null; then
-    echo "RetroPie está instalado. Procediendo con la descarga del repositorio y ejecución del nuevo script..."
-    
-    # Crear el directorio de instalación si no existe
-    mkdir -p "$INSTALL_DIR"
-    
-    # Clonar el repositorio
-    git clone "$REPO_URL" "$INSTALL_DIR"
-    
-    # Verificar si la clonación fue exitosa
-    if [ $? -ne 0 ]; then
-        echo "Error al clonar el repositorio. Saliendo..."
-        exit 1
-    fi
-
-    # Dar permisos de ejecución al script descargado
+    # Si no hay actualización, proceder con la ejecución del script principal
+    echo "Procediendo con la ejecución del script..."
     chmod +x "$SCRIPT_PATH"
-
-    # Ejecutar el nuevo script
-    exec "$SCRIPT_PATH"
-
-    # Salir del script actual
-    exit 0
+    exec "$SCRIPT_PATH" "$@"
 else
     echo "RetroPie no está instalado. Las siguientes opciones estarán disponibles:"
 fi
