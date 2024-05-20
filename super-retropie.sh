@@ -10,7 +10,7 @@ if command -v emulationstation &> /dev/null; then
     ##############################
 
     # Descargar y ejecutar el otro script
-    wget -qO- https://raw.githubusercontent.com/MacRimi/SuperEmulator/main/scripts/menu-super-retropie.sh | sudo bash
+    wget -qO- https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/scripts/menu-super-retropie.sh | sudo bash
 
     # Verificar si el usuario canceló la instalación adicional
     if [[ $? -eq 1 ]]; then
