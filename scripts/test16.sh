@@ -36,15 +36,18 @@ else
     echo "RetroPie no está instalado. Configurando en el directorio del usuario: $INSTALL_DIR"
 fi
 
-# Crear directorios necesarios
-mkdir -p "$INSTALL_DIR/scripts"
-if [ ! -f "$INSTALL_DIR/version.txt" ]; then
-    touch "$INSTALL_DIR/version.txt"
-    echo "0.0" > "$INSTALL_DIR/version.txt"
+# Crear directorios y archivos necesarios en /opt/Super-RetroPie si no existen
+mkdir -p "$GLOBAL_INSTALL_DIR/scripts"
+
+# Crear directorios y archivos necesarios en /home/pi/Super-RetroPie si no existen
+mkdir -p "$USER_INSTALL_DIR"
+if [ ! -f "$USER_INSTALL_DIR/version.txt" ]; then
+    echo "0.0" > "$USER_INSTALL_DIR/version.txt"
 fi
 
-SCRIPT_PATH="$INSTALL_DIR/scripts/menu-super-retropie.sh"
-VERSION_FILE="$INSTALL_DIR/version.txt"
+SCRIPT_PATH="$GLOBAL_INSTALL_DIR/scripts/menu-super-retropie.sh"
+USER_SCRIPT_PATH="$USER_INSTALL_DIR/super-retropie.sh"
+VERSION_FILE="$USER_INSTALL_DIR/version.txt"
 
 # Función para actualizar el script
 update_script() {
@@ -60,8 +63,8 @@ update_script() {
   CURRENT_VERSION=$(cat "$VERSION_FILE")
   if [ "$NEW_VERSION" != "$CURRENT_VERSION" ]; then
     echo "Nueva versión disponible: $NEW_VERSION. Actualizando..."
-    mkdir -p "$INSTALL_DIR/scripts"
-    cp "$TMP_DIR/scripts/"* "$INSTALL_DIR/scripts"
+    cp "$TMP_DIR/scripts/menu-super-retropie.sh" "$GLOBAL_INSTALL_DIR/scripts/"
+    cp "$TMP_DIR/version.txt" "$USER_INSTALL_DIR/"
     echo "$NEW_VERSION" > "$VERSION_FILE"
     chmod +x "$SCRIPT_PATH"
     echo "Actualización completada. Reiniciando script..."
@@ -83,7 +86,7 @@ exec "$SCRIPT_PATH" "$@"
 # Función para comprobar si el volumen lógico está usando todo el espacio disponible
 check_volume() {
   local LV_PATH=$(lvscan | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
-  if [ -z "$LV_PATH" ]; entonces
+  if [ -z "$LV_PATH" ]; then
     echo "No se pudo determinar la ruta del volumen lógico. Asegúrate de que el volumen lógico está activo."
     exit 1
   fi
@@ -102,21 +105,21 @@ extend_volume() {
   
   # Verificar si el volumen ya está extendido al máximo
   local EXTEND_STATUS=$(lvdisplay "$LV_PATH" | grep "Allocated to snapshot")
-  if [[ -z "$EXTEND_STATUS" ]]; entonces
+  if [[ -z "$EXTEND_STATUS" ]]; then
     echo "El volumen lógico ya está extendido al máximo."
     return
   fi
 
   echo "Extendiendo el volumen lógico..."
   lvextend -l +100%FREE "$LV_PATH"
-  if [ $? -ne 0 ]; entonces
+  if [ $? -ne 0 ]; then
     echo "Error al extender el volumen lógico."
     exit 1
   fi
 
   echo "Redimensionando el sistema de archivos..."
   resize2fs "$LV_PATH"
-  if [ $? -ne 0 ]; entonces
+  if [ $? -ne 0 ]; then
     echo "Error al redimensionar el sistema de archivos."
     exit 1
   fi
@@ -129,7 +132,7 @@ install_retropie() {
     # Comprobar el estado del volumen antes de proceder
     check_volume
     local volume_status=$?
-    if [ "$volume_status" -eq 1 ]; entonces
+    if [ "$volume_status" -eq 1 ]; then
         # El volumen tiene espacio libre, advertir al usuario
         dialog --yesno "Se va a proceder a instalar RetroPie en un volumen de espacio reducido, esto podría hacer que te quedaras sin espacio pronto. ¿Desea continuar?" 10 60
         if [[ $? -eq 0 ]]; then
@@ -167,13 +170,13 @@ show_menu() {
 
     respuesta=$?
 
-    if [[ $respuesta -eq 1 || $respuesta -eq 255 ]]; entonces
+    if [[ $respuesta -eq 1 || $respuesta -eq 255 ]]; then
         clear
         echo "Instalación cancelada."
         exit 1
     fi
 
-    if echo "$opciones" | grep -q "2"; entonces
+    if echo "$opciones" | grep -q "2"; then
         dialog --yesno "¿Desea continuar con la instalación de RetroPie?" 10 60
         if [[ $? -eq 0 ]]; then
             install_retropie
@@ -183,7 +186,7 @@ show_menu() {
         fi
     fi
 
-    if echo "$opciones" | grep -q "1"; entonces
+    if echo "$opciones" | grep -q "1"; then
         dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
         if [[ $? -eq 0 ]]; then
             extend_volume
