@@ -2,7 +2,7 @@
 
 REPO_URL="https://github.com/MacRimi/Super-RetroPie"
 GLOBAL_INSTALL_DIR="/opt/Super-RetroPie"
-USER_HOME=$(eval echo ~$SUDO_USER)
+USER_HOME=$(eval echo ~$USER)
 USER_INSTALL_DIR="$USER_HOME/Super-RetroPie"
 TMP_DIR=$(mktemp -d)
 
@@ -12,59 +12,34 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
-# Función para verificar e instalar dependencias
-install_if_missing() {
-  PACKAGE_NAME=$1
-  if ! command -v $PACKAGE_NAME &> /dev/null; then
-    echo "El paquete '$PACKAGE_NAME' no está instalado. Instalándolo..."
-    apt-get update
-    apt-get install -y $PACKAGE_NAME
-  fi
-}
-
-# Verificar e instalar dependencias necesarias
-install_if_missing dialog
-install_if_missing git
-install_if_missing lvextend
-install_if_missing expect
-
-# Crear directorios y archivos necesarios en /opt/Super-RetroPie si no existen
-mkdir -p "$GLOBAL_INSTALL_DIR/scripts"
-
-# Crear directorios y archivos necesarios en /home/pi/Super-RetroPie si no existen
-mkdir -p "$USER_INSTALL_DIR"
-if [ ! -f "$USER_INSTALL_DIR/version.txt" ]; then
-    echo "0.0" > "$USER_INSTALL_DIR/version.txt"
+# Comprobar si 'dialog' está instalado
+if ! command -v dialog &> /dev/null; then
+    echo "'dialog' no está instalado. Instalando 'dialog'..."
+    sudo apt-get update
+    sudo apt-get install -y dialog
 fi
 
-SCRIPT_PATH="$GLOBAL_INSTALL_DIR/scripts/menu-super-retropie.sh"
-USER_SCRIPT_PATH="$USER_INSTALL_DIR/super-retropie.sh"
-VERSION_FILE="$USER_INSTALL_DIR/version.txt"
+# Comprobación de RetroPie instalado y configuración de directorios
+if command -v emulationstation &> /dev/null; then
+    INSTALL_DIR="$GLOBAL_INSTALL_DIR"
+    echo "RetroPie está instalado. Usando el directorio global: $INSTALL_DIR"
+else
+    INSTALL_DIR="$USER_INSTALL_DIR"
+    echo "RetroPie no está instalado. Configurando en el directorio del usuario: $INSTALL_DIR"
+    mkdir -p "$INSTALL_DIR/scripts"
+    touch "$INSTALL_DIR/version.txt"
+    echo "0.0" > "$INSTALL_DIR/version.txt"
+fi
+
+SCRIPT_PATH="$INSTALL_DIR/scripts/menu-super-retropie.sh"
+VERSION_FILE="$INSTALL_DIR/version.txt"
 
 # Función para actualizar el script
 update_script() {
   echo "Verificando actualizaciones del script..."
   git clone --depth=1 "$REPO_URL" "$TMP_DIR"
   if [ $? -ne 0 ]; then
-    echo "Error al clonar el repositorio."
-    rm -rf "$TMP_DIR"
-    exit 1
-  fi
-
-  echo "Contenido del directorio clonado:"
-  ls -l "$TMP_DIR"
-
-  if [ ! -d "$TMP_DIR/scripts" ]; then
-    echo "El directorio $TMP_DIR/scripts no existe después de la clonación. Verifica la URL del repositorio."
-    rm -rf "$TMP_DIR"
-    exit 1
-  fi
-
-  echo "Contenido del directorio 'scripts' clonado:"
-  ls -l "$TMP_DIR/scripts"
-
-  if [ ! -f "$TMP_DIR/scripts/menu-super-retropie.sh" ]; then
-    echo "El archivo $TMP_DIR/scripts/menu-super-retropie.sh no existe después de la clonación. Verifica la URL del repositorio."
+    echo "Error al clonar el repositorio para la actualización. Saliendo..."
     rm -rf "$TMP_DIR"
     exit 1
   fi
@@ -73,13 +48,13 @@ update_script() {
   CURRENT_VERSION=$(cat "$VERSION_FILE")
   if [ "$NEW_VERSION" != "$CURRENT_VERSION" ]; then
     echo "Nueva versión disponible: $NEW_VERSION. Actualizando..."
-    cp "$TMP_DIR/scripts/menu-super-retropie.sh" "$GLOBAL_INSTALL_DIR/scripts/"
-    cp "$TMP_DIR/super-retropie.sh" "$USER_INSTALL_DIR/"
+    mkdir -p "$INSTALL_DIR/scripts"
+    cp "$TMP_DIR/scripts/"* "$INSTALL_DIR/scripts"
     echo "$NEW_VERSION" > "$VERSION_FILE"
-    chmod +x "$USER_SCRIPT_PATH"
+    chmod +x "$SCRIPT_PATH"
     echo "Actualización completada. Reiniciando script..."
     rm -rf "$TMP_DIR"
-    exec "$USER_SCRIPT_PATH" "$@"
+    exec "$SCRIPT_PATH" "$@"
     exit 0
   else
     echo "El script ya está actualizado."
@@ -89,16 +64,9 @@ update_script() {
 
 # Llamar a la función de actualización si es necesario y proceder con la ejecución del script principal
 update_script
-
-# Proceder con la ejecución del script
-if [ -f "$SCRIPT_PATH" ]; then
-    echo "Procediendo con la ejecución del script..."
-    chmod +x "$SCRIPT_PATH"
-    exec "$SCRIPT_PATH" "$@"
-else
-    echo "Error: $SCRIPT_PATH no existe."
-    exit 1
-fi
+echo "Procediendo con la ejecución del script..."
+chmod +x "$SCRIPT_PATH"
+exec "$SCRIPT_PATH" "$@"
 
 # Función para comprobar si el volumen lógico está usando todo el espacio disponible
 check_volume() {
@@ -115,6 +83,13 @@ check_volume() {
     return 0
   fi
 }
+
+# Verificar si el paquete 'lvm2' está instalado, necesario para la instalación automatizada
+if ! command -v lvextend &> /dev/null; then
+    echo "El paquete 'lvm2' no está instalado. Instalándolo..."
+    apt-get update
+    apt-get install -y lvm2
+fi
 
 # Función para extender el volumen lógico
 extend_volume() {
@@ -136,7 +111,7 @@ extend_volume() {
 
   echo "Redimensionando el sistema de archivos..."
   resize2fs "$LV_PATH"
-  if [ $? -ne 0 ];then
+  if [ $? -ne 0 ]; then
     echo "Error al redimensionar el sistema de archivos."
     exit 1
   fi
@@ -146,6 +121,13 @@ extend_volume() {
 
 # Función para instalar RetroPie con comprobación de volumen
 install_retropie() {
+    # Verificar si el paquete 'expect' está instalado, necesario para la instalación automatizada
+    if ! command -v expect &> /dev/null; then
+        echo "El paquete 'expect' no está instalado. Instalándolo..."
+        apt-get update
+        apt-get install -y expect
+    fi
+
     # Comprobar el estado del volumen antes de proceder
     check_volume
     local volume_status=$?
