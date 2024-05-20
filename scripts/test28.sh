@@ -1,5 +1,28 @@
 #!/bin/bash
 
+# Directorio del usuario
+USER_DIR="/home/$(whoami)"
+
+# Nombre del repositorio
+REPO_NAME="Super-RetroPie"
+
+# Crear la carpeta en el directorio del usuario
+TARGET_DIR="$USER_DIR/$REPO_NAME"
+mkdir -p "$TARGET_DIR"
+
+# URL base del repositorio
+REPO_URL="https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main"
+
+# Descargar los archivos dentro de la carpeta creada
+wget -q "$REPO_URL/version.txt" -O "$TARGET_DIR/version.txt"
+wget -q "$REPO_URL/super-retropie.sh" -O "$TARGET_DIR/super-retropie.sh"
+
+# Asignar permisos de ejecución al archivo descargado
+chmod +x "$TARGET_DIR/super-retropie.sh"
+
+# Ejecutar el script
+sudo bash "$TARGET_DIR/super-retropie.sh"
+
 # Función para comprobar si el volumen lógico está usando todo el espacio disponible
 check_volume() {
   local LV_PATH=$(lvscan | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
