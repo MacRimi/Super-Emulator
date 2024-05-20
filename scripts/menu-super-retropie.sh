@@ -11,7 +11,6 @@ fi
 platforms_cfg="/opt/retropie/configs/all/platforms.cfg"
 es_systems_cfg="/etc/emulationstation/es_systems.cfg"
 
-
 #############################
 # Función para añadir RPCS3
 #############################
@@ -93,7 +92,7 @@ instalar_steam() {
 #################################
 # Función para ajustar emuladores 
 #################################
-function ajustes_emuladores() {
+ajustes_emuladores() {
     # Directorio de emuladores
     local emulators_dir="/opt/retropie/emulators"
     # Directorio de ajustes
@@ -115,7 +114,7 @@ function ajustes_emuladores() {
     fi
     
 
- for emulador in "$emulators_dir"/*; do
+    for emulador in "$emulators_dir"/*; do
         # Obtener el nombre del emulador
         emulador_name=$(basename "$emulador")
         # Directorio binario del emulador
@@ -172,9 +171,9 @@ function ajustes_emuladores() {
     done
 
 
-if ! grep -q '<name>ajustes</name>' "$es_systems_cfg"; then
-    # Definir el nuevo sistema
-    nuevo_sistema=$(cat << EOF
+    if ! grep -q '<name>ajustes</name>' "$es_systems_cfg"; then
+        # Definir el nuevo sistema
+        nuevo_sistema=$(cat << EOF
   <system>
     <name>ajustes</name>
     <fullname>Configuraciones</fullname>
@@ -186,25 +185,25 @@ if ! grep -q '<name>ajustes</name>' "$es_systems_cfg"; then
   </system>
 EOF
 )
-    # Insertar el nuevo sistema antes de la etiqueta </systemList>
-    awk -v new_system="$nuevo_sistema" '/<\/systemList>/ {print new_system} 1' "$es_systems_cfg" > temp.xml && mv temp.xml "$es_systems_cfg"
-fi
-
+        # Insertar el nuevo sistema antes de la etiqueta </systemList>
+        awk -v new_system="$nuevo_sistema" '/<\/systemList>/ {print new_system} 1' "$es_systems_cfg" > temp.xml && mv temp.xml "$es_systems_cfg"
+    fi
 }
 
 ###################################################
 
-# Mostrar el menú y capturar la selección
 while true; do
-    opciones=$(dialog --checklist "Seleccione los scripts a ejecutar:" 20 60 4 \
+    # Mostrar el menú y capturar la selección
+    opciones=$(dialog --checklist "Seleccione los scripts a ejecutar:" 20 60 5 \
         1 "Instalar RPCS3 (Play Station 3)" off \
         2 "Instalar Yuzu (Nintendo Switch)" off \
         3 "Instalar Steam" off \
-        4 "Ajustes Emuladores" off 3>&1 1>&2 2>&3 3>&-)
+        4 "Ajustes Emuladores" off \
+        5 "Salir" off 3>&1 1>&2 2>&3 3>&-)
 
     respuesta=$?
 
-    if [[ $respuesta -eq 1 || $respuesta -eq 255 ]]; then
+    if [[ $respuesta -eq 1 || $respuesta -eq 255 || "$opciones" == *5* ]]; then
         clear
         echo "Instalación cancelada o salida del script."
         exit 1
@@ -218,30 +217,28 @@ while true; do
     # Confirmar la selección
     confirmacion=$(dialog --yesno "¿Desea continuar con la instalación de los scripts seleccionados?" 10 60 3>&1 1>&2 2>&3 3>&-)
     if [[ $? -eq 0 ]]; then
-        break
+        # Acciones basadas en la selección del usuario
+        clear
+        for opcion in $opciones; do
+            case $opcion in
+                1)
+                    echo "Instalando RPCS3..."
+                    instalar_rpcs3
+                    ;;
+                2)
+                    echo "Instalando Yuzu..."
+                    instalar_yuzu
+                    ;;
+                3)
+                    echo "Instalando Steam..."
+                    instalar_steam
+                    ;;
+                4)
+                    echo "Ajustando Emuladores..."
+                    ajustes_emuladores
+                    ;;
+            esac
+        done
+        echo "Instalación completada."
     fi
 done
-
-# Acciones basadas en la selección del usuario
-clear
-for opcion in $opciones; do
-    case $opcion in
-        1)
-            echo "Instalando RPCS3..."
-            instalar_rpcs3
-            ;;
-        2)
-            echo "Instalando Yuzu..."
-            instalar_yuzu
-            ;;
-        3)
-            echo "Instalando Steam..."
-            instalar_steam
-            ;;
-        4)
-            echo "Ajustando Emuladores..."
-            ajustes_emuladores
-            ;;
-    esac
-done
-echo "Instalación completada."
