@@ -12,15 +12,18 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
-# Función para instalar dependencias
+# Función para instalar dependencias necesarias
 install_dependencies() {
+    echo "Actualizando lista de paquetes..."
     apt-get update  # Asegurarse de que la lista de paquetes está actualizada
     local dependencies=("git" "wget" "dialog" "expect" "lvm2")
     echo "Verificando e instalando dependencias necesarias..."
     for pkg in "${dependencies[@]}"; do
         if ! command -v $pkg &> /dev/null; then
-            echo "Instalando $pkg..."
+            echo "El paquete $pkg no está instalado. Instalándolo..."
             apt-get install -y $pkg
+        else
+            echo "El paquete $pkg ya está instalado."
         fi
     done
 }
