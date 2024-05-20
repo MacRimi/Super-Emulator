@@ -12,24 +12,13 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
-# Función para instalar dependencias necesarias
-install_dependencies() {
-    echo "Actualizando lista de paquetes..."
-    apt-get update  # Asegurarse de que la lista de paquetes está actualizada
-    local dependencies=("git" "wget" "dialog" "expect" "lvm2")
-    echo "Verificando e instalando dependencias necesarias..."
-    for pkg in "${dependencies[@]}"; do
-        if ! command -v $pkg &> /dev/null; then
-            echo "El paquete $pkg no está instalado. Instalándolo..."
-            apt-get install -y $pkg
-        else
-            echo "El paquete $pkg ya está instalado."
-        fi
-    done
-}
+# Comprobar si 'dialog' está instalado
+if ! command -v dialog &> /dev/null; then
+    echo "'dialog' no está instalado. Instalando 'dialog'..."
+    sudo apt-get update
+    sudo apt-get install -y dialog
+fi
 
-# Instalar dependencias antes de proceder
-install_dependencies
 
 # Comprobación de RetroPie instalado y configuración de directorios
 if command -v emulationstation &> /dev/null; then
@@ -45,7 +34,6 @@ fi
 
 SCRIPT_PATH="$INSTALL_DIR/scripts/menu-super-retropie.sh"
 VERSION_FILE="$INSTALL_DIR/version.txt"
-
 
 # Función para actualizar el script
 update_script() {
@@ -98,6 +86,13 @@ check_volume() {
 }
 
 # Función para extender el volumen lógico
+
+# Verificar si el paquete 'lvm2' está instalado, necesario para la instalación automatizada
+    if ! command -v lvm2 &> /dev/null; then
+        echo "El paquete 'lvm2' no está instalado. Instalándolo..."
+        apt-get update
+        apt-get install -y lvm2
+    fi
 extend_volume() {
   local LV_PATH=$(lvscan | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
   
