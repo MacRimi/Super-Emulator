@@ -3,7 +3,8 @@
 REPO_URL="https://github.com/MacRimi/Super-RetroPie"
 INSTALL_DIR="/opt/Super-RetroPie"
 SCRIPT_PATH="$INSTALL_DIR/scripts/menu-super-retropie.sh"
-CURRENT_SCRIPT="$(realpath "$0")"
+VERSION_FILE="$INSTALL_DIR/version.txt"
+TMP_DIR=$(mktemp -d)
 
 # Asegurarse de que el script se ejecute con permisos de superusuario
 if [ "$EUID" -ne 0 ]; then
@@ -16,7 +17,6 @@ update_script() {
   echo "Verificando actualizaciones del script..."
   
   # Clonar temporalmente el repositorio
-  TMP_DIR=$(mktemp -d)
   git clone --depth=1 "$REPO_URL" "$TMP_DIR"
   
   # Verificar si la clonación fue exitosa
@@ -25,17 +25,27 @@ update_script() {
     rm -rf "$TMP_DIR"
     exit 1
   fi
-  
-  # Reemplazar el script actual con el nuevo
-  cp "$TMP_DIR/scripts/menu-super-retropie.sh" "$CURRENT_SCRIPT"
-  chmod +x "$CURRENT_SCRIPT"
-  
+
+  # Comparar versiones
+  NEW_VERSION=$(cat "$TMP_DIR/version.txt")
+  CURRENT_VERSION=$(cat "$VERSION_FILE")
+
+  if [ "$NEW_VERSION" != "$CURRENT_VERSION" ]; then
+    echo "Nueva versión disponible: $NEW_VERSION. Actualizando..."
+    # Copiar nuevos archivos
+    cp -r "$TMP_DIR/scripts" "$INSTALL_DIR"
+    echo "$NEW_VERSION" > "$VERSION_FILE"
+    chmod +x "$SCRIPT_PATH"
+    echo "Actualización completada. Reiniciando script..."
+    rm -rf "$TMP_DIR"
+    exec "$SCRIPT_PATH" "$@"
+    exit 0
+  else
+    echo "El script ya está actualizado."
+  fi
+
   # Limpiar el directorio temporal
   rm -rf "$TMP_DIR"
-  
-  echo "Script actualizado. Reiniciando..."
-  exec "$CURRENT_SCRIPT" "$@"
-  exit 0
 }
 
 # Llamar a la función de actualización al inicio del script
@@ -72,7 +82,7 @@ fi
 # Función para comprobar si el volumen lógico está usando todo el espacio disponible
 check_volume() {
   local LV_PATH=$(lvscan | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
-  if [ -z "$LV_PATH" ]; then
+  if [ -z "$LV_PATH" ];hen
     echo "No se pudo determinar la ruta del volumen lógico. Asegúrate de que el volumen lógico está activo."
     exit 1
   fi
@@ -98,14 +108,14 @@ extend_volume() {
 
   echo "Extendiendo el volumen lógico..."
   lvextend -l +100%FREE "$LV_PATH"
-  if [ $? -ne 0 ]; then
+  if [ $? -ne 0 ];hen
     echo "Error al extender el volumen lógico."
     exit 1
   fi
 
   echo "Redimensionando el sistema de archivos..."
   resize2fs "$LV_PATH"
-  if [ $? -ne 0 ]; then
+  if [ $? -ne 0 ];hen
     echo "Error al redimensionar el sistema de archivos."
     exit 1
   fi
@@ -153,7 +163,7 @@ show_menu() {
 
     if echo "$opciones" | grep -q "2"; then
         dialog --yesno "¿Desea continuar con la instalación de RetroPie?" 10 60
-        if [[ $? -eq 0 ]]; then
+        if [[ $? -eq 0 ]];hen
             install_retropie
             return
         else
@@ -163,7 +173,7 @@ show_menu() {
 
     if echo "$opciones" | grep -q "1"; then
         dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
-        if [[ $? -eq 0 ]]; then
+        if [[ $? -eq 0 ]];hen
             extend_volume
             return
         else
