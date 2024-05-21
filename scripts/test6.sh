@@ -71,7 +71,7 @@ extend_volume() {
   fi
 
   resize2fs "$LV_PATH"
-  if [ $? -ne 0 ]; then
+  if [ $? -ne 0 ]; entonces
     echo "Error al redimensionar el sistema de archivos."
     return 1
   fi
@@ -86,7 +86,7 @@ install_retropie() {
   local volume_status=$?
   if [ "$volume_status" -eq 1 ]; then
     dialog --yesno "Se va a proceder a instalar RetroPie en un volumen de espacio reducido, esto podría hacer que te quedaras sin espacio pronto. ¿Desea continuar?" 10 60
-    if [[ $? -ne 0 ]]; entonces
+    if [[ $? -ne 0 ]]; then
       echo "Instalación cancelada por el usuario."
       return
     fi
@@ -133,7 +133,7 @@ show_menu() {
 
     if echo "$opciones" | grep -q "1"; then
         dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
-        if [[ $? -eq 0 ]]; entonces
+        if [[ $? -eq 0 ]]; then
             extend_volume
         else
             clear
@@ -180,6 +180,5 @@ else
     echo "Error: $SCRIPT_PATH no existe."
     exit 1
   fi
-
   show_menu
 fi
