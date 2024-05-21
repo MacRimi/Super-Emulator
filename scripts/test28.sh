@@ -1,27 +1,73 @@
 #!/bin/bash
 
-# Directorio del usuario
-USER_DIR="/home/$(whoami)"
+REPO_URL="https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/super-retropie.sh"
+REPO_URL_FULL="https://github.com/MacRimi/Super-RetroPie.git"
+GLOBAL_INSTALL_DIR="/opt/Super-RetroPie"
+USER_HOME=$(eval echo ~$SUDO_USER)
+USER_INSTALL_DIR="$USER_HOME/Super-RetroPie"
+SCRIPT_NAME="super-retropie.sh"
+USER_SCRIPT_PATH="$USER_INSTALL_DIR/$SCRIPT_NAME"
 
-# Nombre del repositorio
-REPO_NAME="Super-RetroPie"
+# Asegurarse de que el script se ejecute con permisos de superusuario
+if [ "$EUID" -ne 0 ]; then
+  echo "Por favor, ejecute este script como root."
+  exit 1
+fi
 
-# Crear la carpeta en el directorio del usuario
-TARGET_DIR="$USER_DIR/$REPO_NAME"
-mkdir -p "$TARGET_DIR"
+# Función para verificar e instalar dependencias
+install_if_missing() {
+  PACKAGE_NAME=$1
+  if ! command -v $PACKAGE_NAME &> /dev/null; then
+    echo "El paquete '$PACKAGE_NAME' no está instalado. Instalándolo..."
+    apt-get update
+    apt-get install -y $PACKAGE_NAME
+  fi
+}
 
-# URL base del repositorio
-REPO_URL="https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main"
+# Verificar e instalar dependencias necesarias
+install_if_missing dialog
+install_if_missing wget
+install_if_missing git
+install_if_missing lvm2  # Cambiar 'lvextend' por 'lvm2'
+install_if_missing expect
 
-# Descargar los archivos dentro de la carpeta creada
-wget -q "$REPO_URL/version.txt" -O "$TARGET_DIR/version.txt"
-wget -q "$REPO_URL/super-retropie.sh" -O "$TARGET_DIR/super-retropie.sh"
+# Descargar y ejecutar el script si emulationstation no está instalado
+if ! command -v emulationstation &> /dev/null; then
+  echo "emulationstation no está instalado. Descargando y ejecutando $SCRIPT_NAME..."
+  mkdir -p "$USER_INSTALL_DIR"
+  wget -q "$REPO_URL" -O "$USER_SCRIPT_PATH"
+  if [ $? -ne 0 ]; then
+    echo "Error al descargar $SCRIPT_NAME en $USER_INSTALL_DIR."
+    exit 1
+  fi
 
-# Asignar permisos de ejecución al archivo descargado
-chmod +x "$TARGET_DIR/super-retropie.sh"
+  if [ -f "$USER_SCRIPT_PATH" ]; then
+    echo "Ejecutando el script..."
+    chmod +x "$USER_SCRIPT_PATH"
+    exec "$USER_SCRIPT_PATH" "$@"
+  else
+    echo "Error: $USER_SCRIPT_PATH no existe."
+    exit 1
+  fi
+else
+  echo "emulationstation está instalado. Clonando el repositorio en $GLOBAL_INSTALL_DIR..."
+  rm -rf "$GLOBAL_INSTALL_DIR"
+  git clone "$REPO_URL_FULL" "$GLOBAL_INSTALL_DIR"
+  if [ $? -ne 0 ]; then
+    echo "Error al clonar el repositorio en $GLOBAL_INSTALL_DIR."
+    exit 1
+  fi
 
-# Ejecutar el script
-sudo bash "$TARGET_DIR/super-retropie.sh"
+  SCRIPT_PATH="$GLOBAL_INSTALL_DIR/scripts/menu-super-retropie.sh"
+  if [ -f "$SCRIPT_PATH" ]; then
+    echo "Ejecutando el script de menú..."
+    chmod +x "$SCRIPT_PATH"
+    exec "$SCRIPT_PATH" "$@"
+  else
+    echo "Error: $SCRIPT_PATH no existe."
+    exit 1
+  fi
+fi
 
 # Función para comprobar si el volumen lógico está usando todo el espacio disponible
 check_volume() {
@@ -39,23 +85,9 @@ check_volume() {
   fi
 }
 
-# Verificar si el paquete 'lvm2' está instalado, necesario para la instalación automatizada
-if ! command -v lvextend &> /dev/null; then
-    echo "El paquete 'lvm2' no está instalado. Instalándolo..."
-    apt-get update
-    apt-get install -y lvm2
-fi
-
 # Función para extender el volumen lógico
 extend_volume() {
   local LV_PATH=$(lvscan | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
-
-  # Verificar si el volumen ya está extendido al máximo
-  local EXTEND_STATUS=$(lvdisplay "$LV_PATH" | grep "Allocated to snapshot")
-  if [[ -z "$EXTEND_STATUS" ]]; then
-    echo "El volumen lógico ya está extendido al máximo."
-    return
-  fi
 
   echo "Extendiendo el volumen lógico..."
   lvextend -l +100%FREE "$LV_PATH"
@@ -76,43 +108,36 @@ extend_volume() {
 
 # Función para instalar RetroPie con comprobación de volumen
 install_retropie() {
-    # Verificar si el paquete 'expect' está instalado, necesario para la instalación automatizada
-    if ! command -v expect &> /dev/null; then
-        echo "El paquete 'expect' no está instalado. Instalándolo..."
-        apt-get update
-        apt-get install -y expect
+  # Comprobar el estado del volumen antes de proceder
+  check_volume
+  local volume_status=$?
+  if [ "$volume_status" -eq 1 ]; then
+    # El volumen tiene espacio libre, advertir al usuario
+    dialog --yesno "Se va a proceder a instalar RetroPie en un volumen de espacio reducido, esto podría hacer que te quedaras sin espacio pronto. ¿Desea continuar?" 10 60
+    if [[ $? -eq 0 ]]; then
+      echo "Instalando RetroPie..."
+    else
+      echo "Instalación cancelada por el usuario."
+      return
     fi
+  fi
 
-    # Comprobar el estado del volumen antes de proceder
-    check_volume
-    local volume_status=$?
-    if [ "$volume_status" -eq 1 ]; then
-        # El volumen tiene espacio libre, advertir al usuario
-        dialog --yesno "Se va a proceder a instalar RetroPie en un volumen de espacio reducido, esto podría hacer que te quedaras sin espacio pronto. ¿Desea continuar?" 10 60
-        if [[ $? -eq 0 ]]; then
-            echo "Instalando RetroPie..."
-        else
-            echo "Instalación cancelada por el usuario."
-            return
-        fi
-    fi
+  # Descargar y ejecutar el script de instalación de RetroPie
+  wget -q https://raw.githubusercontent.com/MizterB/RetroPie-Setup-Ubuntu/master/bootstrap.sh
+  bash ./bootstrap.sh
 
-    # Descargar y ejecutar el script de instalación de RetroPie
-    wget -q https://raw.githubusercontent.com/MizterB/RetroPie-Setup-Ubuntu/master/bootstrap.sh
-    bash ./bootstrap.sh
-
-    # Automatizar la interacción con el script de instalación de RetroPie
-    expect << EOF
-    spawn sudo ./RetroPie-Setup-Ubuntu/retropie_setup_ubuntu.sh
-    expect {
-        "Press any key to continue" { send "\r"; exp_continue }
-        "RetroPie Setup" { send "\r"; exp_continue }
-        "Exit" { send "\r" }
-    }
+  # Automatizar la interacción con el script de instalación de RetroPie
+  expect << EOF
+  spawn sudo ./RetroPie-Setup-Ubuntu/retropie_setup_ubuntu.sh
+  expect {
+      "Press any key to continue" { send "\r"; exp_continue }
+      "RetroPie Setup" { send "\r"; exp_continue }
+      "Exit" { send "\r" }
+  }
 EOF
 
-    # Reiniciar el sistema tras la instalación
-    reboot
+  # Reiniciar el sistema tras la instalación
+  reboot
 }
 
 # Función para mostrar el menú y capturar la selección del usuario
@@ -134,6 +159,7 @@ show_menu() {
         dialog --yesno "¿Desea continuar con la instalación de RetroPie?" 10 60
         if [[ $? -eq 0 ]]; then
             install_retropie
+            return
         else
             clear
         fi
@@ -143,6 +169,7 @@ show_menu() {
         dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
         if [[ $? -eq 0 ]]; then
             extend_volume
+            return
         else
             clear
         fi
@@ -152,4 +179,3 @@ show_menu() {
 
 # Inicio del script
 show_menu
-
