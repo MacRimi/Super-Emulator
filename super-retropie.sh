@@ -17,7 +17,7 @@ fi
 # Función para verificar e instalar dependencias
 install_if_missing() {
   PACKAGE_NAME=$1
-  if ! command -v $PACKAGE_NAME &> /dev/null; then
+  if ! dpkg -s $PACKAGE_NAME &> /dev/null; then
     echo "El paquete '$PACKAGE_NAME' no está instalado. Instalándolo..."
     apt-get update
     apt-get install -y $PACKAGE_NAME
@@ -27,17 +27,20 @@ install_if_missing() {
 # Verificar e instalar dependencias necesarias
 install_if_missing dialog
 install_if_missing expect
+install_if_missing wget
 
-# Descargar y ejecutar el script si emulationstation no está instalado
-if ! command -v emulationstation-test &> /dev/null; then
-  echo "emulationstation no está instalado. Descargando y ejecutando $SCRIPT_NAME..."
+# Descargar y preparar el script si emulationstation no está instalado
+if ! command -v emulationstation &> /dev/null; then
+  echo "emulationstation no está instalado. Descargando y preparando $SCRIPT_NAME..."
   mkdir -p "$USER_INSTALL_DIR"
   wget -q "$REPO_URL" -O "$USER_SCRIPT_PATH"
- 
+  
   if [ -f "$USER_SCRIPT_PATH" ]; then
-    echo "Ejecutando el script..."
+    echo "Script descargado y preparado en $USER_SCRIPT_PATH"
     chmod +x "$USER_SCRIPT_PATH"
-    exec "$USER_SCRIPT_PATH" "$@"
+  else
+    echo "Error al descargar $SCRIPT_NAME en $USER_INSTALL_DIR."
+    exit 1
   fi
 else
   echo "emulationstation está instalado. Clonando el repositorio en $GLOBAL_INSTALL_DIR..."
@@ -49,6 +52,9 @@ else
     echo "Ejecutando el script de menú..."
     chmod +x "$SCRIPT_PATH"
     exec "$SCRIPT_PATH" "$@"
+  else
+    echo "Error: $SCRIPT_PATH no existe."
+    exit 1
   fi
 fi
 
@@ -61,7 +67,7 @@ check_volume() {
   fi
 
   local FREE_SPACE=$(vgdisplay | grep "Free  PE / Size" | awk '{print $5}')
-  if [ "$FREE_SPACE" -gt 0 ]; then
+  if [ "$FREE_SPACE" -gt 0 ]; entonces
     return 1
   else
     return 0
@@ -97,7 +103,7 @@ install_retropie() {
   if [ "$volume_status" -eq 1 ]; then
     # El volumen tiene espacio libre, advertir al usuario
     dialog --yesno "Se va a proceder a instalar RetroPie en un volumen de espacio reducido, esto podría hacer que te quedaras sin espacio pronto. ¿Desea continuar?" 10 60
-    if [[ $? -eq 0 ]]; then
+    if [[ $? -eq 0 ]]; entonces
       echo "Instalando RetroPie..."
     else
       echo "Instalación cancelada por el usuario."
@@ -132,15 +138,15 @@ show_menu() {
 
     respuesta=$?
 
-    if [[ $respuesta -eq 1 || $respuesta -eq 255 ]]; then
+    if [[ $respuesta -eq 1 || $respuesta -eq 255 ]]; entonces
         clear
         echo "Instalación cancelada."
         exit 1
     fi
 
-    if echo "$opciones" | grep -q "2"; then
+    if echo "$opciones" | grep -q "2"; entonces
         dialog --yesno "¿Desea continuar con la instalación de RetroPie?" 10 60
-        if [[ $? -eq 0 ]]; then
+        if [[ $? -eq 0 ]]; entonces
             install_retropie
             return
         else
@@ -148,9 +154,9 @@ show_menu() {
         fi
     fi
 
-    if echo "$opciones" | grep -q "1"; then
+    if echo "$opciones" | grep -q "1"; entonces
         dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
-        if [[ $? -eq 0 ]]; then
+        if [[ $? -eq 0 ]]; entonces
             extend_volume
             return
         else
