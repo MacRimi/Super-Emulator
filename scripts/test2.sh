@@ -26,9 +26,6 @@ install_if_missing() {
 
 # Verificar e instalar dependencias necesarias
 install_if_missing dialog
-install_if_missing wget
-install_if_missing git
-install_if_missing lvm2
 install_if_missing expect
 
 # Función para comprobar si el volumen lógico está usando todo el espacio disponible
