@@ -32,7 +32,7 @@ install_if_missing lvextend
 install_if_missing expect
 
 # Descargar y ejecutar el script si emulationstation no está instalado
-if ! command -v emulationstation &> /dev/null; then
+if ! command -v emulationstation_test &> /dev/null; then
   echo "emulationstation no está instalado. Descargando y ejecutando $SCRIPT_NAME..."
   mkdir -p "$USER_INSTALL_DIR"
   wget -q "$REPO_URL" -O "$USER_SCRIPT_PATH"
