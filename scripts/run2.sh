@@ -14,9 +14,9 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
-# Descargar y ejecutar el script si emulationstation no está instalado
+# Descargar y ejecutar el script si emulationstation_test no está instalado
 if ! command -v emulationstation_test &> /dev/null; then
-  echo "emulationstation no está instalado. Descargando y ejecutando $SCRIPT_NAME..."
+  echo "emulationstation_test no está instalado. Descargando y ejecutando $SCRIPT_NAME..."
   mkdir -p "$USER_INSTALL_DIR"
   wget -q "$REPO_URL" -O "$USER_SCRIPT_PATH"
   if [ $? -ne 0 ]; then
@@ -33,7 +33,7 @@ if ! command -v emulationstation_test &> /dev/null; then
     exit 1
   fi
 else
-  echo "emulationstation está instalado. Clonando el repositorio en $GLOBAL_INSTALL_DIR..."
+  echo "emulationstation_test está instalado. Clonando el repositorio en $GLOBAL_INSTALL_DIR..."
   rm -rf "$GLOBAL_INSTALL_DIR"
   git clone "$REPO_URL_FULL" "$GLOBAL_INSTALL_DIR"
   if [ $? -ne 0 ]; then
@@ -64,18 +64,21 @@ install_if_missing() {
 
 # Verificar e instalar dependencias necesarias
 install_if_missing dialog
+install_if_missing wget
+install_if_missing git
+install_if_missing lvm2
 install_if_missing expect
 
 # Función para comprobar si el volumen lógico está usando todo el espacio disponible
 check_volume() {
   local LV_PATH=$(lvscan | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
-  if [ -z "$LV_PATH" ]; then
+  if [ -z "$LV_PATH" ]; entonces
     echo "No se pudo determinar la ruta del volumen lógico. Asegúrate de que el volumen lógico está activo."
     exit 1
   fi
 
   local FREE_SPACE=$(vgdisplay | grep "Free  PE / Size" | awk '{print $5}')
-  if [ "$FREE_SPACE" -gt 0 ]; then
+  if [ "$FREE_SPACE" -gt 0 ]; entonces
     return 1
   else
     return 0
@@ -86,7 +89,7 @@ check_volume() {
 extend_volume() {
   local LV_PATH=$(lvscan | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
 
-  if [ -z "$LV_PATH" ]; then
+  if [ -z "$LV_PATH" ]; entonces
     echo "Error: No se pudo determinar la ruta del volumen lógico."
     return 1
   fi
@@ -94,7 +97,7 @@ extend_volume() {
   local CURRENT_SIZE=$(lvdisplay "$LV_PATH" | grep "Current LE" | awk '{print $3}')
   local MAX_SIZE=$(vgdisplay | grep "Total PE" | awk '{print $3}')
 
-  if [ "$CURRENT_SIZE" -eq "$MAX_SIZE" ]; then
+  if [ "$CURRENT_SIZE" -eq "$MAX_SIZE" ]; entonces
     echo "El volumen lógico ya está en su tamaño máximo."
     return 0
   fi
