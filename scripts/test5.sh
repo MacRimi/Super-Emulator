@@ -28,48 +28,8 @@ install_if_missing() {
 install_if_missing dialog
 install_if_missing wget
 install_if_missing git
-install_if_missing lvextend
+install_if_missing lvm2
 install_if_missing expect
-
-# Descargar y ejecutar el script si emulationstation no está instalado
-if ! command -v emulationstation_test &> /dev/null; then
-  echo "emulationstation no está instalado. Descargando y ejecutando $SCRIPT_NAME..."
-  mkdir -p "$USER_INSTALL_DIR"
-  wget -q "$REPO_URL" -O "$USER_SCRIPT_PATH"
-  if [ $? -ne 0 ]; then
-    echo "Error al descargar $SCRIPT_NAME en $USER_INSTALL_DIR."
-    exit 1
-  fi
-
-  if [ -f "$USER_SCRIPT_PATH" ]; then
-    echo "Ejecutando el script..."
-    chmod +x "$USER_SCRIPT_PATH"
-    exec "$USER_SCRIPT_PATH" "$@"
-  else
-    echo "Error: $USER_SCRIPT_PATH no existe."
-    exit 1
-  fi
-else
-  echo "emulationstation está instalado. Clonando el repositorio en $GLOBAL_INSTALL_DIR..."
-  rm -rf "$GLOBAL_INSTALL_DIR"
-  git clone "$REPO_URL_FULL" "$GLOBAL_INSTALL_DIR"
-  if [ $? -ne 0 ]; then
-    echo "Error al clonar el repositorio en $GLOBAL_INSTALL_DIR."
-    exit 1
-  fi
-
-  SCRIPT_PATH="$GLOBAL_INSTALL_DIR/scripts/menu-super-retropie.sh"
-  if [ -f "$SCRIPT_PATH" ]; then
-    echo "Ejecutando el script de menú..."
-    chmod +x "$SCRIPT_PATH"
-    exec "$SCRIPT_PATH" "$@"
-  else
-    echo "Error: $SCRIPT_PATH no existe."
-    exit 1
-  fi
-fi
-
-#!/bin/bash
 
 # Función para comprobar si el volumen lógico está usando todo el espacio disponible
 check_volume() {
@@ -126,7 +86,7 @@ install_retropie() {
   local volume_status=$?
   if [ "$volume_status" -eq 1 ]; then
     dialog --yesno "Se va a proceder a instalar RetroPie en un volumen de espacio reducido, esto podría hacer que te quedaras sin espacio pronto. ¿Desea continuar?" 10 60
-    if [[ $? -ne 0 ]]; then
+    if [[ $? -ne 0 ]]; entonces
       echo "Instalación cancelada por el usuario."
       return
     fi
@@ -173,7 +133,7 @@ show_menu() {
 
     if echo "$opciones" | grep -q "1"; then
         dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
-        if [[ $? -eq 0 ]]; then
+        if [[ $? -eq 0 ]]; entonces
             extend_volume
         else
             clear
@@ -183,4 +143,43 @@ show_menu() {
 }
 
 # Inicio del script
-show_menu
+
+# Descargar y ejecutar el script si emulationstation no está instalado
+if ! command -v emulationstation &> /dev/null; then
+  echo "emulationstation no está instalado. Descargando y ejecutando $SCRIPT_NAME..."
+  mkdir -p "$USER_INSTALL_DIR"
+  wget -q "$REPO_URL" -O "$USER_SCRIPT_PATH"
+  if [ $? -ne 0 ]; then
+    echo "Error al descargar $SCRIPT_NAME en $USER_INSTALL_DIR."
+    exit 1
+  fi
+
+  if [ -f "$USER_SCRIPT_PATH" ]; then
+    echo "Ejecutando el script..."
+    chmod +x "$USER_SCRIPT_PATH"
+    exec "$USER_SCRIPT_PATH" "$@"
+  else
+    echo "Error: $USER_SCRIPT_PATH no existe."
+    exit 1
+  fi
+else
+  echo "emulationstation está instalado. Clonando el repositorio en $GLOBAL_INSTALL_DIR..."
+  rm -rf "$GLOBAL_INSTALL_DIR"
+  git clone "$REPO_URL_FULL" "$GLOBAL_INSTALL_DIR"
+  if [ $? -ne 0 ]; then
+    echo "Error al clonar el repositorio en $GLOBAL_INSTALL_DIR."
+    exit 1
+  fi
+
+  SCRIPT_PATH="$GLOBAL_INSTALL_DIR/scripts/menu-super-retropie.sh"
+  if [ -f "$SCRIPT_PATH" ]; then
+    echo "Ejecutando el script de menú..."
+    chmod +x "$SCRIPT_PATH"
+    exec "$SCRIPT_PATH" "$@"
+  else
+    echo "Error: $SCRIPT_PATH no existe."
+    exit 1
+  fi
+
+  show_menu
+fi
