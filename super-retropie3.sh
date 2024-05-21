@@ -1,11 +1,11 @@
 #!/bin/bash
 
-REPO_URL="https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/super-retropie2.sh"
+REPO_URL="https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/super-retropie3.sh"
 REPO_URL_FULL="https://github.com/MacRimi/Super-RetroPie.git"
 GLOBAL_INSTALL_DIR="/opt/Super-RetroPie"
 USER_HOME=$(eval echo ~$SUDO_USER)
 USER_INSTALL_DIR="$USER_HOME/Super-RetroPie"
-SCRIPT_NAME="super-retropie2.sh"
+SCRIPT_NAME="super-retropie3.sh"
 USER_SCRIPT_PATH="$USER_INSTALL_DIR/$SCRIPT_NAME"
 
 # Asegurarse de que el script se ejecute con permisos de superusuario
@@ -78,44 +78,50 @@ check_volume() {
 extend_volume() {
   local LV_PATH=$(lvscan | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
 
-  echo "Extendiendo el volumen lógico..."
+  if [ -z "$LV_PATH" ]; then
+    echo "Error: No se pudo determinar la ruta del volumen lógico."
+    return 1
+  fi
+
+  local CURRENT_SIZE=$(lvdisplay "$LV_PATH" | grep "Current LE" | awk '{print $3}')
+  local MAX_SIZE=$(vgdisplay | grep "Total PE" | awk '{print $3}')
+
+  if [ "$CURRENT_SIZE" -eq "$MAX_SIZE" ]; then
+    echo "El volumen lógico ya está en su tamaño máximo."
+    return 0
+  fi
+
   lvextend -l +100%FREE "$LV_PATH"
   if [ $? -ne 0 ]; then
     echo "Error al extender el volumen lógico."
-    exit 1
+    return 1
   fi
 
-  echo "Redimensionando el sistema de archivos..."
   resize2fs "$LV_PATH"
   if [ $? -ne 0 ]; then
     echo "Error al redimensionar el sistema de archivos."
-    exit 1
+    return 1
   fi
 
   echo "El volumen lógico y el sistema de archivos se han extendido correctamente."
+  return 0
 }
 
 # Función para instalar RetroPie con comprobación de volumen
 install_retropie() {
-  # Comprobar el estado del volumen antes de proceder
   check_volume
   local volume_status=$?
   if [ "$volume_status" -eq 1 ]; then
-    # El volumen tiene espacio libre, advertir al usuario
     dialog --yesno "Se va a proceder a instalar RetroPie en un volumen de espacio reducido, esto podría hacer que te quedaras sin espacio pronto. ¿Desea continuar?" 10 60
-    if [[ $? -eq 0 ]]; then
-      echo "Instalando RetroPie..."
-    else
+    if [[ $? -ne 0 ]]; then
       echo "Instalación cancelada por el usuario."
       return
     fi
   fi
 
-  # Descargar y ejecutar el script de instalación de RetroPie
   wget -q https://raw.githubusercontent.com/MizterB/RetroPie-Setup-Ubuntu/master/bootstrap.sh
   bash ./bootstrap.sh
 
-  # Automatizar la interacción con el script de instalación de RetroPie
   expect << EOF
   spawn sudo ./RetroPie-Setup-Ubuntu/retropie_setup_ubuntu.sh
   expect {
@@ -125,7 +131,6 @@ install_retropie() {
   }
 EOF
 
-  # Reiniciar el sistema tras la instalación
   reboot
 }
 
@@ -148,7 +153,6 @@ show_menu() {
         dialog --yesno "¿Desea continuar con la instalación de RetroPie?" 10 60
         if [[ $? -eq 0 ]]; then
             install_retropie
-            return
         else
             clear
         fi
@@ -158,7 +162,6 @@ show_menu() {
         dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
         if [[ $? -eq 0 ]]; then
             extend_volume
-            return
         else
             clear
         fi
