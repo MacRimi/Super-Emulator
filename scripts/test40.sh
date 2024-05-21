@@ -26,7 +26,7 @@ extend_volume() {
   local LV_PATH=$(lvscan | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
   echo "LV_PATH detectado: $LV_PATH"
 
-  if [ -z "$LV_PATH" ]; entonces
+  if [ -z "$LV_PATH" ]; then
     echo "Error: No se pudo determinar la ruta del volumen lógico."
     return 1
   fi
@@ -36,21 +36,21 @@ extend_volume() {
   local MAX_SIZE=$(vgdisplay | grep "Total PE" | awk '{print $3}')
   echo "Tamaño actual: $CURRENT_SIZE, Tamaño máximo: $MAX_SIZE"
 
-  if [ "$CURRENT_SIZE" -eq "$MAX_SIZE" ]; entonces
+  if [ "$CURRENT_SIZE" -eq "$MAX_SIZE" ]; then
     echo "El volumen lógico ya está en su tamaño máximo."
     return 0
   fi
 
   echo "Extendiendo el volumen lógico..."
   lvextend -l +100%FREE "$LV_PATH"
-  if [ $? -ne 0 ]; entonces
+  if [ $? -ne 0 ]; then
     echo "Error al extender el volumen lógico."
     return 1
   fi
 
   echo "Redimensionando el sistema de archivos..."
   resize2fs "$LV_PATH"
-  if [ $? -ne 0 ]; entonces
+  if [ $? -ne 0 ]; then
     echo "Error al redimensionar el sistema de archivos."
     return 1
   fi
@@ -65,10 +65,10 @@ install_retropie() {
   # Comprobar el estado del volumen antes de proceder
   check_volume
   local volume_status=$?
-  if [ "$volume_status" -eq 1 ]; entonces
+  if [ "$volume_status" -eq 1 ]; then
     # El volumen tiene espacio libre, advertir al usuario
     dialog --yesno "Se va a proceder a instalar RetroPie en un volumen de espacio reducido, esto podría hacer que te quedaras sin espacio pronto. ¿Desea continuar?" 10 60
-    if [[ $? -ne 0 ]]; entonces
+    if [[ $? -ne 0 ]]; then
       echo "Instalación cancelada por el usuario."
       return
     fi
@@ -107,18 +107,18 @@ show_menu() {
         exit 1
     fi
 
-    if echo "$opciones" | grep -q "2"; entonces
+    if echo "$opciones" | grep -q "2"; then
         dialog --yesno "¿Desea continuar con la instalación de RetroPie?" 10 60
-        if [[ $? -eq 0 ]]; entonces
+        if [[ $? -eq 0 ]]; then
             install_retropie
         else
             clear
         fi
     fi
 
-    if echo "$opciones" | grep -q "1"; entonces
+    if echo "$opciones" | grep -q "1"; then
         dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
-        if [[ $? -eq 0 ]]; entonces
+        if [[ $? -eq 0 ]]; then
             extend_volume
         else
             clear
