@@ -12,6 +12,14 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
+# Verificar la accesibilidad de la URL
+echo "Verificando la URL de descarga..."
+wget -q --spider "$REPO_URL"
+if [ $? -ne 0 ]; then
+  echo "La URL no es accesible. Verifique la URL de descarga: $REPO_URL"
+  exit 1
+fi
+
 # Descargar y ejecutar el script si emulationstation_test no está instalado
 echo "Verificando si emulationstation_test está instalado..."
 if [ -x "$(command -v emulationstation_test)" ]; then
