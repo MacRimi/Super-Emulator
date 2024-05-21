@@ -71,10 +71,10 @@ instalar_steam() {
         echo "steam_fullname=\"Steam\"" >> "$platforms_cfg"
         echo "steam_command=\"%ROM%\"" >> "$platforms_cfg"
         # Añadir ajustes
-        echo "ajustes_exts=\".sh\"" >> "$platforms_cfg"
-        echo "ajustes_fullname=\"Ajustes\"" >> "$platforms_cfg"
-        echo "ajustes_command=\"%ROM%\"" >> "$platforms_cfg"
-        echo "ajustes_platform=\"config\"" >> "$platforms_cfg"
+        # echo "ajustes_exts=\".sh\"" >> "$platforms_cfg"
+        # echo "ajustes_fullname=\"Ajustes\"" >> "$platforms_cfg"
+        # echo "ajustes_command=\"%ROM%\"" >> "$platforms_cfg"
+        # echo "ajustes_platform=\"config\"" >> "$platforms_cfg"
     else
         # Crear platforms.cfg y agregar las líneas
         echo "Creando platforms.cfg y añadiendo configuración de Steam..."
@@ -82,10 +82,27 @@ instalar_steam() {
         echo "steam_fullname=\"Steam\"" >> "$platforms_cfg"
         echo "steam_command=\"%ROM%\"" >> "$platforms_cfg"
         # Añadir ajustes
-        echo "ajustes_exts=\".sh\"" >> "$platforms_cfg"
-        echo "ajustes_fullname=\"Ajustes\"" >> "$platforms_cfg"
-        echo "ajustes_command=\"%ROM%\"" >> "$platforms_cfg"
-        echo "ajustes_platform=\"config\"" >> "$platforms_cfg"
+        # echo "ajustes_exts=\".sh\"" >> "$platforms_cfg"
+        # echo "ajustes_fullname=\"Ajustes\"" >> "$platforms_cfg"
+        # echo "ajustes_command=\"%ROM%\"" >> "$platforms_cfg"
+        # echo "ajustes_platform=\"config\"" >> "$platforms_cfg"
+    fi
+       if ! grep -q '<name>ajustes</name>' "$es_systems_cfg"; then
+        # Definir el nuevo sistema
+        nuevo_sistema=$(cat << EOF
+  <system>
+    <name>ajustes</name>
+    <fullname>Configuraciones</fullname>
+    <path>/root/RetroPie/roms/ajustes</path>
+    <extension>.sh</extension>
+    <command>%ROM%</command>
+    <platform>config</platform>
+    <theme>ajustes</theme>
+  </system>
+EOF
+)
+        # Insertar el nuevo sistema antes de la etiqueta </systemList>
+        awk -v new_system="$nuevo_sistema" '/<\/systemList>/ {print new_system} 1' "$es_systems_cfg" > temp.xml && mv temp.xml "$es_systems_cfg"
     fi
 }
 
