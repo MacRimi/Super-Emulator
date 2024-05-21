@@ -15,7 +15,7 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # Descargar y ejecutar el script si emulationstation no está instalado
-if ! command -v emulationstation &> /dev/null; then
+if ! command -v emulationstation_test &> /dev/null; then
   mkdir -p "$USER_INSTALL_DIR"
   wget -q "$REPO_URL" -O "$USER_SCRIPT_PATH"
 
