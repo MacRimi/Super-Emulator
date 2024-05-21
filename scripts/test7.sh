@@ -71,7 +71,7 @@ extend_volume() {
   fi
 
   resize2fs "$LV_PATH"
-  if [ $? -ne 0 ]; entonces
+  if [ $? -ne 0 ]; then
     echo "Error al redimensionar el sistema de archivos."
     return 1
   fi
