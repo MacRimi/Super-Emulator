@@ -1,15 +1,18 @@
 #!/bin/bash
 
-
 # Función para comprobar si el volumen lógico está usando todo el espacio disponible
 check_volume() {
+  echo "Ejecutando lvscan para detectar volúmenes lógicos activos..."
   local LV_PATH=$(lvscan | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
+  echo "LV_PATH detectado: $LV_PATH"
   if [ -z "$LV_PATH" ]; then
     echo "No se pudo determinar la ruta del volumen lógico. Asegúrate de que el volumen lógico está activo."
     exit 1
   fi
 
+  echo "Ejecutando vgdisplay para detectar espacio libre en el volumen lógico..."
   local FREE_SPACE=$(vgdisplay | grep "Free  PE / Size" | awk '{print $5}')
+  echo "Espacio libre en el volumen: $FREE_SPACE"
   if [ "$FREE_SPACE" -gt 0 ]; then
     return 1
   else
@@ -19,7 +22,24 @@ check_volume() {
 
 # Función para extender el volumen lógico
 extend_volume() {
+  echo "Preparándose para extender el volumen lógico..."
   local LV_PATH=$(lvscan | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
+  echo "LV_PATH detectado: $LV_PATH"
+
+  if [ -z "$LV_PATH" ]; then
+    echo "Error: No se pudo determinar la ruta del volumen lógico."
+    exit 1
+  fi
+
+  echo "Comprobando el tamaño actual del volumen lógico..."
+  local CURRENT_SIZE=$(lvdisplay "$LV_PATH" | grep "Current LE" | awk '{print $3}')
+  local MAX_SIZE=$(vgdisplay | grep "Total PE" | awk '{print $3}')
+  echo "Tamaño actual: $CURRENT_SIZE, Tamaño máximo: $MAX_SIZE"
+
+  if [ "$CURRENT_SIZE" -eq "$MAX_SIZE" ]; then
+    echo "El volumen lógico ya está en su tamaño máximo."
+    return 0
+  fi
 
   echo "Extendiendo el volumen lógico..."
   lvextend -l +100%FREE "$LV_PATH"
@@ -40,6 +60,7 @@ extend_volume() {
 
 # Función para instalar RetroPie con comprobación de volumen
 install_retropie() {
+  echo "Preparándose para instalar RetroPie..."
   # Comprobar el estado del volumen antes de proceder
   check_volume
   local volume_status=$?
@@ -54,11 +75,11 @@ install_retropie() {
     fi
   fi
 
-  # Descargar y ejecutar el script de instalación de RetroPie
+  echo "Descargando y ejecutando el script de instalación de RetroPie..."
   wget -q https://raw.githubusercontent.com/MizterB/RetroPie-Setup-Ubuntu/master/bootstrap.sh
   bash ./bootstrap.sh
 
-  # Automatizar la interacción con el script de instalación de RetroPie
+  echo "Automatizando la interacción con el script de instalación de RetroPie..."
   expect << EOF
   spawn sudo ./RetroPie-Setup-Ubuntu/retropie_setup_ubuntu.sh
   expect {
@@ -68,7 +89,7 @@ install_retropie() {
   }
 EOF
 
-  # Reiniciar el sistema tras la instalación
+  echo "Reiniciando el sistema tras la instalación..."
   reboot
 }
 
