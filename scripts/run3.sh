@@ -14,9 +14,9 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
-# Descargar y ejecutar el script si emulationstation_test no está instalado
+# Descargar y ejecutar el script si emulationstation no está instalado
 if ! command -v emulationstation_test &> /dev/null; then
-  echo "emulationstation_test no está instalado. Descargando y ejecutando $SCRIPT_NAME..."
+  echo "emulationstation no está instalado. Descargando y ejecutando $SCRIPT_NAME..."
   mkdir -p "$USER_INSTALL_DIR"
   wget -q "$REPO_URL" -O "$USER_SCRIPT_PATH"
   if [ $? -ne 0 ]; then
@@ -33,7 +33,7 @@ if ! command -v emulationstation_test &> /dev/null; then
     exit 1
   fi
 else
-  echo "emulationstation_test está instalado. Clonando el repositorio en $GLOBAL_INSTALL_DIR..."
+  echo "emulationstation está instalado. Clonando el repositorio en $GLOBAL_INSTALL_DIR..."
   rm -rf "$GLOBAL_INSTALL_DIR"
   git clone "$REPO_URL_FULL" "$GLOBAL_INSTALL_DIR"
   if [ $? -ne 0 ]; then
