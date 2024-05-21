@@ -1,9 +1,9 @@
 #!/bin/bash
 
-REPO_URL="https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/test_emulations2.sh"
+REPO_URL="https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/test_emulations3.sh"
 USER_HOME=$(eval echo ~$SUDO_USER)
 USER_INSTALL_DIR="$USER_HOME/Super-RetroPie"
-SCRIPT_NAME="test_emulations2.sh"
+SCRIPT_NAME="test_emulations3.sh"
 USER_SCRIPT_PATH="$USER_INSTALL_DIR/$SCRIPT_NAME"
 
 # Asegurarse de que el script se ejecute con permisos de superusuario
