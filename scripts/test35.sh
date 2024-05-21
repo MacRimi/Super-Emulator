@@ -16,6 +16,9 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
+# Agregar /sbin y /usr/sbin al PATH
+export PATH=$PATH:/sbin:/usr/sbin
+
 echo "Verificando e instalando dependencias necesarias..."
 
 # Función para verificar e instalar dependencias
@@ -33,8 +36,14 @@ install_if_missing() {
 install_if_missing dialog dialog
 install_if_missing wget wget
 install_if_missing git git
-install_if_missing lvm2 lvextend
+install_if_missing lvm2 lvscan
 install_if_missing expect expect
+
+# Verificar si lvscan está disponible
+if ! command -v lvscan &> /dev/null; then
+  echo "El comando lvscan no está disponible incluso después de instalar lvm2."
+  exit 1
+fi
 
 echo "Dependencias verificadas."
 
