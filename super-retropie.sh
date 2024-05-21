@@ -26,46 +26,29 @@ install_if_missing() {
 
 # Verificar e instalar dependencias necesarias
 install_if_missing dialog
-install_if_missing wget
-install_if_missing git
-install_if_missing lvextend
 install_if_missing expect
 
 # Descargar y ejecutar el script si emulationstation no está instalado
-if ! command -v emulationstation &> /dev/null; then
+if ! command -v emulationstation-test &> /dev/null; then
   echo "emulationstation no está instalado. Descargando y ejecutando $SCRIPT_NAME..."
   mkdir -p "$USER_INSTALL_DIR"
   wget -q "$REPO_URL" -O "$USER_SCRIPT_PATH"
-  if [ $? -ne 0 ]; then
-    echo "Error al descargar $SCRIPT_NAME en $USER_INSTALL_DIR."
-    exit 1
-  fi
-
+ 
   if [ -f "$USER_SCRIPT_PATH" ]; then
     echo "Ejecutando el script..."
     chmod +x "$USER_SCRIPT_PATH"
     exec "$USER_SCRIPT_PATH" "$@"
-  else
-    echo "Error: $USER_SCRIPT_PATH no existe."
-    exit 1
   fi
 else
   echo "emulationstation está instalado. Clonando el repositorio en $GLOBAL_INSTALL_DIR..."
   rm -rf "$GLOBAL_INSTALL_DIR"
   git clone "$REPO_URL_FULL" "$GLOBAL_INSTALL_DIR"
-  if [ $? -ne 0 ]; then
-    echo "Error al clonar el repositorio en $GLOBAL_INSTALL_DIR."
-    exit 1
-  fi
 
   SCRIPT_PATH="$GLOBAL_INSTALL_DIR/scripts/menu-super-retropie.sh"
   if [ -f "$SCRIPT_PATH" ]; then
     echo "Ejecutando el script de menú..."
     chmod +x "$SCRIPT_PATH"
     exec "$SCRIPT_PATH" "$@"
-  else
-    echo "Error: $SCRIPT_PATH no existe."
-    exit 1
   fi
 fi
 
