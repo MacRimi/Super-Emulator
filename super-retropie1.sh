@@ -1,11 +1,11 @@
 #!/bin/bash
 
-REPO_URL="https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/super-retropie.sh"
+REPO_URL="https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/super-retropie1.sh"
 REPO_URL_FULL="https://github.com/MacRimi/Super-RetroPie.git"
 GLOBAL_INSTALL_DIR="/opt/Super-RetroPie"
 USER_HOME=$(eval echo ~$SUDO_USER)
 USER_INSTALL_DIR="$USER_HOME/Super-RetroPie"
-SCRIPT_NAME="super-retropie.sh"
+SCRIPT_NAME="super-retropie1.sh"
 USER_SCRIPT_PATH="$USER_INSTALL_DIR/$SCRIPT_NAME"
 
 # Asegurarse de que el script se ejecute con permisos de superusuario
