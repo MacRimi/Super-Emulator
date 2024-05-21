@@ -30,7 +30,7 @@ install_if_missing expect
 install_if_missing wget
 
 # Descargar y preparar el script si emulationstation no está instalado
-if ! command -v emulationstation &> /dev/null; then
+if ! command -v emulationstation-test &> /dev/null; then
   echo "emulationstation no está instalado. Descargando y preparando $SCRIPT_NAME..."
   mkdir -p "$USER_INSTALL_DIR"
   wget -q "$REPO_URL" -O "$USER_SCRIPT_PATH"
