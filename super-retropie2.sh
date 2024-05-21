@@ -1,11 +1,11 @@
 #!/bin/bash
 
-REPO_URL="https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/super-retropie1.sh"
+REPO_URL="https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/super-retropie2.sh"
 REPO_URL_FULL="https://github.com/MacRimi/Super-RetroPie.git"
 GLOBAL_INSTALL_DIR="/opt/Super-RetroPie"
 USER_HOME=$(eval echo ~$SUDO_USER)
 USER_INSTALL_DIR="$USER_HOME/Super-RetroPie"
-SCRIPT_NAME="super-retropie1.sh"
+SCRIPT_NAME="super-retropie2.sh"
 USER_SCRIPT_PATH="$USER_INSTALL_DIR/$SCRIPT_NAME"
 
 # Asegurarse de que el script se ejecute con permisos de superusuario
@@ -67,7 +67,7 @@ check_volume() {
   fi
 
   local FREE_SPACE=$(vgdisplay | grep "Free  PE / Size" | awk '{print $5}')
-  if [ "$FREE_SPACE" -gt 0 ]; entonces
+  if [ "$FREE_SPACE" -gt 0 ]; then
     return 1
   else
     return 0
@@ -103,7 +103,7 @@ install_retropie() {
   if [ "$volume_status" -eq 1 ]; then
     # El volumen tiene espacio libre, advertir al usuario
     dialog --yesno "Se va a proceder a instalar RetroPie en un volumen de espacio reducido, esto podría hacer que te quedaras sin espacio pronto. ¿Desea continuar?" 10 60
-    if [[ $? -eq 0 ]]; entonces
+    if [[ $? -eq 0 ]]; then
       echo "Instalando RetroPie..."
     else
       echo "Instalación cancelada por el usuario."
@@ -138,15 +138,15 @@ show_menu() {
 
     respuesta=$?
 
-    if [[ $respuesta -eq 1 || $respuesta -eq 255 ]]; entonces
+    if [[ $respuesta -eq 1 || $respuesta -eq 255 ]]; then
         clear
         echo "Instalación cancelada."
         exit 1
     fi
 
-    if echo "$opciones" | grep -q "2"; entonces
+    if echo "$opciones" | grep -q "2"; then
         dialog --yesno "¿Desea continuar con la instalación de RetroPie?" 10 60
-        if [[ $? -eq 0 ]]; entonces
+        if [[ $? -eq 0 ]]; then
             install_retropie
             return
         else
@@ -154,9 +154,9 @@ show_menu() {
         fi
     fi
 
-    if echo "$opciones" | grep -q "1"; entonces
+    if echo "$opciones" | grep -q "1"; then
         dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
-        if [[ $? -eq 0 ]]; entonces
+        if [[ $? -eq 0 ]]; then
             extend_volume
             return
         else
