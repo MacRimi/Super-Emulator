@@ -41,7 +41,9 @@ echo "Dependencias verificadas."
 # Función para comprobar si el volumen lógico está usando todo el espacio disponible
 check_volume() {
   echo "Comprobando el volumen lógico..."
-  local LV_PATH=$(lvscan | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
+  lvscan_output=$(lvscan)
+  echo "Salida de lvscan: $lvscan_output"
+  local LV_PATH=$(echo "$lvscan_output" | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
   echo "LV_PATH detectado: $LV_PATH"
   if [ -z "$LV_PATH" ]; then
     echo "No se pudo determinar la ruta del volumen lógico. Asegúrate de que el volumen lógico está activo."
@@ -60,7 +62,9 @@ check_volume() {
 # Función para extender el volumen lógico
 extend_volume() {
   echo "Preparándose para extender el volumen lógico..."
-  local LV_PATH=$(lvscan | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
+  lvscan_output=$(lvscan)
+  echo "Salida de lvscan: $lvscan_output"
+  local LV_PATH=$(echo "$lvscan_output" | grep "ACTIVE" | awk '{print $2}' | tr -d "'")
   echo "LV_PATH detectado: $LV_PATH"
 
   if [ -z "$LV_PATH" ]; then
