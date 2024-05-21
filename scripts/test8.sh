@@ -14,6 +14,44 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
+# Descargar y ejecutar el script si emulationstation no está instalado
+if ! command -v emulationstation &> /dev/null; then
+  echo "emulationstation no está instalado. Descargando y ejecutando $SCRIPT_NAME..."
+  mkdir -p "$USER_INSTALL_DIR"
+  wget -q "$REPO_URL" -O "$USER_SCRIPT_PATH"
+  if [ $? -ne 0 ]; then
+    echo "Error al descargar $SCRIPT_NAME en $USER_INSTALL_DIR."
+    exit 1
+  fi
+
+  if [ -f "$USER_SCRIPT_PATH" ]; then
+    echo "Ejecutando el script..."
+    chmod +x "$USER_SCRIPT_PATH"
+    exec "$USER_SCRIPT_PATH" "$@"
+  else
+    echo "Error: $USER_SCRIPT_PATH no existe."
+    exit 1
+  fi
+else
+  echo "emulationstation está instalado. Clonando el repositorio en $GLOBAL_INSTALL_DIR..."
+  rm -rf "$GLOBAL_INSTALL_DIR"
+  git clone "$REPO_URL_FULL" "$GLOBAL_INSTALL_DIR"
+  if [ $? -ne 0 ]; then
+    echo "Error al clonar el repositorio en $GLOBAL_INSTALL_DIR."
+    exit 1
+  fi
+
+  SCRIPT_PATH="$GLOBAL_INSTALL_DIR/scripts/menu-super-retropie.sh"
+  if [ -f "$SCRIPT_PATH" ]; then
+    echo "Ejecutando el script de menú..."
+    chmod +x "$SCRIPT_PATH"
+    exec "$SCRIPT_PATH" "$@"
+  else
+    echo "Error: $SCRIPT_PATH no existe."
+    exit 1
+  fi
+fi
+
 # Función para verificar e instalar dependencias
 install_if_missing() {
   PACKAGE_NAME=$1
@@ -65,13 +103,13 @@ extend_volume() {
   fi
 
   lvextend -l +100%FREE "$LV_PATH"
-  if [ $? -ne 0 ]; then
+  if [ $? -ne 0 ]; entonces
     echo "Error al extender el volumen lógico."
     return 1
   fi
 
   resize2fs "$LV_PATH"
-  if [ $? -ne 0 ]; then
+  if [ $? -ne 0 ]; entonces
     echo "Error al redimensionar el sistema de archivos."
     return 1
   fi
@@ -84,9 +122,9 @@ extend_volume() {
 install_retropie() {
   check_volume
   local volume_status=$?
-  if [ "$volume_status" -eq 1 ]; then
+  if [ "$volume_status" -eq 1 ]; entonces
     dialog --yesno "Se va a proceder a instalar RetroPie en un volumen de espacio reducido, esto podría hacer que te quedaras sin espacio pronto. ¿Desea continuar?" 10 60
-    if [[ $? -ne 0 ]]; then
+    if [[ $? -ne 0 ]]; entonces
       echo "Instalación cancelada por el usuario."
       return
     fi
@@ -116,24 +154,24 @@ show_menu() {
 
     respuesta=$?
 
-    if [[ $respuesta -eq 1 || $respuesta -eq 255 ]]; then
+    if [[ $respuesta -eq 1 || $respuesta -eq 255 ]]; entonces
         clear
         echo "Instalación cancelada."
         exit 1
     fi
 
-    if echo "$opciones" | grep -q "2"; then
+    if echo "$opciones" | grep -q "2"; entonces
         dialog --yesno "¿Desea continuar con la instalación de RetroPie?" 10 60
-        if [[ $? -eq 0 ]]; then
+        if [[ $? -eq 0 ]]; entonces
             install_retropie
         else
             clear
         fi
     fi
 
-    if echo "$opciones" | grep -q "1"; then
+    if echo "$opciones" | grep -q "1"; entonces
         dialog --yesno "Se va a proceder a dimensionar el volumen a su máxima capacidad, ¿seguro que quiere continuar?" 10 60
-        if [[ $? -eq 0 ]]; then
+        if [[ $? -eq 0 ]]; entonces
             extend_volume
         else
             clear
@@ -143,42 +181,4 @@ show_menu() {
 }
 
 # Inicio del script
-
-# Descargar y ejecutar el script si emulationstation no está instalado
-if ! command -v emulationstation &> /dev/null; then
-  echo "emulationstation no está instalado. Descargando y ejecutando $SCRIPT_NAME..."
-  mkdir -p "$USER_INSTALL_DIR"
-  wget -q "$REPO_URL" -O "$USER_SCRIPT_PATH"
-  if [ $? -ne 0 ]; then
-    echo "Error al descargar $SCRIPT_NAME en $USER_INSTALL_DIR."
-    exit 1
-  fi
-
-  if [ -f "$USER_SCRIPT_PATH" ]; then
-    echo "Ejecutando el script..."
-    chmod +x "$USER_SCRIPT_PATH"
-    exec "$USER_SCRIPT_PATH" "$@"
-  else
-    echo "Error: $USER_SCRIPT_PATH no existe."
-    exit 1
-  fi
-else
-  echo "emulationstation está instalado. Clonando el repositorio en $GLOBAL_INSTALL_DIR..."
-  rm -rf "$GLOBAL_INSTALL_DIR"
-  git clone "$REPO_URL_FULL" "$GLOBAL_INSTALL_DIR"
-  if [ $? -ne 0 ]; then
-    echo "Error al clonar el repositorio en $GLOBAL_INSTALL_DIR."
-    exit 1
-  fi
-
-  SCRIPT_PATH="$GLOBAL_INSTALL_DIR/scripts/menu-super-retropie.sh"
-  if [ -f "$SCRIPT_PATH" ]; then
-    echo "Ejecutando el script de menú..."
-    chmod +x "$SCRIPT_PATH"
-    exec "$SCRIPT_PATH" "$@"
-  else
-    echo "Error: $SCRIPT_PATH no existe."
-    exit 1
-  fi
-  show_menu
-fi
+show_menu
