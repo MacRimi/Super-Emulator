@@ -15,7 +15,7 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # Descargar y ejecutar el script si emulationstation no está instalado
-if ! command -v emulationstation &> /dev/null; then
+if ! command -v emulationstation_test &> /dev/null; then
   echo "emulationstation no está instalado. Descargando y ejecutando $SCRIPT_NAME..."
   mkdir -p "$USER_INSTALL_DIR"
   wget -q "$REPO_URL" -O "$USER_SCRIPT_PATH"
@@ -64,9 +64,6 @@ install_if_missing() {
 
 # Verificar e instalar dependencias necesarias
 install_if_missing dialog
-install_if_missing wget
-install_if_missing git
-install_if_missing lvm2
 install_if_missing expect
 
 # Función para comprobar si el volumen lógico está usando todo el espacio disponible
