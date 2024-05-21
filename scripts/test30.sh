@@ -17,7 +17,8 @@ fi
 # Función para verificar e instalar dependencias
 install_if_missing() {
   PACKAGE_NAME=$1
-  if ! command -v $PACKAGE_NAME &> /dev/null; then
+  COMMAND_NAME=$2
+  if ! command -v $COMMAND_NAME &> /dev/null; then
     echo "El paquete '$PACKAGE_NAME' no está instalado. Instalándolo..."
     apt-get update
     apt-get install -y $PACKAGE_NAME
@@ -25,11 +26,11 @@ install_if_missing() {
 }
 
 # Verificar e instalar dependencias necesarias
-install_if_missing dialog
-install_if_missing wget
-install_if_missing git
-install_if_missing lvm2
-install_if_missing expect
+install_if_missing dialog dialog
+install_if_missing wget wget
+install_if_missing git git
+install_if_missing lvm2 lvextend
+install_if_missing expect expect
 
 # Función para comprobar si el volumen lógico está usando todo el espacio disponible
 check_volume() {
