@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Bariable url repositorio
-REPO_BASE_URL="https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/steam"
-
 # Get the machine hardware name
 architecture=$(uname -m)
 
@@ -63,6 +60,10 @@ display_controls() {
 clear
 animate_title
 display_controls
+
+# Define URL base variable
+REPO_BASE_URL="${REPO_BASE_URL:-https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/steam}"
+
 # Define variables
 BASE_DIR="/userdata/system/pro/steam"
 HOME_DIR="$BASE_DIR/home"
