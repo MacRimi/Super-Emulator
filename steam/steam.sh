@@ -10,7 +10,7 @@ if [ "$architecture" != "x86_64" ]; then
 fi
 
 # Define URL base variable
-REPO_BASE_URL="${REPO_BASE_URL:-https://raw.githubusercontent.com/uureel/batocera.pro/main/steam}"
+REPO_BASE_URL="${REPO_BASE_URL:-https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/steam}"
 
 # Define the options
 OPTIONS=("1" "Install STABLE: Download prebuilt Arch Container (RECOMMENDED)"
