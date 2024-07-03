@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Bariable url repositorio
+REPO_BASE_URL="https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/steam"
+
 # Get the machine hardware name
 architecture=$(uname -m)
 
@@ -107,7 +110,7 @@ echo "Conty files have been downloaded a to $target_directory"
 ###############
 
 # Update shortcuts
-wget -q --tries=30 --no-check-certificate --no-cache --no-cookies --tries=50 -O /tmp/update_shortcuts.sh https://raw.githubusercontent.com/uureel/batocera.pro/main/steam/update_shortcuts.sh
+wget -q --tries=30 --no-check-certificate --no-cache --no-cookies --tries=50 -O /tmp/update_shortcuts.sh "${REPO_BASE_URL}/update_shortcuts.sh"
 dos2unix /tmp/update_shortcuts.sh 2>/dev/null
 chmod 777 /tmp/update_shortcuts.sh 2>/dev/null
 bash /tmp/update_shortcuts.sh 
