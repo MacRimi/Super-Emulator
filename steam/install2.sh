@@ -125,7 +125,7 @@ sleep 1
 
 ###############
 
-MSG="nstalación completada. Deberías ver un nuevo sistema en EmulationStation llamado Linux o Arch Container, dependiendo del tema.
+MSG="Instalación completada. Deberías ver un nuevo sistema en EmulationStation llamado Linux o Arch Linux, dependiendo del tema.
 
 Usuarios de NVIDIA: Los controladores se descargarán en segundo plano durante el primer inicio de la aplicación y pueden tardar un tiempo."
 dialog --title "Arch Container Steam Setup Complete" --msgbox "$MSG" 20 70
