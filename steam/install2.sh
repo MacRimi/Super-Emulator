@@ -33,7 +33,7 @@ clear
 
 # Function to display animated title
 animate_title() {
-    local text="Steam/Heroic/Lutris container installer"
+    local text="Steam container installer"
     local delay=0.1
     local length=${#text}
 
