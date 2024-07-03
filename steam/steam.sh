@@ -9,7 +9,8 @@ if [ "$architecture" != "x86_64" ]; then
     exit 1
 fi
 
-
+# Define URL base variable
+REPO_BASE_URL="${REPO_BASE_URL:-https://raw.githubusercontent.com/uureel/batocera.pro/main/steam}"
 
 # Define the options
 OPTIONS=("1" "Install STABLE: Download prebuilt Arch Container (RECOMMENDED)"
@@ -40,7 +41,7 @@ case $CHOICE in
     1)
         echo "Installing Steam Container..."
         rm /tmp/runner 2>/dev/null
-        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner https://raw.githubusercontent.com/uureel/batocera.pro/main/steam/install2.sh
+        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner "${REPO_BASE_URL}/install2.sh"
         dos2unix /tmp/runner 2>/dev/null 
         chmod 777 /tmp/runner 2>/dev/null
         bash /tmp/runner
@@ -48,7 +49,7 @@ case $CHOICE in
      2)
         echo "Installing Steam Container..."
         rm /tmp/runner 2>/dev/null
-        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner https://raw.githubusercontent.com/uureel/batocera.pro/main/steam/install_new.sh
+        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner "${REPO_BASE_URL}/install_new.sh"
         dos2unix /tmp/runner 2>/dev/null 
         chmod 777 /tmp/runner 2>/dev/null
         bash /tmp/runner
@@ -56,7 +57,7 @@ case $CHOICE in
      3)
         echo "Loading Package List..."
         rm /tmp/runner 2>/dev/null
-        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner https://raw.githubusercontent.com/uureel/batocera.pro/main/steam/list.sh
+        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner "${REPO_BASE_URL}/list.sh"
         dos2unix /tmp/runner 2>/dev/null 
         chmod 777 /tmp/runner 2>/dev/null
         bash /tmp/runner
@@ -64,7 +65,7 @@ case $CHOICE in
     4)
         echo "Loading Uninstall script..."
         rm /tmp/runner 2>/dev/null
-        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner https://raw.githubusercontent.com/uureel/batocera.pro/main/steam/uninstall.sh
+        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner "${REPO_BASE_URL}/uninstall.sh"
         dos2unix /tmp/runner 2>/dev/null 
         chmod 777 /tmp/runner 2>/dev/null
         bash /tmp/runner
@@ -72,7 +73,7 @@ case $CHOICE in
     5)  
         echo "Update EmulationStation Arch Container Launcher Shortcuts..."
         rm /tmp/runner 2>/dev/null
-        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner https://raw.githubusercontent.com/uureel/batocera.pro/main/steam/update_shortcuts.sh
+        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner "${REPO_BASE_URL}/update_shortcuts.sh"
         dos2unix /tmp/runner 2>/dev/null 
         chmod 777 /tmp/runner 2>/dev/null
         bash /tmp/runner
@@ -80,7 +81,7 @@ case $CHOICE in
     6)  
         echo "Update/Re-download Container..."
         rm /tmp/runner 2>/dev/null
-        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner https://raw.githubusercontent.com/uureel/batocera.pro/main/steam/redownload.sh
+        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner "${REPO_BASE_URL}/redownload.sh"
         dos2unix /tmp/runner 2>/dev/null 
         chmod 777 /tmp/runner 2>/dev/null
         bash /tmp/runner
@@ -88,7 +89,7 @@ case $CHOICE in
     7)  
         echo "Update Conty Container..."
         rm /tmp/runner 2>/dev/null
-        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner https://raw.githubusercontent.com/uureel/batocera.pro/main/steam/build.sh
+        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner "${REPO_BASE_URL}/build.sh"
         dos2unix /tmp/runner 2>/dev/null 
         chmod 777 /tmp/runner 2>/dev/null
         bash /tmp/runner
@@ -96,7 +97,7 @@ case $CHOICE in
      8)  
         echo "Installing Desktop/Windowed Mode..."
         rm /tmp/runner 2>/dev/null
-        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner https://github.com/uureel/batocera.pro/raw/main/steam/arch-de.sh
+        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner "${REPO_BASE_URL}/arch-de.sh"
         dos2unix /tmp/runner 2>/dev/null 
         chmod 777 /tmp/runner 2>/dev/null
         bash /tmp/runner
@@ -104,7 +105,7 @@ case $CHOICE in
     9)  
         echo "Add/Update Lutris shortcuts to emulationstation..."
         rm /tmp/runner 2>/dev/null
-        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner https://raw.githubusercontent.com/uureel/batocera.pro/main/steam/addon_lutris.sh
+        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner "${REPO_BASE_URL}/addon_lutris.sh"
         dos2unix /tmp/runner 2>/dev/null 
         chmod 777 /tmp/runner 2>/dev/null
         bash /tmp/runner
@@ -112,7 +113,7 @@ case $CHOICE in
     10)  
         echo "Add/update Heroic shortcuts to emulationstation..."
         rm /tmp/runner 2>/dev/null
-        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner https://raw.githubusercontent.com/uureel/batocera.pro/main/steam/addon_heroic.sh
+        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner "${REPO_BASE_URL}/addon_heroic.sh"
         dos2unix /tmp/runner 2>/dev/null 
         chmod 777 /tmp/runner 2>/dev/null
         bash /tmp/runner
@@ -120,7 +121,7 @@ case $CHOICE in
     11)  
         echo "Emudeck Menu..."
         rm /tmp/runner 2>/dev/null
-        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner https://github.com/uureel/batocera.pro/raw/main/emudeck/emudeck.sh
+        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner "${REPO_BASE_URL}/emudeck/emudeck.sh"
         dos2unix /tmp/runner 2>/dev/null 
         chmod 777 /tmp/runner 2>/dev/null
         bash /tmp/runner
@@ -128,7 +129,7 @@ case $CHOICE in
     12)  
         echo "Webapps Installer..."
         rm /tmp/runner 2>/dev/null
-        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner https://github.com/uureel/batocera.pro/raw/main/webapps/install.sh
+        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner "${REPO_BASE_URL}/webapps/install.sh"
         dos2unix /tmp/runner 2>/dev/null 
         chmod 777 /tmp/runner 2>/dev/null
         bash /tmp/runner
@@ -136,7 +137,7 @@ case $CHOICE in
     13)  
         echo "NVIDIA CUDA Installer..."
         rm /tmp/runner 2>/dev/null
-        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner https://raw.githubusercontent.com/uureel/batocera.pro/main/steam/build/cuda.sh
+        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner "${REPO_BASE_URL}/build/cuda.sh"
         dos2unix /tmp/runner 2>/dev/null 
         chmod 777 /tmp/runner 2>/dev/null
         bash /tmp/runner
