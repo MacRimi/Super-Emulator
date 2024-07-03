@@ -126,8 +126,10 @@ sleep 1
 
 ###############
 
-MSG="Install Done.  You should see a new system  in EmulatiationStation called Linux or Arch Container depending on theme\nNVIDIA Users: Drivers will download in the background on First app start-up & can take a while."
-dialog --title "Arch Container Setup Complete" --msgbox "$MSG" 20 70
+MSG="nstalación completada. Deberías ver un nuevo sistema en EmulationStation llamado Linux o Arch Container, dependiendo del tema.
+
+Usuarios de NVIDIA: Los controladores se descargarán en segundo plano durante el primer inicio de la aplicación y pueden tardar un tiempo."
+dialog --title "Arch Container Steam Setup Complete" --msgbox "$MSG" 20 70
 
 ###############
 
