@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Update shortcuts
-wget -q --tries=30 --no-check-certificate --no-cache --no-cookies --tries=50 -O /tmp/update_shortcuts.sh https://raw.githubusercontent.com/uureel/batocera.pro/main/steam/update_shortcuts.sh
-dos2unix /tmp/update_shortcuts.sh 2>/dev/null
-chmod 777 /tmp/update_shortcuts.sh 2>/dev/null
-bash /tmp/update_shortcuts.sh 
-sleep 1
+# wget -q --tries=30 --no-check-certificate --no-cache --no-cookies --tries=50 -O /tmp/update_shortcuts.sh https://raw.githubusercontent.com/uureel/batocera.pro/main/steam/update_shortcuts.sh
+# dos2unix /tmp/update_shortcuts.sh 2>/dev/null
+# chmod 777 /tmp/update_shortcuts.sh 2>/dev/null
+# bash /tmp/update_shortcuts.sh 
+# sleep 1
 
 # merge ~/.local/share/applications/* and ~/Desktop/* for scanning
 scan=/tmp/.conty-scandir
