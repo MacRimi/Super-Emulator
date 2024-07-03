@@ -51,7 +51,7 @@ sleep 1
 
 # Download parsers and custom systems
 echo "Downloading parsers and custom systems..."
-wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/roms/steam2/+UPDATE-STEAM-SHORTCUTS.sh "${REPO_BASE_URL}/shortcuts/%2BUPDATE-STEAM-SHORTCUTS.sh"
+wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/roms/conty/+UPDATE-STEAM-SHORTCUTS.sh "${REPO_BASE_URL}/shortcuts/%2BUPDATE-STEAM-SHORTCUTS.sh"
 dos2unix /userdata/roms/steam2/+UPDATE-STEAM-SHORTCUTS.sh 2>/dev/null
 chmod 777 /userdata/roms/steam2/+UPDATE-STEAM-SHORTCUTS.sh 2>/dev/null
 
