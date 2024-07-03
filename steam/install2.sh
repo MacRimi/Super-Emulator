@@ -9,7 +9,7 @@ if [ "$architecture" != "x86_64" ]; then
     exit 1
 fi
 
-MESSAGE="Since Version 39 of Batocera, apparently due to kernel and/or SDL changes, xinput over bluetooth does not work on steam in the Arch container. Xbox One/S/X controllers are verified working via wired USB or Xbox wireless adapter only. 8bitDO controller users can switch their input mode to d-input or switch input.  Continue?"
+MESSAGE="Desde la versión 39 de Batocera, aparentemente debido a cambios en el kernel y/o SDL, xinput sobre bluetooth no funciona en Steam en el contenedor de Arch. Los controladores Xbox One/S/X funcionan únicamente a través de USB con cable o adaptador inalámbrico de Xbox. Los usuarios de controladores 8bitDO pueden cambiar su modo de entrada a d-input o entrada de switch. ¿Deseas continuar?"
 
 # Use dialog to create a yes/no box
 if dialog --title "Compatibility Warning" --yesno "$MESSAGE" 10 70; then
