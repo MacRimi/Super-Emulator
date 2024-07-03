@@ -130,7 +130,7 @@ for file in "${sh_files[@]}"; do
   # Replace spaces with '%20' for URL encoding
   encoded_file=$(echo "$file" | sed 's/ /%20/g')
   echo "Downloading $file..."
-  wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O "${target_directory}${file}" "${REPO_BASE_URL}/shortcuts/${encoded_file}" &
+  wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O "${target_directory}${file}" "${REPO_BASE_URL}/shortcuts/${encoded_file}"
   sleep 0.1
 done
 
@@ -148,18 +148,18 @@ wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/r
 dos2unix /userdata/roms/steam2/+UPDATE-STEAM-SHORTCUTS.sh 2>/dev/null
 chmod 777 /userdata/roms/steam2/+UPDATE-STEAM-SHORTCUTS.sh 2>/dev/null
 
-wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/emulationstation/es_systems_arch.cfg "${REPO_BASE_URL}/shortcuts/es_configs/es_systems_arch.cfg" &
-wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/emulationstation/es_features_arch.cfg "${REPO_BASE_URL}/shortcuts/es_configs/es_features_arch.cfg" &
-wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/emulationstation/es_systems_steam2.cfg "${REPO_BASE_URL}/shortcuts/es_configs/es_systems_steam2.cfg" &
-wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/emulationstation/es_features_steam2.cfg "${REPO_BASE_URL}/shortcuts/es_configs/es_features_steam2.cfg" &
+wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/emulationstation/es_systems_arch.cfg "${REPO_BASE_URL}/shortcuts/es_configs/es_systems_arch.cfg"
+wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/emulationstation/es_features_arch.cfg "${REPO_BASE_URL}/shortcuts/es_configs/es_features_arch.cfg"
+wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/emulationstation/es_systems_steam2.cfg "${REPO_BASE_URL}/shortcuts/es_configs/es_systems_steam2.cfg"
+wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/emulationstation/es_features_steam2.cfg "${REPO_BASE_URL}/shortcuts/es_configs/es_features_steam2.cfg"
 
-wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/evmapy/Arch.keys "${REPO_BASE_URL}/shortcuts/es_configs/keys/Arch.keys" &
-wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/evmapy/Lutris.keys "${REPO_BASE_URL}/shortcuts/es_configs/keys/Lutris.keys" &
-wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/evmapy/Heroic2.keys "${REPO_BASE_URL}/shortcuts/es_configs/keys/Heroic2.keys" &
-wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/evmapy/steam2.keys "${REPO_BASE_URL}/shortcuts/es_configs/keys/steam2.keys" &
-wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/evmapy/steam.keys "${REPO_BASE_URL}/shortcuts/es_configs/keys/steam.keys" &
+wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/evmapy/Arch.keys "${REPO_BASE_URL}/shortcuts/es_configs/keys/Arch.keys"
+wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/evmapy/Lutris.keys "${REPO_BASE_URL}/shortcuts/es_configs/keys/Lutris.keys"
+wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/evmapy/Heroic2.keys "${REPO_BASE_URL}/shortcuts/es_configs/keys/Heroic2.keys"
+wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/evmapy/steam2.keys "${REPO_BASE_URL}/shortcuts/es_configs/keys/steam2.keys"
+wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/evmapy/steam.keys "${REPO_BASE_URL}/shortcuts/es_configs/keys/steam.keys"
 
-wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/pro/steam/batocera-conty-patcher.sh "${REPO_BASE_URL}/build/batocera-conty-patcher.sh" &
+wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/pro/steam/batocera-conty-patcher.sh "${REPO_BASE_URL}/build/batocera-conty-patcher.sh"
 wait
 
 dos2unix /userdata/system/configs/emulationstation/*.cfg 2>/dev/null
@@ -169,9 +169,9 @@ chmod 777 /userdata/system/pro/steam/batocera-conty-patcher.sh 2>/dev/null
 
 # lutris
 if [[ -e /userdata/system/configs/emulationstation/es_systems_lutris.cfg ]]; then 
-  wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/emulationstation/es_systems_lutris.cfg "${REPO_BASE_URL}/shortcuts/es_configs/es_systems_lutris.cfg" &
-  wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/emulationstation/es_features_lutris.cfg "${REPO_BASE_URL}/shortcuts/es_configs/es_features_lutris.cfg" &
-  wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/evmapy/Lutris.keys "${REPO_BASE_URL}/shortcuts/es_configs/keys/Lutris.keys" &
+  wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/emulationstation/es_systems_lutris.cfg "${REPO_BASE_URL}/shortcuts/es_configs/es_systems_lutris.cfg"
+  wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/emulationstation/es_features_lutris.cfg "${REPO_BASE_URL}/shortcuts/es_configs/es_features_lutris.cfg"
+  wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/evmapy/Lutris.keys "${REPO_BASE_URL}/shortcuts/es_configs/keys/Lutris.keys"
   wait
   dos2unix /userdata/system/configs/emulationstation/*.cfg 2>/dev/null
   dos2unix /userdata/system/configs/evmapy/*.keys 2>/dev/null
@@ -179,9 +179,9 @@ fi
 
 # heroic
 if [[ -e /userdata/system/configs/emulationstation/es_systems_heroic2.cfg ]]; then 
-  wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/emulationstation/es_systems_heroic2.cfg "${REPO_BASE_URL}/shortcuts/es_configs/es_systems_heroic2.cfg" &
-  wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/emulationstation/es_features_heroic2.cfg "${REPO_BASE_URL}/shortcuts/es_configs/es_features_heroic2.cfg" &
-  wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/evmapy/Heroic2.keys "${REPO_BASE_URL}/shortcuts/es_configs/keys/Heroic2.keys" &
+  wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/emulationstation/es_systems_heroic2.cfg "${REPO_BASE_URL}/shortcuts/es_configs/es_systems_heroic2.cfg"
+  wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/emulationstation/es_features_heroic2.cfg "${REPO_BASE_URL}/shortcuts/es_configs/es_features_heroic2.cfg"
+  wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/evmapy/Heroic2.keys "${REPO_BASE_URL}/shortcuts/es_configs/keys/Heroic2.keys"
   wait
   dos2unix /userdata/system/configs/emulationstation/*.cfg 2>/dev/null
   dos2unix /userdata/system/configs/evmapy/*.keys 2>/dev/null
