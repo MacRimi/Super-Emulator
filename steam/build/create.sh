@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Define la URL base de tu repositorio
+REPO_BASE_URL="${REPO_BASE_URL:-https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/steam}"
+
 # Dependencies: curl tar gzip grep coreutils
 # Root rights are required
 
@@ -7,7 +10,7 @@
 # prepare batocera patched files
 thisdir="$(dirname "$(readlink -f "${0}")")"
 cd $thisdir
-wget -q --tries=10 -O $thisdir/utils_dwarfs.tar.gz https://github.com/uureel/batocera.pro/raw/main/steam/build/utils_dwarfs.tar.gz
+wget -q --tries=10 -O $thisdir/utils_dwarfs.tar.gz "${REPO_BASE_URL}/build/utils_dwarfs.tar.gz"
 tar xf $thisdir/utils_dwarfs.tar.gz
 ########################################################################
 
@@ -462,14 +465,13 @@ sed -i 's,os.geteuid() == 0,os.geteuid() == 888,g' "${bootstrap}"/usr/lib/python
 sed -i 's,id -u)" == "0",id -u)" == "888",g' "${bootstrap}"/usr/lib/steam/bin_steam.sh 2>/dev/null
 sed -i 's,id -u)" = "0",id -u)" = "888",g' "${bootstrap}"/usr/share/playonlinux4/lib/sources 2>/dev/null
 sed -i 's,EUID" = 0,EUID" = 888,g'   "${bootstrap}"/bin/steamtinkerlaunch 2>/dev/null
-sed -i 's/geteuid/getppid/' "${bootstrap}"/usr/sbin/vlc 2>/dev/null
 
 # Fix steam ctrl+click openbox bug
 # --
 # Include steamfixer.sh as /usr/bin/steamfixer
 steamfixer="${bootstrap}"/usr/bin/steamfixer
 	rm "$steamfixer" 2>/dev/null
-	wget -q --tries=10 --no-check-certificate --no-cache --no-cookies -O "$steamfixer" "https://raw.githubusercontent.com/trashbus99/Conty/master/steamfixer.sh"
+	wget -q --tries=10 --no-check-certificate --no-cache --no-cookies -O "$steamfixer" "${REPO_BASE_URL}/steamfixer.sh"
 		dos2unix "$steamfixer" 2>/dev/null
 		chmod 777 "$steamfixer" 2>/dev/null
 		chown -R batocera:batocera "$steamfixer" 2>/dev/null
@@ -477,7 +479,7 @@ steamfixer="${bootstrap}"/usr/bin/steamfixer
 # Include steamfix.sh as /usr/bin/steamfix
 steamfix="${bootstrap}"/usr/bin/steamfix
 	rm "$steamfix" 2>/dev/null
-	wget -q --tries=10 --no-check-certificate --no-cache --no-cookies -O "$steamfix" "https://raw.githubusercontent.com/trashbus99/Conty/master/steamfix.sh"
+	wget -q --tries=10 --no-check-certificate --no-cache --no-cookies -O "$steamfix" "${REPO_BASE_URL}/steamfix.sh"
 		dos2unix "$steamfix" 2>/dev/null
 		chmod 777 "$steamfix" 2>/dev/null
 		chown -R batocera:batocera "$steamfix" 2>/dev/null
@@ -586,7 +588,7 @@ echo "Entering chroot"
 # REBUILD LIBC WITH DT_HASH PATCH + ADDITIONAL FIXES
 chroot "${bootstrap}" \
 /usr/bin/env LANG=en_US.UTF-8 TERM=xterm PATH="/bin:/sbin:/usr/bin:/usr/sbin" /bin/bash -c \
-"curl -Ls https://raw.githubusercontent.com/uureel/batocera.pro/main/steam/build/patch.sh | bash && exit"
+"curl -Ls ${REPO_BASE_URL}/build/patch.sh | bash && exit"
 # ------------------------------------------------------------------------------------------
 
 echo "Exiting chroot"
@@ -597,4 +599,3 @@ umount "${bootstrap}"/sys
 umount "${bootstrap}"/dev/pts
 umount "${bootstrap}"/dev/shm
 umount "${bootstrap}"/dev
-
