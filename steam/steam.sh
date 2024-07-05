@@ -31,7 +31,7 @@ case $CHOICE in
     1)
         echo "Installing Steam Container..."
         rm /tmp/runner 2>/dev/null
-        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner "https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/steam/install2.sh"
+        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner "https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/steam/install.sh"
         dos2unix /tmp/runner 2>/dev/null 
         chmod 777 /tmp/runner 2>/dev/null
         bash /tmp/runner
