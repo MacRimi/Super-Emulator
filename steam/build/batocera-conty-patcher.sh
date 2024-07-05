@@ -296,7 +296,7 @@ if [[ ! -s "${nvdir}/.nvidia-$v-downloaded" ]]; then
             cp /userdata/system/.local/share/Conty/aria2c /usr/bin/aria2c
             chmod 777 /usr/bin/aria2c 2>/dev/null
         else
-            wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /usr/bin/aria2c "https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/steam/.dep/aria2c"
+            wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /usr/bin/aria2c "https://github.com/MacRimi/Super-Emulator/raw/main/steam/.dev/aria2c"
             chmod 777 /usr/bin/aria2c 2>/dev/null
             cp /usr/bin/aria2c /userdata/system/.local/share/Conty/aria2c
         fi
