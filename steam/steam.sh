@@ -13,9 +13,9 @@ fi
 # REPO_BASE_URL="${REPO_BASE_URL:-https://raw.githubusercontent.com/MacRimi/Super-Emulator/main/steam}"
 
 # Define the options
-OPTIONS=("1" "Install STABLE: Download prebuilt Arch Container (RECOMMENDED)"
-         "2" "Uninstall Arch Container"
-         "3" "Update ES Launcher shortcuts for Arch container")
+OPTIONS=("1" "Instalar STEAM (a través de Arch Container)"
+         "2" "Desinstalar STEAM"
+         "3" "Actualizar accesos directos")
 
 # Display the dialog and get the user choice
 CHOICE=$(dialog --clear --backtitle "Arch Container Management" \
