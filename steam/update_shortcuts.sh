@@ -57,7 +57,7 @@ wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/r
 dos2unix /userdata/roms/conty/+UPDATE-STEAM-SHORTCUTS.sh 2>/dev/null
 chmod 777 /userdata/roms/conty/+UPDATE-STEAM-SHORTCUTS.sh 2>/dev/null
 
-# Download configuration files
+echo "Downloading configuration files..."
 config_files=(
     "es_systems_arch.cfg"
     "es_features_arch.cfg"
@@ -66,10 +66,12 @@ config_files=(
 )
 
 for file in "${config_files[@]}"; do
+    echo "Downloading $file..."
     wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O "/userdata/system/configs/emulationstation/${file}" "https://github.com/uureel/batocera.pro/raw/main/steam/shortcuts/es_configs/${file}"
+    sleep 0.1
 done
 
-# Download key mappings
+echo "Downloading key mappings..."
 key_files=(
     "Arch.keys"
     "steam2.keys"
@@ -77,11 +79,14 @@ key_files=(
 )
 
 for file in "${key_files[@]}"; do
+    echo "Downloading $file..."
     wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O "/userdata/system/configs/evmapy/${file}" "https://github.com/uureel/batocera.pro/raw/main/steam/shortcuts/es_configs/keys/${file}"
+    sleep 0.1
 done
 
-# Download patcher script
+echo "Downloading patcher script..."
 wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/pro/steam/batocera-conty-patcher.sh "https://raw.githubusercontent.com/uureel/batocera.pro/main/steam/build/batocera-conty-patcher.sh"
+
 
 # Convert line endings and set execute permissions
 dos2unix /userdata/system/configs/emulationstation/*.cfg 2>/dev/null
