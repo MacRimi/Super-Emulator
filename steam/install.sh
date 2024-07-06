@@ -61,7 +61,7 @@ animate_title
 display_controls
 
 # Define URL base variable
-REPO_BASE_URL="${REPO_BASE_URL:-https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/steam}"
+REPO_BASE_URL="${REPO_BASE_URL:-https://raw.githubusercontent.com/MacRimi/Super-Emulator/main/steam}"
 
 # Define variables
 BASE_DIR="/userdata/system/pro/steam"
