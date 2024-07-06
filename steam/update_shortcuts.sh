@@ -53,7 +53,7 @@ mkdir -p /userdata/system/configs/evmapy 2>/dev/null
 rm /userdata/system/configs/emulationstation/es_features_steam2.cfg 2>/dev/null
 
 echo "Downloading parsers and custom systems..."
-wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/roms/conty/+UPDATE-STEAM-SHORTCUTS.sh "https://raw.githubusercontent.com/uureel/batocera.pro/main/steam/shortcuts/%2BUPDATE-STEAM-SHORTCUTS.sh"
+wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/roms/conty/+UPDATE-STEAM-SHORTCUTS.sh "https://raw.githubusercontent.com/MacRimi/Super-Emulator/main/steam/shortcuts/%2BUPDATE-STEAM-SHORTCUTS.sh"
 dos2unix /userdata/roms/conty/+UPDATE-STEAM-SHORTCUTS.sh 2>/dev/null
 chmod 777 /userdata/roms/conty/+UPDATE-STEAM-SHORTCUTS.sh 2>/dev/null
 
