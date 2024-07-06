@@ -1,47 +1,46 @@
 #!/bin/bash
 
-# Define la URL base de tu repositorio
-REPO_BASE_URL="${REPO_BASE_URL:-https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/steam}"
-
 echo
 echo "Updating shortcuts/launchers..."
 echo
 
+github_url="https://github.com/uureel/batocera.pro/raw/main/steam/shortcuts/"
 target_directory="/userdata/roms/conty/"
 
 # List of .sh files to download
 sh_files=(
-"Steam Big Picture Mode.sh"
-"Steam Diagnostic.sh"
-"Steam.sh"
-"SteamTinker Launch (settings).sh"
+    "Steam Big Picture Mode.sh"
+    "Steam Diagnostic.sh"
+    "Steam.sh"
+    "SteamTinker Launch (settings).sh"
 )
 
 # List of .sh files to remove
 old_sh_files=(
-  "Steam Big Picture Mode.sh"
-  "Steam Diagnostic.sh"
-  "Steam.sh"
-  "SteamTinker Launch (settings).sh"
+    "Steam Big Picture Mode.sh"
+    "Steam Diagnostic.sh"
+    "Steam.sh"
+    "SteamTinker Launch (settings).sh"
 )
 
+# Create target directory if it doesn't exist
 mkdir -p "$target_directory"
 
 # Remove old version .sh files
 for file in "${old_sh_files[@]}"; do
-  rm "${target_directory}${file}" 2>/dev/null
+    rm "${target_directory}${file}" 2>/dev/null
 done
 
 # Download new .sh files
 for file in "${sh_files[@]}"; do
-  # Replace spaces with '%20' for URL encoding
-  encoded_file=$(echo "$file" | sed 's/ /%20/g')
-  echo "Downloading $file..."
-  wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O "${target_directory}${file}" "${REPO_BASE_URL}/shortcuts/${encoded_file}"
-  sleep 0.1
+    # Replace spaces with '%20' for URL encoding
+    encoded_file=$(echo "$file" | sed 's/ /%20/g')
+    echo "Downloading $file..."
+    wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O "${target_directory}${file}" "${github_url}${encoded_file}"
+    sleep 0.1
 done
 
-wait
+# Convert line endings and set execute permissions
 dos2unix "${target_directory}"/*.sh 2>/dev/null
 chmod 777 "${target_directory}"/*.sh 2>/dev/null
 
@@ -49,51 +48,48 @@ echo "Downloaded shortcuts."
 echo
 sleep 1
 
-# Download parsers and custom systems
+# Prepare directories and remove old configuration files
+mkdir -p /userdata/system/configs/evmapy 2>/dev/null
+rm /userdata/system/configs/emulationstation/es_features_steam2.cfg 2>/dev/null
+
 echo "Downloading parsers and custom systems..."
-wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/roms/conty/+UPDATE-STEAM-SHORTCUTS.sh "${REPO_BASE_URL}/shortcuts/%2BUPDATE-STEAM-SHORTCUTS.sh"
-dos2unix /userdata/roms/steam2/+UPDATE-STEAM-SHORTCUTS.sh 2>/dev/null
-chmod 777 /userdata/roms/steam2/+UPDATE-STEAM-SHORTCUTS.sh 2>/dev/null
+wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/roms/conty/+UPDATE-STEAM-SHORTCUTS.sh "https://raw.githubusercontent.com/uureel/batocera.pro/main/steam/shortcuts/%2BUPDATE-STEAM-SHORTCUTS.sh"
+dos2unix /userdata/roms/conty/+UPDATE-STEAM-SHORTCUTS.sh 2>/dev/null
+chmod 777 /userdata/roms/conty/+UPDATE-STEAM-SHORTCUTS.sh 2>/dev/null
 
-wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/emulationstation/es_systems_arch.cfg "${REPO_BASE_URL}/shortcuts/es_configs/es_systems_arch.cfg"
-wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/emulationstation/es_features_arch.cfg "${REPO_BASE_URL}/shortcuts/es_configs/es_features_arch.cfg"
-wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/emulationstation/es_systems_steam2.cfg "${REPO_BASE_URL}/shortcuts/es_configs/es_systems_steam2.cfg"
-wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/emulationstation/es_features_steam2.cfg "${REPO_BASE_URL}/shortcuts/es_configs/es_features_steam2.cfg"
+# Download configuration files
+config_files=(
+    "es_systems_arch.cfg"
+    "es_features_arch.cfg"
+    "es_systems_steam2.cfg"
+    "es_features_steam2.cfg"
+)
 
-wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/evmapy/Arch.keys "${REPO_BASE_URL}/shortcuts/es_configs/keys/Arch.keys"
-# wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/evmapy/Lutris.keys "${REPO_BASE_URL}/shortcuts/es_configs/keys/Lutris.keys"
-# wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/evmapy/Heroic2.keys "${REPO_BASE_URL}/shortcuts/es_configs/keys/Heroic2.keys"
-wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/evmapy/steam2.keys "${REPO_BASE_URL}/shortcuts/es_configs/keys/steam2.keys"
-wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/evmapy/steam.keys "${REPO_BASE_URL}/shortcuts/es_configs/keys/steam.keys"
+for file in "${config_files[@]}"; do
+    wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O "/userdata/system/configs/emulationstation/${file}" "https://github.com/uureel/batocera.pro/raw/main/steam/shortcuts/es_configs/${file}"
+done
 
-wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/pro/steam/batocera-conty-patcher.sh "${REPO_BASE_URL}/build/batocera-conty-patcher.sh"
-wait
+# Download key mappings
+key_files=(
+    "Arch.keys"
+    "steam2.keys"
+    "steam.keys"
+)
 
+for file in "${key_files[@]}"; do
+    wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O "/userdata/system/configs/evmapy/${file}" "https://github.com/uureel/batocera.pro/raw/main/steam/shortcuts/es_configs/keys/${file}"
+done
+
+# Download patcher script
+wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/pro/steam/batocera-conty-patcher.sh "https://raw.githubusercontent.com/uureel/batocera.pro/main/steam/build/batocera-conty-patcher.sh"
+
+# Convert line endings and set execute permissions
 dos2unix /userdata/system/configs/emulationstation/*.cfg 2>/dev/null
 dos2unix /userdata/system/configs/evmapy/*.keys 2>/dev/null
 dos2unix /userdata/system/pro/steam/batocera-conty-patcher.sh 2>/dev/null
 chmod 777 /userdata/system/pro/steam/batocera-conty-patcher.sh 2>/dev/null
 
-# lutris
-#if [[ -e /userdata/system/configs/emulationstation/es_systems_lutris.cfg ]]; then 
-#  wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/emulationstation/es_systems_lutris.cfg "${REPO_BASE_URL}/shortcuts/es_configs/es_systems_lutris.cfg"
-#  wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/emulationstation/es_features_lutris.cfg "${REPO_BASE_URL}/shortcuts/es_configs/es_features_lutris.cfg"
-#  wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/evmapy/Lutris.keys "${REPO_BASE_URL}/shortcuts/es_configs/keys/Lutris.keys"
-#  wait
-#  dos2unix /userdata/system/configs/emulationstation/*.cfg 2>/dev/null
-#  dos2unix /userdata/system/configs/evmapy/*.keys 2>/dev/null
-#fi
-
-# heroic
-#if [[ -e /userdata/system/configs/emulationstation/es_systems_heroic2.cfg ]]; then 
-#  wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/emulationstation/es_systems_heroic2.cfg "${REPO_BASE_URL}/shortcuts/es_configs/es_systems_heroic2.cfg"
-#  wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/emulationstation/es_features_heroic2.cfg "${REPO_BASE_URL}/shortcuts/es_configs/es_features_heroic2.cfg"
-#  wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/configs/evmapy/Heroic2.keys "${REPO_BASE_URL}/shortcuts/es_configs/keys/Heroic2.keys"
-#  wait
-#  dos2unix /userdata/system/configs/emulationstation/*.cfg 2>/dev/null
-#  dos2unix /userdata/system/configs/evmapy/*.keys 2>/dev/null
-#fi 
-
+# Cleanup old scripts
 rm /userdata/system/pro/steam/prepare.sh 2>/dev/null
 dos2unix /userdata/roms/conty/*.sh 2>/dev/null
 chmod 777 /userdata/roms/conty/*.sh 2>/dev/null
