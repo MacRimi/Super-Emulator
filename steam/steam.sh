@@ -10,7 +10,7 @@ if [ "$architecture" != "x86_64" ]; then
 fi
 
 # Define URL base variable
-# REPO_BASE_URL="${REPO_BASE_URL:-https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/steam}"
+# REPO_BASE_URL="${REPO_BASE_URL:-https://raw.githubusercontent.com/MacRimi/Super-Emulator/main/steam}"
 
 # Define the options
 OPTIONS=("1" "Install STABLE: Download prebuilt Arch Container (RECOMMENDED)"
@@ -31,7 +31,7 @@ case $CHOICE in
     1)
         echo "Installing Steam Container..."
         rm /tmp/runner 2>/dev/null
-        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner "https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/steam/install.sh"
+        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner "https://raw.githubusercontent.com/MacRimi/Super-Emulator/main/steam/install.sh"
         dos2unix /tmp/runner 2>/dev/null 
         chmod 777 /tmp/runner 2>/dev/null
         bash /tmp/runner
@@ -39,7 +39,7 @@ case $CHOICE in
     2)
         echo "Loading Uninstall script..."
         rm /tmp/runner 2>/dev/null
-        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner "https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/steam/uninstall.sh"
+        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner "https://raw.githubusercontent.com/MacRimi/Super-Emulator/main/steam/uninstall.sh"
         dos2unix /tmp/runner 2>/dev/null 
         chmod 777 /tmp/runner 2>/dev/null
         bash /tmp/runner
@@ -47,7 +47,7 @@ case $CHOICE in
     3)  
         echo "Update EmulationStation Arch Container Launcher Shortcuts..."
         rm /tmp/runner 2>/dev/null
-        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner "https://raw.githubusercontent.com/MacRimi/Super-RetroPie/main/steam/update_shortcuts.sh"
+        wget -q --tries=30 --no-check-certificate --no-cache --no-cookies -O /tmp/runner "https://raw.githubusercontent.com/MacRimi/Super-Emulator/main/steam/update_shortcuts.sh"
         dos2unix /tmp/runner 2>/dev/null 
         chmod 777 /tmp/runner 2>/dev/null
         bash /tmp/runner
