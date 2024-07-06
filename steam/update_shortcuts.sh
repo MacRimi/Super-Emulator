@@ -53,11 +53,11 @@ mkdir -p /userdata/system/configs/evmapy 2>/dev/null
 rm /userdata/system/configs/emulationstation/es_features_steam2.cfg 2>/dev/null
 
 echo "Downloading parsers and custom systems..."
-wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/roms/conty/+UPDATE-STEAM-SHORTCUTS.sh "https://raw.githubusercontent.com/MacRimi/Super-Emulator/main/steam/shortcuts/%2BUPDATE-STEAM-SHORTCUTS.sh"
+wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/roms/conty/+UPDATE-STEAM-SHORTCUTS.sh "https://raw.githubusercontent.com/uureel/batocera.pro/main/steam/shortcuts/%2BUPDATE-STEAM-SHORTCUTS.sh"
 dos2unix /userdata/roms/conty/+UPDATE-STEAM-SHORTCUTS.sh 2>/dev/null
 chmod 777 /userdata/roms/conty/+UPDATE-STEAM-SHORTCUTS.sh 2>/dev/null
 
-echo "Downloading configuration files..."
+# Download configuration files
 config_files=(
     "es_systems_arch.cfg"
     "es_features_arch.cfg"
@@ -66,12 +66,10 @@ config_files=(
 )
 
 for file in "${config_files[@]}"; do
-    echo "Downloading $file..."
     wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O "/userdata/system/configs/emulationstation/${file}" "https://github.com/uureel/batocera.pro/raw/main/steam/shortcuts/es_configs/${file}"
-    sleep 0.1
 done
 
-echo "Downloading key mappings..."
+# Download key mappings
 key_files=(
     "Arch.keys"
     "steam2.keys"
@@ -79,12 +77,10 @@ key_files=(
 )
 
 for file in "${key_files[@]}"; do
-    echo "Downloading $file..."
     wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O "/userdata/system/configs/evmapy/${file}" "https://github.com/uureel/batocera.pro/raw/main/steam/shortcuts/es_configs/keys/${file}"
-    sleep 0.1
 done
 
-echo "Downloading patcher script..."
+# Download patcher script
 wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O /userdata/system/pro/steam/batocera-conty-patcher.sh "https://raw.githubusercontent.com/uureel/batocera.pro/main/steam/build/batocera-conty-patcher.sh"
 
 # Convert line endings and set execute permissions
@@ -97,6 +93,31 @@ chmod 777 /userdata/system/pro/steam/batocera-conty-patcher.sh 2>/dev/null
 rm /userdata/system/pro/steam/prepare.sh 2>/dev/null
 dos2unix /userdata/roms/conty/*.sh 2>/dev/null
 chmod 777 /userdata/roms/conty/*.sh 2>/dev/null
+
+# Download gamelist.xml
+echo "Downloading gamelist.xml..."
+wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O "${target_directory}gamelist.xml" "https://raw.githubusercontent.com/MacRimi/Super-Emulator/main/steam/shortcuts/gamelist.xml"
+sleep 0.1
+
+# Create images directory
+images_directory="${target_directory}images/"
+mkdir -p "$images_directory"
+
+# List of image files to download
+image_files=(
+    "+UPDATE-STEAM-SHORTCUTS-image.png"
+    "Steam Big Picture Mode-image.png"
+    "Steam-image.png"
+    "Steam Diagnostic-image.png"
+    "SteamTinker Launch (settings)-image.png"
+)
+
+# Download image files
+for image in "${image_files[@]}"; do
+    echo "Downloading $image..."
+    wget -q --tries=50 --no-check-certificate --no-cache --no-cookies -O "${images_directory}${image}" "https://raw.githubusercontent.com/MacRimi/Super-Emulator/main/steam/shortcuts/images/${image}"
+    sleep 0.1
+done
 
 sleep 1
 echo "Done."
