@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<gameList>
+    <game>
+        <path>./+UPDATE-STEAM-SHORTCUTS.sh</path>
+        <name>01 +UPDATE-STEAM-SHORTCUTS</name>
+        <image>./images/+UPDATE-STEAM-SHORTCUTS-image.png</image>
+    </game>
+	<game>
+		<path>./Steam Big Picture Mode.sh</path>
+		<name>02 Steam Big Picture Mode</name>
+        <image>./images/Steam Big Picture Mode-image.png</image>
+	</game>
+	<game>
+		<path>./Steam.sh</path>
+		<name>03 Steam</name>
+        <image>./images/Steam-image.png</image>
+	</game>
+	<game>
+		<path>./Steam Diagnostic.sh</path>
+		<name>04 Steam Diagnostic</name>
+        <image>./images/Steam Diagnostic-image.png</image>
+	</game>
+	<game>
+		<path>./SteamTinker Launch (settings).sh</path>
+		<name>05 SteamTinker Launch (settings)</name>
+        <image>./images/SteamTinker Launch (settings)-image.png</image>
+	</game>
+</gameList>
