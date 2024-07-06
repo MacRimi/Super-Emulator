@@ -9,6 +9,19 @@ if [ "$architecture" != "x86_64" ]; then
     exit 1
 fi
 
+MESSAGE="Este contenedor es compatible únicamente con particiones EXT4 o BTRFS. NTFS/EXFat no son compatibles. ¿Desea continuar?"
+
+# Use dialog to create a yes/no box
+if dialog --title "Compatibility Warning" --yesno "$MESSAGE" 10 70; then
+    # If the user chooses 'Yes', continue the installation
+    echo "Continuing installation..."
+    # Add your installation commands here
+else
+    # If the user chooses 'No', exit the script
+    echo "Installation aborted by user."
+    exit 1
+fi
+
 MESSAGE="Desde la versión 39 de Batocera, aparentemente debido a cambios en el kernel y/o SDL, xinput sobre bluetooth no funciona en Steam en el contenedor de Arch. Los controladores Xbox One/S/X funcionan únicamente a través de USB con cable o adaptador inalámbrico de Xbox. Los usuarios de controladores 8bitDO pueden cambiar su modo de entrada a d-input o entrada de switch. ¿Deseas continuar?"
 
 # Use dialog to create a yes/no box
@@ -25,7 +38,7 @@ fi
 # Clear the screen after the dialog is closed
 clear
 
-echo "Starting Steam Installer Script..."
+echo "Iniciando el script del instalador de Steam..."
 
 sleep 2
 
@@ -46,9 +59,9 @@ animate_title() {
 
 display_controls() {
     echo 
-    echo "This Will install Steam,"
-    echo "a new system appearing in ES called Arch Container or"
-    echo "Linux depending on your theme in ~/pro/steam"  
+    echo "instalando Steam..."
+    echo "un nuevo sistema aparecerá llamado Arch Container Linux o"
+    echo "Arch Container, dependiendo de tu tema, en ~/pro/steam" 
     echo 
     sleep 10  # Delay for 10 seconds
 }
