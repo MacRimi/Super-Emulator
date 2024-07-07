@@ -36,7 +36,11 @@ for file in "${sh_files[@]}"; do
     # Replace spaces with '%20' for URL encoding
     encoded_file=$(echo "$file" | sed 's/ /%20/g')
     echo "Downloading $file..."
-    curl --progress-bar --retry 50 --insecure --location --output "${target_directory}${file}" "${github_url}${encoded_file}"
+    curl --progress-bar --retry 50 --retry-delay 5 --max-time 600 --connect-timeout 30 --insecure --location --output "${target_directory}${file}" "${github_url}${encoded_file}"
+    if [ $? -ne 0 ]; then
+        echo "Error downloading $file"
+    fi
+    sleep 0.1
 done
 
 # Convert line endings and set execute permissions
@@ -52,7 +56,7 @@ mkdir -p /userdata/system/configs/evmapy 2>/dev/null
 rm /userdata/system/configs/emulationstation/es_features_steam2.cfg 2>/dev/null
 
 echo "Downloading parsers and custom systems..."
-curl --progress-bar --retry 50 --insecure --location --output /userdata/roms/conty/+UPDATE-STEAM-SHORTCUTS.sh "https://raw.githubusercontent.com/MacRimi/Super-Emulator/main/steam/shortcuts/%2BUPDATE-STEAM-SHORTCUTS.sh"
+curl --progress-bar --retry 50 --retry-delay 5 --max-time 600 --connect-timeout 30 --insecure --location --output /userdata/roms/conty/+UPDATE-STEAM-SHORTCUTS.sh "https://raw.githubusercontent.com/MacRimi/Super-Emulator/main/steam/shortcuts/%2BUPDATE-STEAM-SHORTCUTS.sh"
 dos2unix /userdata/roms/conty/+UPDATE-STEAM-SHORTCUTS.sh 2>/dev/null
 chmod 777 /userdata/roms/conty/+UPDATE-STEAM-SHORTCUTS.sh 2>/dev/null
 
@@ -66,7 +70,11 @@ config_files=(
 
 for file in "${config_files[@]}"; do
     echo "Downloading $file..."
-    curl --progress-bar --retry 50 --insecure --location --output "/userdata/system/configs/emulationstation/${file}" "https://github.com/uureel/batocera.pro/raw/main/steam/shortcuts/es_configs/${file}"
+    curl --progress-bar --retry 50 --retry-delay 5 --max-time 600 --connect-timeout 30 --insecure --location --output "/userdata/system/configs/emulationstation/${file}" "https://github.com/uureel/batocera.pro/raw/main/steam/shortcuts/es_configs/${file}"
+    if [ $? -ne 0 ]; then
+        echo "Error downloading $file"
+    fi
+    sleep 0.1
 done
 
 echo "Downloading key mappings..."
@@ -78,11 +86,18 @@ key_files=(
 
 for file in "${key_files[@]}"; do
     echo "Downloading $file..."
-    curl --progress-bar --retry 50 --insecure --location --output "/userdata/system/configs/evmapy/${file}" "https://github.com/uureel/batocera.pro/raw/main/steam/shortcuts/es_configs/keys/${file}"
+    curl --progress-bar --retry 50 --retry-delay 5 --max-time 600 --connect-timeout 30 --insecure --location --output "/userdata/system/configs/evmapy/${file}" "https://github.com/uureel/batocera.pro/raw/main/steam/shortcuts/es_configs/keys/${file}"
+    if [ $? -ne 0 ]; then
+        echo "Error downloading $file"
+    fi
+    sleep 0.1
 done
 
 echo "Downloading patcher script..."
-curl --progress-bar --retry 50 --insecure --location --output /userdata/system/pro/steam/batocera-conty-patcher.sh "https://raw.githubusercontent.com/uureel/batocera.pro/main/steam/build/batocera-conty-patcher.sh"
+curl --progress-bar --retry 50 --retry-delay 5 --max-time 600 --connect-timeout 30 --insecure --location --output /userdata/system/pro/steam/batocera-conty-patcher.sh "https://raw.githubusercontent.com/uureel/batocera.pro/main/steam/build/batocera-conty-patcher.sh"
+if [ $? -ne 0 ]; then
+    echo "Error downloading patcher script"
+fi
 
 # Convert line endings and set execute permissions
 dos2unix /userdata/system/configs/emulationstation/*.cfg 2>/dev/null
@@ -97,7 +112,10 @@ chmod 777 /userdata/roms/conty/*.sh 2>/dev/null
 
 # Download gamelist.xml
 echo "Downloading gamelist.xml..."
-curl --progress-bar --retry 50 --insecure --location --output "${target_directory}gamelist.xml" "https://raw.githubusercontent.com/MacRimi/Super-Emulator/main/steam/shortcuts/gamelist.xml"
+curl --progress-bar --retry 50 --retry-delay 5 --max-time 600 --connect-timeout 30 --insecure --location --output "${target_directory}gamelist.xml" "https://raw.githubusercontent.com/MacRimi/Super-Emulator/main/steam/shortcuts/gamelist.xml"
+if [ $? -ne 0 ]; then
+    echo "Error downloading gamelist.xml"
+fi
 
 # Create images directory
 images_directory="${target_directory}images/"
@@ -114,8 +132,14 @@ image_files=(
 
 # Download image files
 for image in "${image_files[@]}"; do
+    # Replace spaces with '%20' for URL encoding
+    encoded_image=$(echo "$image" | sed 's/ /%20/g')
     echo "Downloading $image..."
-    curl --progress-bar --retry 50 --insecure --location --output "${images_directory}${image}" "https://raw.githubusercontent.com/MacRimi/Super-Emulator/main/steam/shortcuts/images/${image}"
+    curl --progress-bar --retry 50 --retry-delay 5 --max-time 600 --connect-timeout 30 --insecure --location --output "${images_directory}${image}" "https://raw.githubusercontent.com/MacRimi/Super-Emulator/main/steam/shortcuts/images/${encoded_image}"
+    if [ $? -ne 0 ]; then
+        echo "Error downloading $image"
+    fi
+    sleep 0.1
 done
 
 sleep 1
