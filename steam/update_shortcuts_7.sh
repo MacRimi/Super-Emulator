@@ -36,7 +36,7 @@ for file in "${sh_files[@]}"; do
     # Replace spaces with '%20' for URL encoding
     encoded_file=$(echo "$file" | sed 's/ /%20/g')
     echo "Downloading $file..."
-    curl --retry 50 --retry-delay 10 --max-time 900 --connect-timeout 60 --insecure --location --output "${target_directory}${file}" "${github_url}${encoded_file}"
+    curl --retry 50 --retry-delay 10 --max-time 900 --connect-timeout 60 --insecure --location --output "${target_directory}${file}" "${github_url}${encoded_file}" > /dev/null 2>&1
     if [ $? -ne 0 ]; then
         echo "Error downloading $file"
     fi
@@ -56,7 +56,7 @@ mkdir -p /userdata/system/configs/evmapy 2>/dev/null
 rm /userdata/system/configs/emulationstation/es_features_steam2.cfg 2>/dev/null
 
 echo "Downloading parsers and custom systems..."
-curl --retry 50 --retry-delay 10 --max-time 900 --connect-timeout 60 --insecure --location --output /userdata/roms/conty/+UPDATE-STEAM-SHORTCUTS.sh "https://raw.githubusercontent.com/MacRimi/Super-Emulator/main/steam/shortcuts/%2BUPDATE-STEAM-SHORTCUTS.sh"
+curl --retry 50 --retry-delay 10 --max-time 900 --connect-timeout 60 --insecure --location --output /userdata/roms/conty/+UPDATE-STEAM-SHORTCUTS.sh "https://raw.githubusercontent.com/MacRimi/Super-Emulator/main/steam/shortcuts/%2BUPDATE-STEAM-SHORTCUTS.sh" > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo "Error downloading +UPDATE-STEAM-SHORTCUTS.sh"
 fi
@@ -73,7 +73,7 @@ config_files=(
 
 for file in "${config_files[@]}"; do
     echo "Downloading $file..."
-    curl --retry 50 --retry-delay 10 --max-time 900 --connect-timeout 60 --insecure --location --output "/userdata/system/configs/emulationstation/${file}" "https://github.com/uureel/batocera.pro/raw/main/steam/shortcuts/es_configs/${file}"
+    curl --retry 50 --retry-delay 10 --max-time 900 --connect-timeout 60 --insecure --location --output "/userdata/system/configs/emulationstation/${file}" "https://github.com/uureel/batocera.pro/raw/main/steam/shortcuts/es_configs/${file}" > /dev/null 2>&1
     if [ $? -ne 0 ]; then
         echo "Error downloading $file"
     fi
@@ -89,7 +89,7 @@ key_files=(
 
 for file in "${key_files[@]}"; do
     echo "Downloading $file..."
-    curl --retry 50 --retry-delay 10 --max-time 900 --connect-timeout 60 --insecure --location --output "/userdata/system/configs/evmapy/${file}" "https://github.com/uureel/batocera.pro/raw/main/steam/shortcuts/es_configs/keys/${file}"
+    curl --retry 50 --retry-delay 10 --max-time 900 --connect-timeout 60 --insecure --location --output "/userdata/system/configs/evmapy/${file}" "https://github.com/uureel/batocera.pro/raw/main/steam/shortcuts/es_configs/keys/${file}" > /dev/null 2>&1
     if [ $? -ne 0 ]; then
         echo "Error downloading $file"
     fi
@@ -97,7 +97,7 @@ for file in "${key_files[@]}"; do
 done
 
 echo "Downloading patcher script..."
-curl --retry 50 --retry-delay 10 --max-time 900 --connect-timeout 60 --insecure --location --output /userdata/system/pro/steam/batocera-conty-patcher.sh "https://raw.githubusercontent.com/uureel/batocera.pro/main/steam/build/batocera-conty-patcher.sh"
+curl --retry 50 --retry-delay 10 --max-time 900 --connect-timeout 60 --insecure --location --output /userdata/system/pro/steam/batocera-conty-patcher.sh "https://raw.githubusercontent.com/uureel/batocera.pro/main/steam/build/batocera-conty-patcher.sh" > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo "Error downloading patcher script"
 fi
@@ -115,7 +115,7 @@ chmod 777 /userdata/roms/conty/*.sh 2>/dev/null
 
 # Download gamelist.xml
 echo "Downloading gamelist.xml..."
-curl --retry 50 --retry-delay 10 --max-time 900 --connect-timeout 60 --insecure --location --output "${target_directory}gamelist.xml" "https://raw.githubusercontent.com/MacRimi/Super-Emulator/main/steam/shortcuts/gamelist.xml"
+curl --retry 50 --retry-delay 10 --max-time 900 --connect-timeout 60 --insecure --location --output "${target_directory}gamelist.xml" "https://raw.githubusercontent.com/MacRimi/Super-Emulator/main/steam/shortcuts/gamelist.xml" > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo "Error downloading gamelist.xml"
 fi
@@ -138,7 +138,7 @@ for image in "${image_files[@]}"; do
     # Replace spaces with '%20' for URL encoding
     encoded_image=$(echo "$image" | sed 's/ /%20/g')
     echo "Downloading $image..."
-    curl --retry 50 --retry-delay 10 --max-time 900 --connect-timeout 60 --insecure --location --output "${images_directory}${image}" "https://raw.githubusercontent.com/MacRimi/Super-Emulator/main/steam/shortcuts/images/${encoded_image}"
+    curl --retry 50 --retry-delay 10 --max-time 900 --connect-timeout 60 --insecure --location --output "${images_directory}${image}" "https://raw.githubusercontent.com/MacRimi/Super-Emulator/main/steam/shortcuts/images/${encoded_image}" > /dev/null 2>&1
     if [ $? -ne 0 ]; then
         echo "Error downloading $image"
     fi
