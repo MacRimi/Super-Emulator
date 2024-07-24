@@ -18,7 +18,7 @@ SHARE_SOURCE="/userdata"
 BOOT_SOURCE="/boot"
 FINAL_DEST="/userdata"
 BOOT_DEST="/boot"
-RSYNC_OPTIONS="-av --progress --partial --inplace --delete --numeric-ids"
+RSYNC_OPTIONS="-av --progress --partial --inplace --delete --numeric-ids --copy-links"
 
 # Función para montar NAS con reintentos
 mount_nas() {
@@ -107,6 +107,21 @@ select_location() {
             ;;
         *)
             echo "Opción no válida."
+            ;;
+    esac
+}
+
+# Función para verificar el sistema de archivos
+check_filesystem() {
+    FILESYSTEM=$(df -T $NAS_MOUNT_POINT | tail -1 | awk '{print $2}')
+    case $FILESYSTEM in
+        ext4|btrfs|xfs|ntfs|apfs)
+            echo "El sistema de archivos $FILESYSTEM es compatible con symlinks."
+            ;;
+        *)
+            echo "El sistema de archivos $FILESYSTEM no es compatible con symlinks."
+            dialog --msgbox "El sistema de archivos $FILESYSTEM en $LOCATION no soporta symlinks. Por favor, usa un sistema de archivos compatible como ext4, btrfs, xfs, ntfs o apfs." 10 50
+            exit 1
             ;;
     esac
 }
@@ -240,6 +255,9 @@ MAIN_OPTION=$(dialog --stdout --menu "Selecciona una opción:" 15 50 2 \
     2 "Restaurar copia de seguridad")
 
 select_location
+
+# Verificar sistema de archivos
+check_filesystem
 
 case $MAIN_OPTION in
     1)
