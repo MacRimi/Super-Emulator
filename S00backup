@@ -1,0 +1,76 @@
+#!/bin/bash
+
+FLAG_FILE="/userdata/system/backup_flag"
+CONFIG_FILE="$HOME/.backup_restore_config"
+RSYNC_BIN="/usr/bin/rsync"
+BACKUP_DIR="/mnt/nas/backups"
+SHARE_SOURCE="/userdata"
+BOOT_SOURCE="/boot"
+LOG_DIR="/var/log"
+LOG_FILE="$LOG_DIR/backup.log"
+RSYNC_OPTIONS="-av --progress --partial --inplace --numeric-ids -l --delete --ignore-errors"
+
+# Montar NAS
+mount_nas() {
+    source $CONFIG_FILE
+    mkdir -p /mnt/nas
+    mount -t cifs -o username=$NAS_USERNAME,password=$NAS_PASSWORD //$NAS_IP/$NAS_SHARE /mnt/nas
+    mkdir -p $BACKUP_DIR
+}
+
+# Desmontar NAS
+umount_nas() {
+    umount /mnt/nas
+}
+
+# Montar partición `share` en modo solo lectura
+mount_share_readonly() {
+    mount -o remount,ro $SHARE_SOURCE
+}
+
+# Montar partición `share` en modo lectura/escritura
+mount_share_readwrite() {
+    mount -o remount,rw $SHARE_SOURCE
+}
+
+# Copia de Seguridad
+backup() {
+    BACKUP_DIR_NAME="backup_$(date +'%Y-%m-%d')"
+    mkdir -p "$BACKUP_DIR/$BACKUP_DIR_NAME"
+    
+    echo "Iniciando copia de seguridad de la partición share..." | tee -a $LOG_FILE
+    mount_share_readonly
+    rsync $RSYNC_OPTIONS $SHARE_SOURCE "$BACKUP_DIR/$BACKUP_DIR_NAME/share" 2>&1 | tee -a "$LOG_FILE"
+    mount_share_readwrite
+    
+    echo "Iniciando copia de seguridad de la partición boot..." | tee -a $LOG_FILE
+    mount -o remount,rw /boot
+    rsync $RSYNC_OPTIONS $BOOT_SOURCE "$BACKUP_DIR/$BACKUP_DIR_NAME/boot" 2>&1 | tee -a "$LOG_FILE"
+    mount -o remount,ro /boot
+}
+
+# Verificar si rsync está instalado
+if ! command -v rsync &> /dev/null; then
+    echo "rsync no está instalado. Por favor, instala rsync y vuelve a intentarlo."
+    exit 1
+fi
+
+# Verificar si el archivo de señalización existe
+if [ -f $FLAG_FILE ]; then
+    # Montar NAS
+    mount_nas
+
+    # Realizar la copia de seguridad
+    backup
+
+    # Desmontar NAS
+    umount_nas
+
+    # Eliminar el archivo de señalización
+    rm -f $FLAG_FILE
+
+    echo "Copia de seguridad completada." | tee -a $LOG_FILE
+fi
+
+# Continuar con el arranque normal
+exit 0
