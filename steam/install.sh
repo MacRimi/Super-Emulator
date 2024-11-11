@@ -105,10 +105,20 @@ fi
 mkdir -p /userdata/roms/steam2
 ###############
 
+###############
 # Step 3: Download conty.sh with download percentage indicator
+# rm /userdata/system/pro/steam/prepare.sh 2>/dev/null
+# rm /userdata/system/pro/steam/conty.s* 2>/dev/null
+# curl -L aria2c.batocera.pro | bash && ./aria2c -x 5 -d /userdata/system/pro/steam http://batocera.pro/app/conty.sh && rm aria2c
+# chmod 777 /userdata/system/pro/steam/conty.sh 2>/dev/null
+###############
+
+###############
+
+# Paso 3: Descargar conty.sh con indicador de progreso
 rm /userdata/system/pro/steam/prepare.sh 2>/dev/null
 rm /userdata/system/pro/steam/conty.s* 2>/dev/null
-curl -L aria2c.batocera.pro | bash && ./aria2c -x 5 -d /userdata/system/pro/steam http://batocera.pro/app/conty.sh && rm aria2c
+curl -L -o /userdata/system/pro/steam/conty.sh https://github.com/Kron4ek/Conty/releases/latest/download/conty.sh
 chmod 777 /userdata/system/pro/steam/conty.sh 2>/dev/null
 
 ###############
