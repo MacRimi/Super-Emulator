@@ -79,7 +79,8 @@ REPO_BASE_URL="${REPO_BASE_URL:-https://raw.githubusercontent.com/MacRimi/Super-
 # Define variables
 BASE_DIR="/userdata/system/pro/steam"
 HOME_DIR="$BASE_DIR/home"
-DOWNLOAD_URL="batocera.pro/app/conty.sh"
+DOWNLOAD_URL="https://github.com/Kron4ek/Conty/releases/latest/download/conty.sh"
+#DOWNLOAD_URL="batocera.pro/app/conty.sh"
 DOWNLOAD_FILE="$BASE_DIR/conty.sh"
 ROMS_DIR="/userdata/roms/ports"
 
